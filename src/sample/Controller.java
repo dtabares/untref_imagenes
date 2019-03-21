@@ -18,12 +18,13 @@ public class Controller extends BorderPane {
 
     private File imageFile = null;
 
-    @FXML private AnchorPane PanelCentral;
-
+    @FXML private AnchorPane PanelIzq;
+    @FXML private AnchorPane PanelDer;
 
     public void initialize()throws IOException{
         System.out.println("Inicializando...");
-        PanelCentral.setStyle("-fx-background-color: #605d6d;");
+        PanelIzq.setStyle("-fx-background-color: #605d6d; -fx-border-color: #000000; -fx-border-width: 1;");
+        PanelDer.setStyle("-fx-background-color: #605d6d; -fx-border-color: #000000; -fx-border-width: 1;");
     }
 
     @FXML public void openFile() {
@@ -62,7 +63,7 @@ public class Controller extends BorderPane {
                     }
                 }
                 ImageView Imagen = new ImageView(wimg);
-                PanelCentral.getChildren().setAll(Imagen);
+                PanelIzq.getChildren().setAll(Imagen);
             }
         }
         catch (Exception e)

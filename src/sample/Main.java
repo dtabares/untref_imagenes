@@ -5,14 +5,16 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javafx.scene.layout.BorderPane;
 
 public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
-        Parent root = FXMLLoader.load(getClass().getResource("root_scene.fxml"));
+        BorderPane borderPane = (BorderPane) FXMLLoader.load(getClass().getResource("root_scene.fxml"));
+        Scene scene = new Scene(borderPane);
         primaryStage.setTitle("Imagenes");
-        primaryStage.setScene(new Scene(root, 1800, 600));
+        primaryStage.setScene(scene);
         primaryStage.show();
     }
 

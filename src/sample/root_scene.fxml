@@ -5,20 +5,9 @@
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="409.0" prefWidth="991.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="sample.Controller">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1700.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="sample.Controller">
   <center>
-    <GridPane id="Grid">
-      <children>
-        <ImageView id="LeftImage" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="0" GridPane.rowIndex="0" />
-      </children>
-      <columnConstraints>
-        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-      </columnConstraints>
-      <rowConstraints>
-        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-      </rowConstraints>
-    </GridPane>
+    <AnchorPane fx:id="PanelCentral" prefHeight="600.0" prefWidth="800.0" />
   </center>
   <left>
     <Accordion BorderPane.alignment="CENTER">
@@ -27,10 +16,10 @@
           <content>
             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
               <children>
-                <VBox layoutX="0.0" layoutY="0.0" prefHeight="293.0" prefWidth="200.0">
+                <VBox layoutX="0.0" layoutY="0.0" prefHeight="284.0" prefWidth="200.0">
                   <children>
-                    <Button mnemonicParsing="false" prefWidth="200.0" text="Action A" />
-                    <Button mnemonicParsing="false" prefWidth="200.0" text="Action B" />
+                    <Button mnemonicParsing="false" prefWidth="205.0" text="Action A" />
+                    <Button mnemonicParsing="false" prefWidth="205.0" text="Action B" />
                   </children>
                 </VBox>
               </children>
@@ -41,7 +30,7 @@
           <content>
             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
               <children>
-                <VBox layoutX="0.0" layoutY="0.0" prefHeight="293.0" prefWidth="200.0">
+                <VBox layoutX="0.0" layoutY="0.0" prefHeight="284.0" prefWidth="200.0">
                   <children>
                     <Button mnemonicParsing="false" prefWidth="200.0" text="Action C" />
                   </children>
@@ -54,9 +43,9 @@
           <content>
             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
               <children>
-                <VBox layoutX="0.0" layoutY="0.0" prefHeight="293.0" prefWidth="200.0">
+                <VBox layoutX="0.0" layoutY="0.0" prefHeight="284.0" prefWidth="200.0">
                   <children>
-                    <Button mnemonicParsing="false" prefWidth="205.0" text="Action D" />
+                    <Button mnemonicParsing="false" prefWidth="200.0" text="Action D" />
                   </children>
                 </VBox>
               </children>

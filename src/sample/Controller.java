@@ -17,6 +17,7 @@ import javafx.scene.image.PixelWriter;
 public class Controller extends BorderPane {
 
     private File imageFile = null;
+    private BufferedImage modifiedImage = null;
 
     @FXML private AnchorPane PanelIzq;
     @FXML private AnchorPane PanelDer;
@@ -27,15 +28,15 @@ public class Controller extends BorderPane {
         PanelDer.setStyle("-fx-background-color: #605d6d; -fx-border-color: #000000; -fx-border-width: 1;");
     }
 
-    @FXML public void openFile() {
-        Stage directorioStage = null;
+    @FXML public void openImageFile() {
+        Stage browser = new Stage();
         FileChooser fc = new FileChooser();
         try {
             fc.setTitle("Seleccionar Directorio");
             if (imageFile!=null){
                 fc.setInitialDirectory(imageFile);
             }
-            imageFile = fc.showOpenDialog(directorioStage);
+            imageFile = fc.showOpenDialog(browser);
             if(imageFile.getName().toLowerCase().contains(".raw") ||
                     imageFile.getName().toLowerCase().contains(".ppm") ||
                         imageFile.getName().toLowerCase().contains(".pgm") ||
@@ -50,21 +51,10 @@ public class Controller extends BorderPane {
                 alert.setContentText("La extension del archivo no esta soportada");
                 alert.showAndWait();
             }
-            if(imageFile != null){
-                BufferedImage bimg = ReadImage(imageFile);
-                WritableImage wimg = null;
-                if (bimg != null) {
-                    wimg = new WritableImage(bimg.getWidth(), bimg.getHeight());
-                    PixelWriter pw = wimg.getPixelWriter();
-                    for (int x = 0; x < bimg.getWidth(); x++) {
-                        for (int y = 0; y < bimg.getHeight(); y++) {
-                            pw.setArgb(x, y, bimg.getRGB(x, y));
-                        }
-                    }
-                }
+
+                WritableImage wimg = ReadImage(imageFile);
                 ImageView Imagen = new ImageView(wimg);
                 PanelIzq.getChildren().setAll(Imagen);
-            }
         }
         catch (Exception e)
         {
@@ -74,26 +64,55 @@ public class Controller extends BorderPane {
             imageFile = null;
         }
         fc.setInitialDirectory(null);
-        directorioStage = null;
     }
+
+    @FXML public void saveImageFile(){
+        Stage browser = new Stage();
+        FileChooser fc = new FileChooser();
+        if (modifiedImage != null)
+        {
+            try {
+                fc.setTitle("Seleccionar Archivo");
+                imageFile = fc.showSaveDialog (browser);
+                File f = new File(fc.getInitialDirectory() + fc.getInitialFileName());
+                WriteImage(modifiedImage, f , f.getName().substring(f.getName().lastIndexOf(".")));
+            }
+            catch (Exception e)
+            {
+                ShowAlert(e.getMessage());
+                imageFile = null;
+            }
+            fc.setInitialDirectory(null);
+        }
+        else
+            {
+                ShowAlert("No hay imagen para guardar");
+            }
+    }
+
     @FXML public void closeApplication(){
         System.exit(0);
     }
 
-    public BufferedImage ReadImage(File f)throws IOException
+    public WritableImage ReadImage(File f)throws IOException
     {
-        int width = 600;
-        int height = 800;
-        BufferedImage image = null;
+        WritableImage wimg = null;
         try {
-            image = new BufferedImage(width,height,BufferedImage.TYPE_INT_ARGB);
-            image = ImageIO.read(f);
-            System.out.println("Reading complete");
+            BufferedImage bimg = ImageIO.read(f);
+            if (bimg != null) {
+                wimg = new WritableImage(bimg.getWidth(), bimg.getHeight());
+                PixelWriter pw = wimg.getPixelWriter();
+                for (int x = 0; x < bimg.getWidth(); x++) {
+                    for (int y = 0; y < bimg.getHeight(); y++) {
+                        pw.setArgb(x, y, bimg.getRGB(x, y));
+                    }
+                }
+            }
         }
         catch (Exception e){
             System.out.println("Error: " + e.getMessage());
         }
-        return image;
+        return wimg;
     }
 
     public void WriteImage(BufferedImage image, File f, String format) throws IOException
@@ -105,5 +124,12 @@ public class Controller extends BorderPane {
         catch (Exception e){
             System.out.println("Error: " + e.getMessage());
         }
+    }
+
+    public void ShowAlert(String message)
+    {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 }

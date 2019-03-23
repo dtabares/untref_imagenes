@@ -72,7 +72,8 @@
       <menus>
         <Menu mnemonicParsing="false" text="File">
           <items>
-            <MenuItem mnemonicParsing="false" onAction="#openFile" text="Open" />
+            <MenuItem mnemonicParsing="false" onAction="#openImageFile" text="Open" />
+            <MenuItem mnemonicParsing="false" onAction="#saveImageFile" text="Save" />
             <MenuItem mnemonicParsing="false" onAction="#closeApplication" text="Close" />
           </items>
         </Menu>

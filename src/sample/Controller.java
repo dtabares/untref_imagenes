@@ -25,8 +25,8 @@ public class Controller extends BorderPane {
 
     public void initialize()throws IOException{
         System.out.println("Inicializando...");
-        PanelIzq.setStyle("-fx-background-color: #605d6d; -fx-border-color: #000000; -fx-border-width: 1;");
-        PanelDer.setStyle("-fx-background-color: #605d6d; -fx-border-color: #000000; -fx-border-width: 1;");
+//        PanelIzq.setStyle("-fx-background-color: #605d6d; -fx-border-color: #000000; -fx-border-width: 1;");
+//        PanelDer.setStyle("-fx-background-color: #605d6d; -fx-border-color: #000000; -fx-border-width: 1;");
     }
 
     @FXML public void openImageFile() {

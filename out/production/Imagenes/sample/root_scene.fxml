@@ -29,6 +29,52 @@
       </rowConstraints>
     </GridPane>
   </center>
+  <left>
+    <Accordion BorderPane.alignment="CENTER">
+      <panes>
+        <TitledPane animated="false" text="Action Group 1">
+          <content>
+            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+              <children>
+                <VBox layoutX="0.0" layoutY="0.0" prefHeight="284.0" prefWidth="200.0">
+                  <children>
+                    <Button mnemonicParsing="false" prefWidth="205.0" text="Action A" />
+                    <Button mnemonicParsing="false" prefWidth="205.0" text="Action B" />
+                  </children>
+                </VBox>
+              </children>
+            </AnchorPane>
+          </content>
+        </TitledPane>
+        <TitledPane animated="false" text="Action Group 2">
+          <content>
+            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+              <children>
+                <VBox layoutX="0.0" layoutY="0.0" prefHeight="284.0" prefWidth="200.0">
+                  <children>
+                    <Button mnemonicParsing="false" prefWidth="200.0" text="Action C" />
+                  </children>
+                </VBox>
+              </children>
+            </AnchorPane>
+          </content>
+        </TitledPane>
+        <TitledPane animated="false" text="Action Group 3">
+          <content>
+            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+              <children>
+                <VBox layoutX="0.0" layoutY="0.0" prefHeight="284.0" prefWidth="200.0">
+                  <children>
+                    <Button mnemonicParsing="false" prefWidth="200.0" text="Action D" />
+                  </children>
+                </VBox>
+              </children>
+            </AnchorPane>
+          </content>
+        </TitledPane>
+      </panes>
+    </Accordion>
+  </left>
   <top>
     <MenuBar BorderPane.alignment="CENTER">
       <menus>

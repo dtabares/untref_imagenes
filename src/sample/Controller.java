@@ -1,5 +1,6 @@
 package sample;
 
+import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.control.Alert;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
@@ -38,13 +39,13 @@ public class Controller extends BorderPane {
             }
             imageFile = fc.showOpenDialog(browser);
             if(imageFile.getName().toLowerCase().contains(".raw") ||
+                    // ver http://lclevy.free.fr/cr2/#intro
                     imageFile.getName().toLowerCase().contains(".ppm") ||
                         imageFile.getName().toLowerCase().contains(".pgm") ||
                             imageFile.getName().toLowerCase().contains(".jpg") ||
                                 imageFile.getName().toLowerCase().contains(".png")
             ) {
                 imageFile = new File(imageFile.getAbsolutePath());
-                System.out.println(imageFile.getAbsolutePath());
             }
             else{
                 Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -55,6 +56,9 @@ public class Controller extends BorderPane {
                 WritableImage wimg = ReadImage(imageFile);
                 ImageView Imagen = new ImageView(wimg);
                 PanelIzq.getChildren().setAll(Imagen);
+                //Prueba para salvar imagen
+                modifiedImage = SwingFXUtils.fromFXImage(wimg, modifiedImage);
+                PanelDer.getChildren().setAll(new ImageView(wimg));
         }
         catch (Exception e)
         {
@@ -73,14 +77,13 @@ public class Controller extends BorderPane {
         {
             try {
                 fc.setTitle("Seleccionar Archivo");
-                imageFile = fc.showSaveDialog (browser);
-                File f = new File(fc.getInitialDirectory() + fc.getInitialFileName());
-                WriteImage(modifiedImage, f , f.getName().substring(f.getName().lastIndexOf(".")));
+                File f = fc.showSaveDialog (browser);
+                String ext = f.getName().substring(f.getName().lastIndexOf("."));
+                WriteImage(modifiedImage, f , ext.substring(1) );
             }
             catch (Exception e)
             {
                 ShowAlert(e.getMessage());
-                imageFile = null;
             }
             fc.setInitialDirectory(null);
         }

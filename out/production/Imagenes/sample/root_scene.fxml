@@ -5,7 +5,7 @@
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1700.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="sample.Controller">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1700.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
   <center>
     <GridPane>
       <children>
@@ -32,46 +32,61 @@
   <left>
     <Accordion BorderPane.alignment="CENTER">
       <panes>
-        <TitledPane animated="false" text="Action Group 1">
+        <TitledPane animated="false" text="Binary Image">
           <content>
             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
               <children>
                 <VBox layoutX="0.0" layoutY="0.0" prefHeight="284.0" prefWidth="200.0">
                   <children>
-                    <Button mnemonicParsing="false" prefWidth="205.0" text="Action A" />
-                    <Button mnemonicParsing="false" prefWidth="205.0" text="Action B" />
+                    <Button mnemonicParsing="false" prefWidth="205.0" text="White Circle" />
+                    <Button mnemonicParsing="false" prefWidth="205.0" text="White Square" />
                   </children>
                 </VBox>
               </children>
             </AnchorPane>
           </content>
         </TitledPane>
-        <TitledPane animated="false" text="Action Group 2">
+        <TitledPane animated="false" text="Scales">
           <content>
             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
               <children>
                 <VBox layoutX="0.0" layoutY="0.0" prefHeight="284.0" prefWidth="200.0">
                   <children>
-                    <Button mnemonicParsing="false" prefWidth="200.0" text="Action C" />
+                    <Button mnemonicParsing="false" prefWidth="200.0" text="Grey Scale" />
+                              <Button mnemonicParsing="false" prefWidth="200.0" text="Color Scale" />
                   </children>
                 </VBox>
               </children>
             </AnchorPane>
           </content>
         </TitledPane>
-        <TitledPane animated="false" text="Action Group 3">
+        <TitledPane animated="false" text="Convert">
           <content>
             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
               <children>
                 <VBox layoutX="0.0" layoutY="0.0" prefHeight="284.0" prefWidth="200.0">
                   <children>
-                    <Button mnemonicParsing="false" prefWidth="200.0" text="Action D" />
+                    <Button mnemonicParsing="false" prefWidth="200.0" text="RGB to HSV" />
                   </children>
                 </VBox>
               </children>
             </AnchorPane>
           </content>
         </TitledPane>
+            <TitledPane animated="false" text="Information">
+               <content>
+                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <VBox layoutX="0.0" layoutY="0.0" prefHeight="284.0" prefWidth="200.0">
+                           <children>
+                              <Button mnemonicParsing="false" prefWidth="200.0" text="Grey level average" />
+                              <Button mnemonicParsing="false" prefWidth="200.0" text="Color band average" />
+                           </children>
+                        </VBox>
+                     </children>
+                  </AnchorPane>
+               </content>
+            </TitledPane>
       </panes>
     </Accordion>
   </left>

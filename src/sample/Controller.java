@@ -14,6 +14,7 @@ import javax.swing.*;
 
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.fxml.FXML;
@@ -239,12 +240,18 @@ public class Controller extends BorderPane {
         int width = 200;
         int height = 200;
         int rad = 50;
+        Rectangle r = new Rectangle();
+        r.setX(0);
+        r.setY(0);
+        r.setWidth(width);
+        r.setHeight(height);
+        r.setFill(Color.BLACK);
         Circle c = new Circle();
         c.setCenterX(width /2);
         c.setCenterY(height /2);
         c.setRadius(rad);
         c.setFill(Color.WHITE);
-        leftPane.getChildren().setAll(c);
+        leftPane.getChildren().setAll(r,c);
         WritableImage image = leftPane.snapshot(null, null);
         BufferedImage bImage = SwingFXUtils.fromFXImage(image, null);
         Stage browser = new Stage();
@@ -252,8 +259,10 @@ public class Controller extends BorderPane {
         try {
                 fc.setTitle("Select File");
                 File f = fc.showSaveDialog (browser);
-                String ext = f.getName().substring(f.getName().lastIndexOf("."));
-                WriteImage(bImage, f , ext.substring(1) );
+                String fileName = f.getName();
+                String[] splittedName = fileName.split("\\.");
+                String ext = splittedName[splittedName.length -1];
+                WriteImage(bImage, f , ext );
             }
         catch (Exception e)
             {

@@ -234,7 +234,6 @@ public class Controller extends BorderPane {
         alert.showAndWait();
     }
 
-    //@FXML public void createImageWithCircle(int width, int height, int rad)
     @FXML public void createImageWithCircle()
     {
         int width = 200;
@@ -257,18 +256,54 @@ public class Controller extends BorderPane {
         Stage browser = new Stage();
         FileChooser fc = new FileChooser();
         try {
-                fc.setTitle("Select File");
-                File f = fc.showSaveDialog (browser);
-                String fileName = f.getName();
-                String[] splittedName = fileName.split("\\.");
-                String ext = splittedName[splittedName.length -1];
-                WriteImage(bImage, f , ext );
-            }
+            fc.setTitle("Select File");
+            File f = fc.showSaveDialog (browser);
+            String fileName = f.getName();
+            String[] splittedName = fileName.split("\\.");
+            String ext = splittedName[splittedName.length -1];
+            WriteImage(bImage, f , ext );
+        }
         catch (Exception e)
-            {
-                ShowAlert(e.getMessage());
-            }
-            fc.setInitialDirectory(null);
+        {
+            ShowAlert(e.getMessage());
+        }
+        fc.setInitialDirectory(null);
+    }
+
+    @FXML public void createImageWithSquare()
+    {
+        int width = 200;
+        int height = 200;
+        Rectangle background = new Rectangle();
+        background.setX(0);
+        background.setY(0);
+        background.setWidth(width);
+        background.setHeight(height);
+        background.setFill(Color.BLACK);
+        Rectangle square = new Rectangle();
+        square.setX(50);
+        square.setY(50);
+        square.setWidth(100);
+        square.setHeight(100);
+        square.setFill(Color.WHITE);
+        leftPane.getChildren().setAll(background,square);
+        WritableImage image = leftPane.snapshot(null, null);
+        BufferedImage bImage = SwingFXUtils.fromFXImage(image, null);
+        Stage browser = new Stage();
+        FileChooser fc = new FileChooser();
+        try {
+            fc.setTitle("Select File");
+            File f = fc.showSaveDialog (browser);
+            String fileName = f.getName();
+            String[] splittedName = fileName.split("\\.");
+            String ext = splittedName[splittedName.length -1];
+            WriteImage(bImage, f , ext );
+        }
+        catch (Exception e)
+        {
+            ShowAlert(e.getMessage());
+        }
+        fc.setInitialDirectory(null);
     }
 
     public void mouseDragged(MouseEvent evt) {

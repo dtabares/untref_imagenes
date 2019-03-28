@@ -8,10 +8,8 @@ import javafx.scene.input.MouseEvent;
 import java.io.File;
 import java.io.IOException;
 import java.awt.image.BufferedImage;
-import java.nio.file.Files;
 import javax.imageio.ImageIO;
 import javax.swing.*;
-
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
@@ -20,33 +18,24 @@ import javafx.stage.Stage;
 import javafx.fxml.FXML;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
-import javafx.scene.image.PixelWriter;
 
 public class Controller extends BorderPane {
 
     private File imageFile = null;
     private BufferedImage leftImage = null;
     private BufferedImage rightImage = null;
-    private String supportedFormats[] = { ".raw", ".ppm", ".pgm", ".jpg", ".png" } ;
+    private ImageUtilities imageUtilities;
+
 
     @FXML private AnchorPane leftPane;
     @FXML private AnchorPane rightPane;
 
     public void initialize()throws IOException{
         System.out.println("Starting...");
+        this.imageUtilities = new ImageUtilities();
     }
     
-    public boolean isSupportedFormat(File f )
-    {
-        for (String s : supportedFormats)
-        {
-            if (f.getName().toLowerCase().contains(s))
-            {
-                return true;
-            }
-        }
-        return false;
-    }
+
     public boolean isRawFormat(File f)
     {
         if (f.getName().toLowerCase().contains("raw"))
@@ -65,7 +54,7 @@ public class Controller extends BorderPane {
         {
             fc.setTitle("Select Directory");
             File f = fc.showOpenDialog(browser);
-            if(isSupportedFormat(f))
+            if(this.imageUtilities.isSupportedFormat(f))
             {
                 imageFile = new File(f.getAbsolutePath());
                 if(isRawFormat(imageFile))
@@ -77,13 +66,13 @@ public class Controller extends BorderPane {
                     int height = Integer.valueOf(JOptionPane.showInputDialog(
                             null, "Height", "Insert Height",
                             JOptionPane.DEFAULT_OPTION));
-                    BufferedImage bimg = openRawImage(f,width,height);
-                    wimg = readRawImage(bimg,width,height);
+                    BufferedImage bimg = this.imageUtilities.openRawImage(f,width,height);
+                    wimg = this.imageUtilities.readRawImage(bimg,width,height);
                 }
                 else
                 {
                     BufferedImage bimg = ImageIO.read(f);
-                    wimg = readImage(bimg);
+                    wimg = this.imageUtilities.readImage(bimg);
                 }
                 displayImageInPane(wimg, leftPane);
                 displayImageInPane(wimg, rightPane);
@@ -105,39 +94,7 @@ public class Controller extends BorderPane {
         }
     }
 
-    private BufferedImage openRawImage(File originalFile, int width,
-                                       int height) {
 
-        BufferedImage image = null;
-        byte[] bytes;
-        try {
-            bytes = Files.readAllBytes(originalFile.toPath());
-
-            image = new BufferedImage(width, height,
-                    BufferedImage.TYPE_3BYTE_BGR);
-            int counter = 0;
-            for (int i = 0; i < height; i++) {
-                for (int j = 0; j < width; j++) {
-
-                    int alpha = -16777216;
-                    int red = ((int) bytes[counter] & 0xff) << 16;
-                    int green = ((int) bytes[counter] & 0xff) << 8;
-                    int blue = ((int) bytes[counter] & 0xff);
-
-                    int color = alpha + red + green + blue;
-
-                    image.setRGB(j, i, color);
-
-                    counter++;
-                }
-            }
-
-        } catch (IOException e) {
-
-            e.printStackTrace();
-        }
-        return image;
-    }
 
     @FXML public void saveImageFile()
     {
@@ -149,7 +106,7 @@ public class Controller extends BorderPane {
                 fc.setTitle("Select File");
                 File f = fc.showSaveDialog (browser);
                 String ext = f.getName().substring(f.getName().lastIndexOf("."));
-                WriteImage(leftImage, f , ext.substring(1) );
+                this.imageUtilities.WriteImage(leftImage, f , ext.substring(1) );
             }
             catch (Exception e)
             {
@@ -173,59 +130,6 @@ public class Controller extends BorderPane {
         pane.getChildren().setAll(image);
     }
 
-    public WritableImage readImage(BufferedImage bimg)
-    {
-        WritableImage wimg = null;
-        try {
-            if (bimg != null) {
-                wimg = new WritableImage(bimg.getWidth(), bimg.getHeight());
-                PixelWriter pw = wimg.getPixelWriter();
-                for (int x = 0; x < bimg.getWidth(); x++) {
-                    for (int y = 0; y < bimg.getHeight(); y++) {
-
-                        pw.setArgb(x, y, bimg.getRGB(x, y));
-                    }
-                }
-            }
-        }
-        catch (Exception e){
-            System.out.println("Error: " + e.getMessage());
-        }
-        return wimg;
-    }
-
-    public WritableImage readRawImage(BufferedImage bimg, int width, int height)
-    {
-        WritableImage wimg = null;
-        try {
-            if (bimg != null) {
-                wimg = new WritableImage(width, height);
-                PixelWriter pw = wimg.getPixelWriter();
-                for (int x = 0; x < width; x++) {
-                    for (int y = 0; y < height; y++)
-                    {
-                        pw.setArgb(x, y, bimg.getRGB(x, y));
-                    }
-                }
-            }
-        }
-        catch (Exception e){
-            System.out.println("Error: " + e.getMessage());
-        }
-        return wimg;
-    }
-
-
-    public void WriteImage(BufferedImage image, File f, String format) throws IOException
-    {
-        try {
-            ImageIO.write(image, format, f);
-            System.out.println("Writing complete");
-        }
-        catch (Exception e){
-            System.out.println("Error: " + e.getMessage());
-        }
-    }
 
     public void ShowAlert(String message)
     {
@@ -261,7 +165,7 @@ public class Controller extends BorderPane {
             String fileName = f.getName();
             String[] splittedName = fileName.split("\\.");
             String ext = splittedName[splittedName.length -1];
-            WriteImage(bImage, f , ext );
+            this.imageUtilities.WriteImage(bImage, f , ext );
         }
         catch (Exception e)
         {
@@ -297,7 +201,7 @@ public class Controller extends BorderPane {
             String fileName = f.getName();
             String[] splittedName = fileName.split("\\.");
             String ext = splittedName[splittedName.length -1];
-            WriteImage(bImage, f , ext );
+            this.imageUtilities.WriteImage(bImage, f , ext );
         }
         catch (Exception e)
         {

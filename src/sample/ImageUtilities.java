@@ -6,18 +6,21 @@ import javafx.scene.image.WritableImage;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.Scanner;
 
 public class ImageUtilities {
 
-    private String supportedFormats[] = { ".raw", ".ppm", ".pgm", ".jpg", ".png" } ;
+    private String supportedFormats[] = { "raw", "ppm", "pgm", "jpg", "png" } ;
 
-    public boolean isSupportedFormat(File f )
+    public boolean isSupportedFormat(String extension )
     {
         for (String s : supportedFormats)
         {
-            if (f.getName().toLowerCase().contains(s))
+            if (extension.toLowerCase().equals(s))
             {
                 return true;
             }
@@ -112,8 +115,40 @@ public class ImageUtilities {
         }
     }
 
-    public void saveImageFile()
-    {
-
+    public void readPGM(String filename){
+        // image buffer for plain gray-scale pixel values
+        int[][] pixels;
+        try {
+            Scanner infile = new Scanner(new FileReader(filename));
+            // process the top 4 header lines
+            String filetype=infile.nextLine();
+            if (!filetype.equalsIgnoreCase("p2")) {
+                System.out.println("[readPGM]Cannot load the image type of "+filetype);
+                return;
+            }
+            infile.nextLine();
+            int cols = infile.nextInt();
+            int rows = infile.nextInt();
+            int maxValue = infile.nextInt();
+            pixels = new int[rows][cols];
+            System.out.println("Reading in image from " + filename + " of size " + rows + " by " + cols);
+            // process the rest lines that hold the actual pixel values
+            for (int r=0; r<rows; r++)
+                for (int c=0; c<cols; c++)
+                    pixels[r][c] = (int)(infile.nextInt()*255.0/maxValue);
+            infile.close();
+        } catch(FileNotFoundException fe) {
+            System.out.println("Had a problem opening a file.");
+        } catch (Exception e) {
+            System.out.println(e.toString() + " caught in readPPM.");
+            e.printStackTrace();
+        }
     }
+
+    public String getImageExtension(String filename)
+    {
+        String[] splittedName = filename.split("\\.");
+        return splittedName[splittedName.length -1].toLowerCase();
+    }
+
 }

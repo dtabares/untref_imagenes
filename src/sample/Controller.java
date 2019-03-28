@@ -50,29 +50,35 @@ public class Controller extends BorderPane {
         Stage browser = new Stage();
         FileChooser fc = new FileChooser();
         WritableImage wimg = null;
+        BufferedImage bimg = null;
         try
         {
             fc.setTitle("Select Directory");
             File f = fc.showOpenDialog(browser);
-            if(this.imageUtilities.isSupportedFormat(f))
+            String fileExtension = this.imageUtilities.getImageExtension(f.getName());
+            if(this.imageUtilities.isSupportedFormat(fileExtension))
             {
                 imageFile = new File(f.getAbsolutePath());
-                if(isRawFormat(imageFile))
+                switch(fileExtension)
                 {
-                    int width = Integer.valueOf(JOptionPane.showInputDialog(
-                            null, "Width", "Insert Width",
-                            JOptionPane.DEFAULT_OPTION));
+                    case "raw":
+                        int width = Integer.valueOf(JOptionPane.showInputDialog(
+                                null, "Width", "Insert Width",
+                                JOptionPane.DEFAULT_OPTION));
 
-                    int height = Integer.valueOf(JOptionPane.showInputDialog(
-                            null, "Height", "Insert Height",
-                            JOptionPane.DEFAULT_OPTION));
-                    BufferedImage bimg = this.imageUtilities.openRawImage(f,width,height);
-                    wimg = this.imageUtilities.readRawImage(bimg,width,height);
-                }
-                else
-                {
-                    BufferedImage bimg = ImageIO.read(f);
-                    wimg = this.imageUtilities.readImage(bimg);
+                        int height = Integer.valueOf(JOptionPane.showInputDialog(
+                                null, "Height", "Insert Height",
+                                JOptionPane.DEFAULT_OPTION));
+                        bimg = this.imageUtilities.openRawImage(f,width,height);
+                        wimg = this.imageUtilities.readRawImage(bimg,width,height);
+                        break;
+                    case "pgm":
+                        this.imageUtilities.readPGM(f.getAbsolutePath());
+                        break;
+
+                    default:
+                        bimg = ImageIO.read(f);
+                        wimg = this.imageUtilities.readImage(bimg);
                 }
                 displayImageInPane(wimg, leftPane);
                 displayImageInPane(wimg, rightPane);
@@ -198,10 +204,7 @@ public class Controller extends BorderPane {
         try {
             fc.setTitle("Select File");
             File f = fc.showSaveDialog (browser);
-            String fileName = f.getName();
-            String[] splittedName = fileName.split("\\.");
-            String ext = splittedName[splittedName.length -1];
-            this.imageUtilities.WriteImage(bImage, f , ext );
+            this.imageUtilities.WriteImage(bImage, f , this.imageUtilities.getImageExtension(f.getName()));
         }
         catch (Exception e)
         {

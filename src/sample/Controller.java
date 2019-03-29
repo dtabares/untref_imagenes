@@ -2,6 +2,7 @@ package sample;
 
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.control.Alert;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.input.MouseEvent;
@@ -13,6 +14,7 @@ import javax.swing.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.fxml.FXML;
@@ -30,9 +32,17 @@ public class Controller extends BorderPane {
     @FXML private AnchorPane leftPane;
     @FXML private AnchorPane rightPane;
 
+    @FXML private Text txtBottom;
+
     public void initialize()throws IOException{
         System.out.println("Starting...");
         this.imageUtilities = new ImageUtilities();
+        this.setBottomText("Mensaje de prueba, remover del medotod initialize en Controller");
+    }
+
+    public void setBottomText(String string)
+    {
+        this.txtBottom.setText("   " + string);
     }
     
     public boolean isRawFormat(File f)

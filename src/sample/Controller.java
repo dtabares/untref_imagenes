@@ -35,7 +35,6 @@ public class Controller extends BorderPane {
         this.imageUtilities = new ImageUtilities();
     }
     
-
     public boolean isRawFormat(File f)
     {
         if (f.getName().toLowerCase().contains("raw"))
@@ -73,9 +72,9 @@ public class Controller extends BorderPane {
                         wimg = this.imageUtilities.readRawImage(bimg,width,height);
                         break;
                     case "pgm":
-                        this.imageUtilities.readPGM(f.getAbsolutePath());
+                        bimg = this.imageUtilities.readPGM(imageFile);
+                        wimg = this.imageUtilities.readImage(bimg);
                         break;
-
                     default:
                         bimg = ImageIO.read(f);
                         wimg = this.imageUtilities.readImage(bimg);

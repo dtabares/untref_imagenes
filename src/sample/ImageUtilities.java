@@ -5,10 +5,7 @@ import javafx.scene.image.WritableImage;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.util.Scanner;
 
@@ -31,13 +28,13 @@ public class ImageUtilities {
     public BufferedImage openRawImage(File originalFile, int width,
                                        int height) {
 
-        BufferedImage image = null;
+        BufferedImage bimg = null;
         byte[] bytes;
         try {
             bytes = Files.readAllBytes(originalFile.toPath());
 
-            image = new BufferedImage(width, height,
-                    BufferedImage.TYPE_3BYTE_BGR);
+            bimg = new BufferedImage(width, height,
+                    BufferedImage.TYPE_INT_ARGB);
             int counter = 0;
             for (int i = 0; i < height; i++) {
                 for (int j = 0; j < width; j++) {
@@ -49,7 +46,7 @@ public class ImageUtilities {
 
                     int color = alpha + red + green + blue;
 
-                    image.setRGB(j, i, color);
+                    bimg.setRGB(j, i, color);
 
                     counter++;
                 }
@@ -59,7 +56,7 @@ public class ImageUtilities {
 
             e.printStackTrace();
         }
-        return image;
+        return bimg;
     }
 
     public WritableImage readImage(BufferedImage bimg)
@@ -71,7 +68,6 @@ public class ImageUtilities {
                 PixelWriter pw = wimg.getPixelWriter();
                 for (int x = 0; x < bimg.getWidth(); x++) {
                     for (int y = 0; y < bimg.getHeight(); y++) {
-
                         pw.setArgb(x, y, bimg.getRGB(x, y));
                     }
                 }
@@ -115,34 +111,60 @@ public class ImageUtilities {
         }
     }
 
-    public void readPGM(String filename){
-        // image buffer for plain gray-scale pixel values
-        int[][] pixels;
+    public BufferedImage readPGM(File file){
+        int width = 0;
+        int height = 0;
+        BufferedImage bimg = null;
+        //Read Header
         try {
-            Scanner infile = new Scanner(new FileReader(filename));
-            // process the top 4 header lines
-            String filetype=infile.nextLine();
-            if (!filetype.equalsIgnoreCase("p2")) {
-                System.out.println("[readPGM]Cannot load the image type of "+filetype);
-                return;
+
+            BufferedReader br = new BufferedReader(new FileReader(file));
+            String magicNumber = br.readLine(); // first line contains P2 or P5
+            String line = br.readLine();
+            while (line.startsWith("#")) { //ignore comments
+                line = br.readLine();
             }
-            infile.nextLine();
-            int cols = infile.nextInt();
-            int rows = infile.nextInt();
-            int maxValue = infile.nextInt();
-            pixels = new int[rows][cols];
-            System.out.println("Reading in image from " + filename + " of size " + rows + " by " + cols);
-            // process the rest lines that hold the actual pixel values
-            for (int r=0; r<rows; r++)
-                for (int c=0; c<cols; c++)
-                    pixels[r][c] = (int)(infile.nextInt()*255.0/maxValue);
-            infile.close();
-        } catch(FileNotFoundException fe) {
-            System.out.println("Had a problem opening a file.");
-        } catch (Exception e) {
-            System.out.println(e.toString() + " caught in readPPM.");
-            e.printStackTrace();
+            Scanner s = new Scanner(line);
+            width = s.nextInt();
+            height = s.nextInt();
+            line = br.readLine(); // third line contains maxVal
+            s = new Scanner(line);
+            int maxValue = s.nextInt();
+            br.close();
+
+            bimg = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);
+            //Read Body
+            DataInputStream stream;
+            stream = new DataInputStream(new BufferedInputStream(new FileInputStream(file)));
+            int newlinecount = 0;
+            char previous = (char) 'a';
+            char c;
+
+            do {
+                c = (char) stream.readByte();
+                if (c == '\n' || c == '\r') {
+                    newlinecount++;
+                }
+                if (c == (char) '#' && (previous == '\n' || previous == '\r')) {
+                    newlinecount--;
+                }
+                previous = c;
+            } while (newlinecount < 3);
+            System.out.println("Skipped header. Start reading binary content...");
+
+            for (int row = 0; row < height; row++) {
+                for (int col = 0; col < width; col++) {
+                    byte b = stream.readByte();
+                    Byte b2 = b;
+                    //pixels[row][col] = b;
+                    bimg.setRGB(col, row, (int)(b2.intValue() * 255 / maxValue));
+                }
+            }
         }
+        catch (Exception e){
+            System.out.println(e.getMessage());
+        }
+        return bimg;
     }
 
     public String getImageExtension(String filename)

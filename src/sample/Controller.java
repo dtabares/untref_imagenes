@@ -41,15 +41,6 @@ public class Controller extends BorderPane {
     {
         this.txtBottom.setText("   " + string);
     }
-    
-    public boolean isRawFormat(File f)
-    {
-        if (f.getName().toLowerCase().contains("raw"))
-        {
-            return true;
-        }
-        return false;
-    }
 
     @FXML public BufferedImage openImageFile()
     {
@@ -76,14 +67,17 @@ public class Controller extends BorderPane {
                                 null, "Height", "Insert Height",
                                 JOptionPane.DEFAULT_OPTION));
                         bimg = this.imageUtilities.openRawImage(f,width,height);
+                        leftImage = rightImage = bimg;
                         wimg = this.imageUtilities.readRawImage(bimg,width,height);
                         break;
                     case "pgm":
                         bimg = this.imageUtilities.readPGM(imageFile);
+                        leftImage = rightImage = bimg;
                         wimg = this.imageUtilities.readImage(bimg);
                         break;
                     default:
                         bimg = ImageIO.read(f);
+                        leftImage = rightImage = bimg;
                         wimg = this.imageUtilities.readImage(bimg);
                 }
                 displayImageInPane(wimg, leftPane);
@@ -207,7 +201,7 @@ public class Controller extends BorderPane {
         }
         fc.setInitialDirectory(null);
     }
-
+    
     //Basics
     public BufferedImage imageAddition()
     {
@@ -261,5 +255,23 @@ public class Controller extends BorderPane {
         return null;
     }
 
+    @FXML public void getPixelInformation()
+    {
+        ImageView leftImageView = (ImageView) leftPane.getChildren().get(0);
+        ImageView rightImageView = (ImageView) rightPane.getChildren().get(0);
+
+
+        leftImageView.setOnMouseClicked(e -> {
+            System.out.println("Left Coordinates Info: ["+e.getX()+", "+e.getY()+"]");
+            String message = this.imageUtilities.getPixelInformation(leftImage,(int)e.getX(),(int)e.getY());
+            this.setBottomText(message);
+        });
+
+        rightImageView.setOnMouseClicked(e -> {
+            System.out.println("Right Coordinates Info:["+e.getX()+", "+e.getY()+"]");
+            String message = this.imageUtilities.getPixelInformation(rightImage,(int)e.getX(),(int)e.getY());
+            this.setBottomText(message);
+        });
+    }
 
 }

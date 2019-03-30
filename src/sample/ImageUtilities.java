@@ -4,6 +4,7 @@ import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 
 import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.nio.Buffer;
@@ -14,7 +15,14 @@ import static javafx.scene.paint.Color.rgb;
 
 public class ImageUtilities {
 
-    private String supportedFormats[] = { "raw", "ppm", "pgm", "jpg", "png" } ;
+    private String supportedFormats[] = { "raw", "ppm", "pgm", "bmp", "png" };
+    private String currentImageFormat;
+
+    public String getCurrentImageFormat() {
+        return currentImageFormat;
+    }
+
+
 
     public boolean isSupportedFormat(String extension )
     {
@@ -173,7 +181,23 @@ public class ImageUtilities {
     public String getImageExtension(String filename)
     {
         String[] splittedName = filename.split("\\.");
-        return splittedName[splittedName.length -1].toLowerCase();
+        this.currentImageFormat = splittedName[splittedName.length -1].toLowerCase();
+        return this.currentImageFormat;
+    }
+
+    public String getPixelInformation(BufferedImage image, int x, int y)
+    {
+        String outPutMessage = "Pixel Information: ";
+        int rgb = image.getRGB(x,y);
+        System.out.println("Pixel RGB:" + image.getRGB(x,y));
+        System.out.println("Color Model:" + image.getColorModel());
+        System.out.println("Image Type:" + image.getType());
+        Color c =  new Color( image.getRGB(x,y));
+        System.out.println("Image R:" + c.getRed());
+        System.out.println("Image G:" + c.getGreen());
+        System.out.println("Image B:" + c.getBlue());
+        outPutMessage =  outPutMessage + "Red: " + c.getRed() + " Green: " + c.getGreen() + " Blue: " + c.getBlue();
+        return outPutMessage;
     }
 
     public BufferedImage imageAddition(BufferedImage bimg1, BufferedImage bimg2)

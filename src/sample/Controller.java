@@ -81,6 +81,7 @@ public class Controller extends BorderPane {
                         wimg = this.imageUtilities.readImage(bimg);
                 }
                 displayImageInPane(wimg, leftPane);
+                displayImageInPane(wimg, rightPane);
                 fc.setInitialDirectory(null);
             }
             else
@@ -201,7 +202,7 @@ public class Controller extends BorderPane {
         }
         fc.setInitialDirectory(null);
     }
-    
+
     //Basics
     public BufferedImage imageAddition()
     {
@@ -259,7 +260,6 @@ public class Controller extends BorderPane {
     {
         ImageView leftImageView = (ImageView) leftPane.getChildren().get(0);
         ImageView rightImageView = (ImageView) rightPane.getChildren().get(0);
-
 
         leftImageView.setOnMouseClicked(e -> {
             System.out.println("Left Coordinates Info: ["+e.getX()+", "+e.getY()+"]");

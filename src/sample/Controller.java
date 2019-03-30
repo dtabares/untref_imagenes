@@ -1,14 +1,14 @@
 package sample;
 
 import javafx.embed.swing.SwingFXUtils;
-import javafx.scene.control.Alert;
-import javafx.scene.control.TextField;
+import javafx.scene.image.WritableImage;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.input.MouseEvent;
 import java.io.File;
 import java.io.IOException;
 import java.awt.image.BufferedImage;
+import java.util.Optional;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javafx.scene.paint.Color;
@@ -19,7 +19,6 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.fxml.FXML;
 import javafx.scene.image.ImageView;
-import javafx.scene.image.WritableImage;
 
 public class Controller extends BorderPane {
 
@@ -28,10 +27,8 @@ public class Controller extends BorderPane {
     private BufferedImage rightImage = null;
     private ImageUtilities imageUtilities;
 
-
     @FXML private AnchorPane leftPane;
     @FXML private AnchorPane rightPane;
-
     @FXML private Text txtBottom;
 
     public void initialize()throws IOException{
@@ -54,7 +51,7 @@ public class Controller extends BorderPane {
         return false;
     }
 
-    @FXML public void openImageFile()
+    @FXML public BufferedImage openImageFile()
     {
         Stage browser = new Stage();
         FileChooser fc = new FileChooser();
@@ -90,23 +87,20 @@ public class Controller extends BorderPane {
                         wimg = this.imageUtilities.readImage(bimg);
                 }
                 displayImageInPane(wimg, leftPane);
-                displayImageInPane(wimg, rightPane);
                 fc.setInitialDirectory(null);
             }
             else
             {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setContentText("La extension del archivo no esta soportada");
-                alert.showAndWait();
+                Alerts.showAlert("La extension del archivo no esta soportada");
             }
         }
         catch (Exception e)
         {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setContentText(e.getMessage());
-            alert.showAndWait();
+
+            Alerts.showAlert(e.getMessage());
             imageFile = null;
         }
+        return bimg;
     }
 
 
@@ -125,13 +119,13 @@ public class Controller extends BorderPane {
             }
             catch (Exception e)
             {
-                ShowAlert(e.getMessage());
+                Alerts.showAlert(e.getMessage());
             }
             fc.setInitialDirectory(null);
         }
         else
             {
-                ShowAlert("There is no image to save");
+                Alerts.showAlert("There is no image to save");
             }
     }
 
@@ -143,14 +137,6 @@ public class Controller extends BorderPane {
     {
         ImageView image = new ImageView(wimg);
         pane.getChildren().setAll(image);
-    }
-
-
-    public void ShowAlert(String message)
-    {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setContentText(message);
-        alert.showAndWait();
     }
 
     @FXML public void createImageWithCircle()
@@ -184,7 +170,7 @@ public class Controller extends BorderPane {
         }
         catch (Exception e)
         {
-            ShowAlert(e.getMessage());
+            Alerts.showAlert(e.getMessage());
         }
         fc.setInitialDirectory(null);
     }
@@ -217,36 +203,63 @@ public class Controller extends BorderPane {
         }
         catch (Exception e)
         {
-            ShowAlert(e.getMessage());
+            Alerts.showAlert(e.getMessage());
         }
         fc.setInitialDirectory(null);
     }
 
-    public void mouseDragged(MouseEvent evt) {
+    //Basics
+    public BufferedImage imageAddition()
+    {
+        BufferedImage bimg = this.openImageFile();
+        BufferedImage bimg2 = this.openImageFile();
+        BufferedImage result = imageUtilities.imageAddition(bimg,bimg2);
+        WritableImage wimg = imageUtilities.readImage(result);
+        this.displayImageInPane(wimg,rightPane);
+        return result;
+    }
 
-/* Esta funcion puede servir para la funcionalidad de seleccionar una parte de la imagen...
+    public BufferedImage imageSubstraction(){
+        BufferedImage bimg = this.openImageFile();
+        BufferedImage bimg2 = this.openImageFile();
+        BufferedImage result = imageUtilities.imageSubstraction(bimg,bimg2);
+        WritableImage wimg = imageUtilities.readImage(result);
+        this.displayImageInPane(wimg,rightPane);
+        return result;
+    }
 
-if (dragging == false)
-            return;  // Nothing to do because the user isn't drawing.
+    public BufferedImage imageScalarProduct(){
+        BufferedImage bimg = this.openImageFile();
+        int scalar = Integer.valueOf(JOptionPane.showInputDialog(
+                null, "Scalar", "Insert Scalar",
+                JOptionPane.DEFAULT_OPTION));
+        BufferedImage result = imageUtilities.imageScalarProduct(bimg,scalar);
+        WritableImage wimg = imageUtilities.readImage(result);
+        this.displayImageInPane(wimg,rightPane);
+        return result;
+    }
 
-        double x = evt.getX();   // x-coordinate of mouse.
-        double y = evt.getY();   // y-coordinate of mouse.
+    public BufferedImage dynamicRangeCompression()
+    {
+/*        int alpha=-1;
+        BufferedImage bimg = this.openImageFile();
+        alpha = Integer.valueOf(JOptionPane.showInputDialog(
+                null, "Compression", "Insert Compression %",
+                JOptionPane.DEFAULT_OPTION));
+        while(alpha <= 0 || alpha > 100)
+        {
+            Alerts.showAlert("El valor debe estar entre 1 y 100");
+            alpha = Integer.valueOf(JOptionPane.showInputDialog(
+                    null, "Compression", "Insert Compression %",
+                    JOptionPane.DEFAULT_OPTION));
+            ;
+        }
+        BufferedImage result = imageUtilities.dynamicRangeCompression(bimg,alpha);
+        WritableImage wimg = imageUtilities.readImage(result);
+        this.displayImageInPane(wimg,rightPane);
+        return result;*/
+        return null;
+    }
 
-        if (x < 3)                          // Adjust the value of x,
-            x = 3;                           //   to make sure it's in
-        if (x > canvas.getWidth() - 57)       //   the drawing area.
-            x = (int)canvas.getWidth() - 57;
-
-        if (y < 3)                          // Adjust the value of y,
-            y = 3;                           //   to make sure it's in
-        if (y > canvas.getHeight() - 4)       //   the drawing area.
-            y = canvas.getHeight() - 4;
-
-        g.strokeLine(prevX, prevY, x, y);  // Draw the line.
-
-        prevX = x;  // Get ready for the next line segment in the curve.
-        prevY = y;*/
-
-    } // end mouseDragged()
 
 }

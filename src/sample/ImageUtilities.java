@@ -8,7 +8,11 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class ImageUtilities {
 
@@ -173,6 +177,75 @@ public class ImageUtilities {
             System.out.println(e.getMessage());
         }
         return bimg;
+    }
+
+    public BufferedImage readPGMNew(File file) throws IOException {
+        //Magic number representing the binary PGM file type.
+        final String MAGIC = "P5";
+
+        //The maximum gray value.
+        final int MAXVAL = 255;
+        BufferedImage bimg = null;
+        BufferedInputStream stream = new BufferedInputStream(new FileInputStream(file));
+
+        try {
+            if (!next(stream).equals(MAGIC))
+                throw new IOException("File " + file + " is not a binary PGM image.");
+            final int col = Integer.parseInt(next(stream));
+            final int row = Integer.parseInt(next(stream));
+            final int max = Integer.parseInt(next(stream));
+            bimg = new BufferedImage(col, row, BufferedImage.TYPE_BYTE_GRAY);
+            if (max < 0 || max > MAXVAL)
+                throw new IOException("The image's maximum gray value must be in range [0, " + MAXVAL + "].");
+            for (int i = 0; i < row; ++i) {
+                for (int j = 0; j < col; ++j) {
+                    final int p = stream.read();
+                    if (p == -1)
+                        throw new IOException("Reached end-of-file prematurely.");
+                    else if (p < 0 || p > max)
+                        throw new IOException("Pixel value " + p + " outside of range [0, " + max + "].");
+                    Color c =  new Color(p,p,p);
+
+                    bimg.setRGB(j, i, c.getRGB());
+                }
+            }
+            return bimg;
+        }
+        finally {
+            stream.close();
+        }
+    }
+
+    private static String next(final InputStream stream) throws IOException {
+        //Character indicating a comment.
+        final char COMMENT = '#';
+        final List<Byte> bytes = new ArrayList<Byte>();
+        while (true) {
+            final int b = stream.read();
+
+            if (b != -1) {
+
+                final char c = (char) b;
+                if (c == COMMENT) {
+                    int d;
+                    do {
+                        d = stream.read();
+                    } while (d != -1 && d != '\n' && d != '\r');
+                } else if (!Character.isWhitespace(c)) {
+                    bytes.add((byte) b);
+                } else if (bytes.size() > 0) {
+                    break;
+                }
+
+            } else {
+                break;
+            }
+
+        }
+        final byte[] bytesArray = new byte[bytes.size()];
+        for (int i = 0; i < bytesArray.length; ++i)
+            bytesArray[i] = bytes.get(i);
+        return new String(bytesArray);
     }
 
     public String getImageExtension(String filename)

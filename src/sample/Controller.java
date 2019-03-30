@@ -74,7 +74,7 @@ public class Controller extends BorderPane {
                         wimg = this.imageUtilities.readRawImage(bimg,width,height);
                         break;
                     case "pgm":
-                        bimg = this.imageUtilities.readPGM(imageFile);
+                        bimg = this.imageUtilities.readPGMNew(imageFile);
                         leftImage = rightImage = bimg;
                         wimg = this.imageUtilities.readImage(bimg);
                         break;

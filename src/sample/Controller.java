@@ -44,15 +44,6 @@ public class Controller extends BorderPane {
     {
         this.txtBottom.setText("   " + string);
     }
-    
-    public boolean isRawFormat(File f)
-    {
-        if (f.getName().toLowerCase().contains("raw"))
-        {
-            return true;
-        }
-        return false;
-    }
 
     @FXML public void openImageFile()
     {
@@ -79,14 +70,17 @@ public class Controller extends BorderPane {
                                 null, "Height", "Insert Height",
                                 JOptionPane.DEFAULT_OPTION));
                         bimg = this.imageUtilities.openRawImage(f,width,height);
+                        leftImage = rightImage = bimg;
                         wimg = this.imageUtilities.readRawImage(bimg,width,height);
                         break;
                     case "pgm":
                         bimg = this.imageUtilities.readPGM(imageFile);
+                        leftImage = rightImage = bimg;
                         wimg = this.imageUtilities.readImage(bimg);
                         break;
                     default:
                         bimg = ImageIO.read(f);
+                        leftImage = rightImage = bimg;
                         wimg = this.imageUtilities.readImage(bimg);
                 }
                 displayImageInPane(wimg, leftPane);
@@ -222,31 +216,23 @@ public class Controller extends BorderPane {
         fc.setInitialDirectory(null);
     }
 
-    public void mouseDragged(MouseEvent evt) {
+    @FXML public void getPixelInformation()
+    {
+        ImageView leftImageView = (ImageView) leftPane.getChildren().get(0);
+        ImageView rightImageView = (ImageView) rightPane.getChildren().get(0);
 
-/* Esta funcion puede servir para la funcionalidad de seleccionar una parte de la imagen...
 
-if (dragging == false)
-            return;  // Nothing to do because the user isn't drawing.
+        leftImageView.setOnMouseClicked(e -> {
+            System.out.println("Left Coordinates Info: ["+e.getX()+", "+e.getY()+"]");
+            String message = this.imageUtilities.getPixelInformation(leftImage,(int)e.getX(),(int)e.getY());
+            this.setBottomText(message);
+        });
 
-        double x = evt.getX();   // x-coordinate of mouse.
-        double y = evt.getY();   // y-coordinate of mouse.
-
-        if (x < 3)                          // Adjust the value of x,
-            x = 3;                           //   to make sure it's in
-        if (x > canvas.getWidth() - 57)       //   the drawing area.
-            x = (int)canvas.getWidth() - 57;
-
-        if (y < 3)                          // Adjust the value of y,
-            y = 3;                           //   to make sure it's in
-        if (y > canvas.getHeight() - 4)       //   the drawing area.
-            y = canvas.getHeight() - 4;
-
-        g.strokeLine(prevX, prevY, x, y);  // Draw the line.
-
-        prevX = x;  // Get ready for the next line segment in the curve.
-        prevY = y;*/
-
-    } // end mouseDragged()
+        rightImageView.setOnMouseClicked(e -> {
+            System.out.println("Right Coordinates Info:["+e.getX()+", "+e.getY()+"]");
+            String message = this.imageUtilities.getPixelInformation(rightImage,(int)e.getX(),(int)e.getY());
+            this.setBottomText(message);
+        });
+    }
 
 }

@@ -55,6 +55,10 @@
                     <Button mnemonicParsing="false" prefWidth="205.0" text="Get Pixel Information" onAction="#getPixelInformation"/>
                     <Button mnemonicParsing="false" prefWidth="205.0" text="Modify Pixel" />
                     <Button mnemonicParsing="false" prefWidth="205.0" text="Select and Duplicate" />
+                    <Button mnemonicParsing="false" prefWidth="205.0" text="Image Addition" onAction="#imageAddition"/>
+                    <Button mnemonicParsing="false" prefWidth="205.0" text="Image Substraction" onAction="#imageSubstraction"/>
+                    <Button mnemonicParsing="false" prefWidth="205.0" text="Image Scalar Product" onAction="#imageScalarProduct"/>
+                    <Button mnemonicParsing="false" prefWidth="205.0" text="Dynamic Range Compression" onAction="#dynamicRangeCompression"/>
                   </children>
                 </VBox>
               </children>

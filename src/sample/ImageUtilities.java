@@ -11,7 +11,7 @@ import java.util.Scanner;
 
 public class ImageUtilities {
 
-    private String supportedFormats[] = { "raw", "ppm", "pgm", "jpg", "png" } ;
+    private String supportedFormats[] = { "raw", "ppm", "pgm", "bmp", "png" } ;
 
     public boolean isSupportedFormat(String extension )
     {

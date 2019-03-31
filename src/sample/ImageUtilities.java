@@ -12,8 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-import static javafx.scene.paint.Color.rgb;
-
 public class ImageUtilities {
 
     private String supportedFormats[] = { "raw", "ppm", "pgm", "bmp", "png" };
@@ -110,11 +108,26 @@ public class ImageUtilities {
         return wimg;
     }
 
-    public void WriteImage(BufferedImage image, File f, String format) throws IOException
+    public void WriteImage(BufferedImage image, File f)
     {
+        String format = this.getImageExtension(f.getName());
+
         try {
-            ImageIO.write(image, format, f);
-            System.out.println("Writing complete");
+            switch(format)
+            {
+                case "raw":
+                    //Do Something
+                    break;
+                case "ppm":
+                    //Do Something
+                    break;
+                case "pgm":
+                    this.savePgmImage(image,f);
+                    break;
+                default:
+                    ImageIO.write(image, format, f);
+                    System.out.println("Writing complete");
+            }
         }
         catch (Exception e){
             System.out.println("Error: " + e.getMessage());
@@ -146,8 +159,8 @@ public class ImageUtilities {
                         throw new IOException("Reached end-of-file prematurely.");
                     else if (p < 0 || p > max)
                         throw new IOException("Pixel value " + p + " outside of range [0, " + max + "].");
-
-                    int rgb = (p << 24) | (p << 16) | (p << 8) | p;
+                    System.out.println(p);
+                    int rgb = ColorUtilities.createRGB(p,p,p);
 
                     bimg.setRGB(j, i, rgb);
                 }
@@ -201,15 +214,17 @@ public class ImageUtilities {
     public String getPixelInformation(BufferedImage image, int x, int y)
     {
         String outPutMessage = "Pixel Information: ";
-        int rgb = image.getRGB(x,y);
+        final int rgb = image.getRGB(x,y);
         System.out.println("Pixel RGB:" + image.getRGB(x,y));
         System.out.println("Color Model:" + image.getColorModel());
         System.out.println("Image Type:" + image.getType());
-        Color c =  new Color( image.getRGB(x,y));
-        System.out.println("Image R:" + c.getRed());
-        System.out.println("Image G:" + c.getGreen());
-        System.out.println("Image B:" + c.getBlue());
-        outPutMessage =  outPutMessage + "Red: " + c.getRed() + " Green: " + c.getGreen() + " Blue: " + c.getBlue();
+        final int red = ColorUtilities.getRed(rgb);
+        final int green = ColorUtilities.getGreen(rgb);
+        final int blue = ColorUtilities.getBlue(rgb);
+        System.out.println("Image R:" + red);
+        System.out.println("Image G:" + green);
+        System.out.println("Image B:" + blue);
+        outPutMessage =  outPutMessage + "Red: " + red + " Green: " + green + " Blue: " + blue;
         return outPutMessage;
     }
 
@@ -522,5 +537,43 @@ public class ImageUtilities {
             }
         }
         return min;
+    }
+
+    public void savePgmImage(BufferedImage image, File f) throws IOException
+    {
+        final String MAGIC = "P5";
+        final int MAXVAL = 255;
+        BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(f));
+
+        try
+        {
+            stream.write(MAGIC.getBytes());
+            stream.write("\n".getBytes());
+            stream.write(Integer.toString(image.getHeight()).getBytes());
+            stream.write(" ".getBytes());
+            stream.write(Integer.toString(image.getWidth()).getBytes());
+            stream.write("\n".getBytes());
+            stream.write(Integer.toString(MAXVAL).getBytes());
+            stream.write("\n".getBytes());
+            for (int i = 0; i < image.getHeight(); ++i) {
+                for (int j = 0; j < image.getWidth(); ++j) {
+                    final int p = image.getRGB(j,i);
+                    final int red = ColorUtilities.getRed(p);
+                    final int green = ColorUtilities.getGreen(p);
+                    final int blue = ColorUtilities.getBlue(p);
+
+                    System.out.println(red + ";" + green + ";" + blue);
+                    if (red != green || red != blue || green != blue)
+                        throw new IOException("R G B should be equal to be grey! Red: " + red + " Green: " + green + " Blue: " + blue);
+                    if (red < 0 || red > MAXVAL)
+                        throw new IOException("Pixel value " + red + " outside of range [0, " + MAXVAL + "].");
+                    stream.write(red);
+                }
+            }
+
+        }finally {
+            stream.close();
+        }
+
     }
 }

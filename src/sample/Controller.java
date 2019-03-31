@@ -92,12 +92,12 @@ public class Controller extends BorderPane {
     @FXML public void saveImageFile(){
         Stage browser = new Stage();
         FileChooser fc = new FileChooser();
-        if (rightImage != null)
+        if (rightPaneImageList.get(rightPaneImageList.size()-1) != null)
         {
             try {
                 fc.setTitle("Select File");
                 File f = fc.showSaveDialog (browser);
-                this.imageUtilities.WriteImage(rightImage, f);
+                this.imageUtilities.WriteImage(rightPaneImageList.get(rightPaneImageList.size()-1), f);
             }
             catch (Exception e)
             {

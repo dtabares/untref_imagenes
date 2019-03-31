@@ -234,15 +234,21 @@ public class Controller extends BorderPane {
         //Basics
 
         public BufferedImage imageAddition(){
+            BufferedImage temp = leftImage;
             BufferedImage bimg = this.openImageFile();
+            leftImage = temp;
             BufferedImage result = imageUtilities.imageAddition(leftImage,bimg);
             this.displayImageInPane(result,rightPane);
+            this.displayImageInPane(leftImage, leftPane);
             return result;
         }
         public BufferedImage imageSubtraction(){
+            BufferedImage temp = leftImage;
             BufferedImage bimg = this.openImageFile();
+            leftImage = temp;
             BufferedImage result = imageUtilities.imageSubtraction(leftImage,bimg);
             this.displayImageInPane(result,rightPane);
+            this.displayImageInPane(leftImage, leftPane);
             return result;
         }
         public BufferedImage imageScalarProduct(){

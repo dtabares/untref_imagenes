@@ -11,6 +11,8 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
+import static sample.ColorUtilities.createRGB;
+
 
 public class ImageUtilities {
 
@@ -33,28 +35,25 @@ public class ImageUtilities {
         return false;
     }
 
-    public BufferedImage openRawImage(File originalFile, int width,
+    public BufferedImage openRawImage(File f, int width,
                                        int height) {
 
         BufferedImage bimg = null;
-        byte[] bytes;
+        byte[] rawImageContent;
         try {
-            bytes = Files.readAllBytes(originalFile.toPath());
+            rawImageContent = Files.readAllBytes(f.toPath());
 
             bimg = new BufferedImage(width, height,
-                    BufferedImage.TYPE_INT_ARGB);
+                    BufferedImage.TYPE_INT_RGB);
             int counter = 0;
             for (int i = 0; i < height; i++) {
                 for (int j = 0; j < width; j++) {
+                    final int red = ColorUtilities.getRed(rawImageContent[counter]);
+                    final int green = ColorUtilities.getGreen(rawImageContent[counter]);
+                    final int blue = ColorUtilities.getBlue(rawImageContent[counter]);
+                    final int rgb = createRGB(red,green,blue);
 
-                    int alpha = -16777216;
-                    int red = ((int) bytes[counter] & 0xff) << 16;
-                    int green = ((int) bytes[counter] & 0xff) << 8;
-                    int blue = ((int) bytes[counter] & 0xff);
-
-                    int color = alpha + red + green + blue;
-
-                    bimg.setRGB(j, i, color);
+                    bimg.setRGB(j, i, createRGB(rawImageContent[counter]));
 
                     counter++;
                 }
@@ -160,7 +159,7 @@ public class ImageUtilities {
                     else if (p < 0 || p > max)
                         throw new IOException("Pixel value " + p + " outside of range [0, " + max + "].");
                     System.out.println(p);
-                    int rgb = ColorUtilities.createRGB(p,p,p);
+                    int rgb = createRGB(p,p,p);
 
                     bimg.setRGB(j, i, rgb);
                 }

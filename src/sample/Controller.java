@@ -1,6 +1,7 @@
 package sample;
 
 import javafx.embed.swing.SwingFXUtils;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
@@ -9,6 +10,7 @@ import java.io.IOException;
 import java.awt.image.BufferedImage;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javafx.scene.paint.Color;
@@ -55,13 +57,8 @@ public class Controller extends BorderPane {
                 switch(fileExtension)
                 {
                     case "raw":
-                        int width = Integer.valueOf(JOptionPane.showInputDialog(
-                                null, "Width", "Insert Width",
-                                JOptionPane.DEFAULT_OPTION));
-
-                        int height = Integer.valueOf(JOptionPane.showInputDialog(
-                                null, "Height", "Insert Height",
-                                JOptionPane.DEFAULT_OPTION));
+                        int width = Integer.valueOf(getInputDialog("Open Image","Raw Image Information","Insert Image Width"));
+                        int height = Integer.valueOf(getInputDialog("Open Image","Raw Image Information","Insert Image Height"));
                         bimg = this.imageUtilities.openRawImage(f,width,height);
                         leftImage = bimg;
                         //wimg = this.imageUtilities.readRawImage(bimg,width,height);
@@ -92,12 +89,14 @@ public class Controller extends BorderPane {
     @FXML public void saveImageFile(){
         Stage browser = new Stage();
         FileChooser fc = new FileChooser();
-        if (rightImage != null)
+        BufferedImage imageToBeSaved = this.getLastModifiedImage();
+
+        if (imageToBeSaved != null)
         {
             try {
                 fc.setTitle("Select File");
                 File f = fc.showSaveDialog (browser);
-                this.imageUtilities.WriteImage(rightImage, f);
+                this.imageUtilities.WriteImage(imageToBeSaved, f);
             }
             catch (Exception e)
             {
@@ -339,5 +338,30 @@ public class Controller extends BorderPane {
     public void setBottomText(String string)
     {
         this.txtBottom.setText("   " + string);
+    }
+
+    private BufferedImage getLastModifiedImage()
+    {
+        BufferedImage lastModifiedImage = null;
+        if (rightPaneImageList.size() > 0)
+        {
+            lastModifiedImage = rightPaneImageList.get(rightPaneImageList.size() - 1);
+        }
+        return lastModifiedImage;
+
+    }
+
+    // Dialog
+    public String getInputDialog(String title, String header, String inputRequest)
+    {
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle(title);
+        dialog.setHeaderText(header);
+        dialog.setContentText(inputRequest);
+
+        Optional<String> result = dialog.showAndWait();
+
+        return result.get();
+
     }
 }

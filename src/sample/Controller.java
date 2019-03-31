@@ -103,13 +103,12 @@ public class Controller extends BorderPane {
     {
         Stage browser = new Stage();
         FileChooser fc = new FileChooser();
-        if (leftImage != null)
+        if (rightImage != null)
         {
             try {
                 fc.setTitle("Select File");
                 File f = fc.showSaveDialog (browser);
-                String ext = f.getName().substring(f.getName().lastIndexOf("."));
-                this.imageUtilities.WriteImage(leftImage, f , ext.substring(1) );
+                this.imageUtilities.WriteImage(rightImage, f);
             }
             catch (Exception e)
             {
@@ -158,9 +157,7 @@ public class Controller extends BorderPane {
             fc.setTitle("Select File");
             File f = fc.showSaveDialog (browser);
             String fileName = f.getName();
-            String[] splittedName = fileName.split("\\.");
-            String ext = splittedName[splittedName.length -1];
-            this.imageUtilities.WriteImage(bImage, f , ext );
+            this.imageUtilities.WriteImage(bImage, f);
         }
         catch (Exception e)
         {
@@ -193,7 +190,7 @@ public class Controller extends BorderPane {
         try {
             fc.setTitle("Select File");
             File f = fc.showSaveDialog (browser);
-            this.imageUtilities.WriteImage(bImage, f , this.imageUtilities.getImageExtension(f.getName()));
+            this.imageUtilities.WriteImage(bImage, f);
         }
         catch (Exception e)
         {

@@ -151,6 +151,17 @@ public class Controller extends BorderPane {
         historyImageList = new LinkedList<>();
         rightPane.getChildren().setAll();
     }
+    @FXML public void setRightToLeft(){
+        if(!rightPaneImageList.isEmpty()) {
+            leftImage = rightPaneImageList.get(rightPaneImageList.size()-1);
+            rightPaneImageList.remove(rightPaneImageList.size()-1);
+            this.reset();
+            this.displayImageInPane(leftImage,leftPane);
+        }
+        else{
+            Alerts.showAlert("No hay imagen para mover");
+        }
+    }
 
     //Left Pane
 

@@ -59,6 +59,8 @@
                     <Button mnemonicParsing="false" prefWidth="205.0" text="Image Substraction" onAction="#imageSubstraction"/>
                     <Button mnemonicParsing="false" prefWidth="205.0" text="Image Scalar Product" onAction="#imageScalarProduct"/>
                     <Button mnemonicParsing="false" prefWidth="205.0" text="Dynamic Range Compression" onAction="#dynamicRangeCompression"/>
+                    <Button mnemonicParsing="false" prefWidth="205.0" text="Pow Function" onAction="#imagePow"/>
+                    <Button mnemonicParsing="false" prefWidth="205.0" text="Negative" onAction="#imageNegative"/>
                   </children>
                 </VBox>
               </children>

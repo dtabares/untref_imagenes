@@ -414,9 +414,9 @@ public class ImageUtilities {
     public BufferedImage dynamicRangeCompression(BufferedImage bimg, int alpha)
     {
         BufferedImage temp = null;
-        int min = this.getMinRgb(bimg);
+/*        int min = this.getMinRgb(bimg);
         int max = this.getMaxRgb(bimg);
-        int range = max - min;
+        int range = max - min;*/
         try
         {
             temp = new BufferedImage(bimg.getWidth(),bimg.getHeight(),bimg.getType());
@@ -426,14 +426,71 @@ public class ImageUtilities {
                 for( int j = 0; j < bimg.getHeight(); j++)
                 {
                     int p = (bimg.getRGB(i,j));
-                    if(p<0)
-                    {
-                        temp.setRGB(i,j,(-1)* ((p*-1)*((int)Math.log(alpha/100))));
-                    }
-                    else
-                    {
-                        temp.setRGB(i,j,(p*(int)Math.log(alpha/100)));
-                    }
+                    int red = (p >> 16) & 0xFF;
+                    int green = (p >> 8) & 0xFF;
+                    int blue = p & 0xFF;
+                    red = alpha * (int)Math.round(Math.log1p((double) (1 + red)));
+                    green = alpha * (int)Math.round(Math.log1p((double) (1 + green)));
+                    blue = alpha * (int)Math.round(Math.log1p((double) (1 + blue)));
+                    int rgb = ((red&0x0ff)<<16)|((green&0x0ff)<<8)|(blue&0x0ff);
+                    temp.setRGB(i,j,rgb);
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            Alerts.showAlert(e.getMessage());
+        }
+        return temp;
+    }
+
+    public BufferedImage imagePow(BufferedImage bimg, int gamma)
+    {
+        BufferedImage temp = null;
+        try
+        {
+            temp = new BufferedImage(bimg.getWidth(),bimg.getHeight(),bimg.getType());
+
+            for (int i = 0; i < bimg.getWidth(); i++)
+            {
+                for( int j = 0; j < bimg.getHeight(); j++)
+                {
+                    int p = (bimg.getRGB(i,j));
+                    int red = (p >> 16) & 0xFF;
+                    int green = (p >> 8) & 0xFF;
+                    int blue = p & 0xFF;
+                    red = (int)Math.round(Math.pow((double) (1 + red), gamma));
+                    green = (int)Math.round(Math.pow((double) (1 + green), gamma));
+                    blue = (int)Math.round(Math.pow((double) (1 + blue), gamma));
+                    int rgb = ((red&0x0ff)<<16)|((green&0x0ff)<<8)|(blue&0x0ff);
+                    temp.setRGB(i,j,rgb);
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            Alerts.showAlert(e.getMessage());
+        }
+        return temp;
+    }
+
+    public BufferedImage imageNegative(BufferedImage bimg)
+    {
+        BufferedImage temp = null;
+        try
+        {
+            temp = new BufferedImage(bimg.getWidth(),bimg.getHeight(),bimg.getType());
+
+            for (int i = 0; i < bimg.getWidth(); i++)
+            {
+                for( int j = 0; j < bimg.getHeight(); j++)
+                {
+                    int p = (bimg.getRGB(i,j));
+                    int red = 255 - ((p >> 16) & 0xFF);
+                    int green = 255 - ((p >> 8) & 0xFF);
+                    int blue = 255 - (p & 0xFF);
+                    int rgb = ((red&0x0ff)<<16)|((green&0x0ff)<<8)|(blue&0x0ff);
+                    temp.setRGB(i,j,rgb);
                 }
             }
         }

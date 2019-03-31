@@ -227,106 +227,125 @@ public class Controller extends BorderPane {
         fc.setInitialDirectory(null);
     }
 
-        //Basics
+    //Basics
 
-        public BufferedImage imageAddition(){
-            BufferedImage temp = leftImage;
-            BufferedImage bimg = this.openImageFile();
-            leftImage = temp;
-            BufferedImage result = imageUtilities.imageAddition(leftImage,bimg);
-            this.displayImageInPane(result,rightPane);
-            this.displayImageInPane(leftImage, leftPane);
-            return result;
-        }
-        public BufferedImage imageSubtraction(){
-            BufferedImage temp = leftImage;
-            BufferedImage bimg = this.openImageFile();
-            leftImage = temp;
-            BufferedImage result = imageUtilities.imageSubtraction(leftImage,bimg);
-            this.displayImageInPane(result,rightPane);
-            this.displayImageInPane(leftImage, leftPane);
-            return result;
-        }
-        public BufferedImage imageScalarProduct(){
-            int scalar = Integer.valueOf(JOptionPane.showInputDialog(
-                    null, "Scalar", "Insert Scalar",
-                    JOptionPane.DEFAULT_OPTION));
-            BufferedImage result = imageUtilities.imageScalarProduct(leftImage,scalar);
-            this.displayImageInPane(result,rightPane);
-            return result;
-        }
-        public BufferedImage dynamicRangeCompression(){
-           int alpha=-1;
+    public BufferedImage imageAddition(){
+        BufferedImage temp = leftImage;
+        BufferedImage bimg = this.openImageFile();
+        leftImage = temp;
+        BufferedImage result = imageUtilities.imageAddition(leftImage,bimg);
+        this.displayImageInPane(result,rightPane);
+        this.displayImageInPane(leftImage, leftPane);
+        return result;
+    }
+    public BufferedImage imageSubtraction(){
+        BufferedImage temp = leftImage;
+        BufferedImage bimg = this.openImageFile();
+        leftImage = temp;
+        BufferedImage result = imageUtilities.imageSubtraction(leftImage,bimg);
+        this.displayImageInPane(result,rightPane);
+        this.displayImageInPane(leftImage, leftPane);
+        return result;
+    }
+    public BufferedImage imageScalarProduct(){
+        int scalar = Integer.valueOf(JOptionPane.showInputDialog(
+                null, "Scalar", "Insert Scalar",
+                JOptionPane.DEFAULT_OPTION));
+        BufferedImage result = imageUtilities.imageScalarProduct(leftImage,scalar);
+        this.displayImageInPane(result,rightPane);
+        return result;
+    }
+    public BufferedImage dynamicRangeCompression(){
+        int alpha=-1;
+        alpha = Integer.valueOf(JOptionPane.showInputDialog(
+                null, "Compression", "Insert Compression %",
+                JOptionPane.DEFAULT_OPTION));
+        while(alpha <= 0 || alpha > 100)
+        {
+            Alerts.showAlert("El valor debe estar entre 1 y 100");
             alpha = Integer.valueOf(JOptionPane.showInputDialog(
                     null, "Compression", "Insert Compression %",
                     JOptionPane.DEFAULT_OPTION));
-            while(alpha <= 0 || alpha > 100)
+            ;
+        }
+        BufferedImage result = imageUtilities.dynamicRangeCompression(leftImage,alpha);
+        this.displayImageInPane(result,rightPane);
+        return result;
+    }
+    @FXML public BufferedImage imagePow(){
+        int gamma=-1;
+        //        alpha = Integer.valueOf(JOptionPane.showInputDialog(
+        //                null, "Compression", "Insert Compression %",
+        //                JOptionPane.DEFAULT_OPTION));
+        //        while(alpha <= 0 || alpha > 100)
+        //        {
+        //            Alerts.showAlert("El valor debe estar entre 1 y 100");
+        //            alpha = Integer.valueOf(JOptionPane.showInputDialog(
+        //                    null, "Compression", "Insert Compression %",
+        //                    JOptionPane.DEFAULT_OPTION));
+        //            ;
+        //        }
+        BufferedImage result = imageUtilities.imagePow(leftImage,5);
+        this.displayImageInPane(result,rightPane);
+        return result;
+    }
+    @FXML public BufferedImage imageNegative(){
+        BufferedImage result = null;
+        if (leftImage != null) {
+            result = imageUtilities.imageNegative(leftImage);
+            WritableImage wimg = imageUtilities.readImage(result);
+            this.displayImageInPane(result, rightPane);
+        }
+        else
+        {
+            Alerts.showAlert("No hay una imagen abierta");
+        }
+        return result;
+    }
+    @FXML public void getPixelInformation(){
+        try{
+            ImageView leftImageView = null;
+            ImageView rightImageView = null;
+            if (!leftPane.getChildren().isEmpty())
             {
-                Alerts.showAlert("El valor debe estar entre 1 y 100");
-                alpha = Integer.valueOf(JOptionPane.showInputDialog(
-                        null, "Compression", "Insert Compression %",
-                        JOptionPane.DEFAULT_OPTION));
-                ;
+                leftImageView = (ImageView) leftPane.getChildren().get(0);
             }
-            BufferedImage result = imageUtilities.dynamicRangeCompression(leftImage,alpha);
-            this.displayImageInPane(result,rightPane);
-            return result;
-        }
-        @FXML public BufferedImage imagePow(){
-            int gamma=-1;
-    //        alpha = Integer.valueOf(JOptionPane.showInputDialog(
-    //                null, "Compression", "Insert Compression %",
-    //                JOptionPane.DEFAULT_OPTION));
-    //        while(alpha <= 0 || alpha > 100)
-    //        {
-    //            Alerts.showAlert("El valor debe estar entre 1 y 100");
-    //            alpha = Integer.valueOf(JOptionPane.showInputDialog(
-    //                    null, "Compression", "Insert Compression %",
-    //                    JOptionPane.DEFAULT_OPTION));
-    //            ;
-    //        }
-            BufferedImage result = imageUtilities.imagePow(leftImage,5);
-            this.displayImageInPane(result,rightPane);
-            return result;
-        }
-        @FXML public BufferedImage imageNegative(){
-            BufferedImage result = null;
-            if (leftImage != null) {
-                result = imageUtilities.imageNegative(leftImage);
-                WritableImage wimg = imageUtilities.readImage(result);
-                this.displayImageInPane(result, rightPane);
+
+            if (!rightPane.getChildren().isEmpty())
+            {
+                rightImageView = (ImageView) rightPane.getChildren().get(0);
+            }
+
+            if (leftImageView == null && rightImageView == null)
+            {
+                Alerts.showAlert("No hay una imagen cargada en el panel derecho");
             }
             else
             {
-                Alerts.showAlert("No hay una imagen abierta");
-            }
-            return result;
-        }
-        @FXML public void getPixelInformation(){
-        try{
-            ImageView leftImageView = (ImageView) leftPane.getChildren().get(0);
-                ImageView rightImageView = (ImageView) rightPane.getChildren().get(0);
+                if (leftImageView != null)
+                {
+                    leftImageView.setOnMouseClicked(e -> {
+                        System.out.println("Left Coordinates Info: ["+e.getX()+", "+e.getY()+"]");
+                        String message = this.imageUtilities.getPixelInformation(leftImage,(int)e.getX(),(int)e.getY());
+                        this.setBottomText(message);
+                    });
+                }
 
-                leftImageView.setOnMouseClicked(e -> {
-                    System.out.println("Left Coordinates Info: ["+e.getX()+", "+e.getY()+"]");
-                    String message = this.imageUtilities.getPixelInformation(leftImage,(int)e.getX(),(int)e.getY());
-                    this.setBottomText(message);
-                });
-                if (rightImageView !=null) {
+
+                if (rightImageView != null) {
                     rightImageView.setOnMouseClicked(e -> {
                         System.out.println("Right Coordinates Info:[" + e.getX() + ", " + e.getY() + "]");
                         String message = this.imageUtilities.getPixelInformation(rightPaneImageList.get(rightPaneImageList.size()), (int) e.getX(), (int) e.getY());
                         this.setBottomText(message);
                     });
                 }
-                else{
-                    Alerts.showAlert("No hay una imagen cargada en el panel derecho");
-                }
             }
-            catch(Exception e){
-            Alerts.showAlert(e.getMessage());
-            }
+
         }
+        catch(Exception e){
+            Alerts.showAlert(e.getMessage());
+        }
+    }
 
     //Panels
 

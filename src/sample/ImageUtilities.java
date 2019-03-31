@@ -7,10 +7,7 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.nio.Buffer;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.Scanner;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -126,63 +123,7 @@ public class ImageUtilities {
         }
     }
 
-    public BufferedImage readPGM(File file){
-        int width = 0;
-        int height = 0;
-        BufferedImage bimg = null;
-        //Read Header
-        try {
-
-            BufferedReader br = new BufferedReader(new FileReader(file));
-            String magicNumber = br.readLine(); // first line contains P2 or P5
-            String line = br.readLine();
-            while (line.startsWith("#")) { //ignore comments
-                line = br.readLine();
-            }
-            Scanner s = new Scanner(line);
-            width = s.nextInt();
-            height = s.nextInt();
-            line = br.readLine(); // third line contains maxVal
-            s = new Scanner(line);
-            int maxValue = s.nextInt();
-            br.close();
-
-            bimg = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);
-            //Read Body
-            DataInputStream stream;
-            stream = new DataInputStream(new BufferedInputStream(new FileInputStream(file)));
-            int newlinecount = 0;
-            char previous = (char) 'a';
-            char c;
-
-            do {
-                c = (char) stream.readByte();
-                if (c == '\n' || c == '\r') {
-                    newlinecount++;
-                }
-                if (c == (char) '#' && (previous == '\n' || previous == '\r')) {
-                    newlinecount--;
-                }
-                previous = c;
-            } while (newlinecount < 3);
-            System.out.println("Skipped header. Start reading binary content...");
-
-            for (int row = 0; row < height; row++) {
-                for (int col = 0; col < width; col++) {
-                    byte b = stream.readByte();
-                    Byte b2 = b;
-                    //pixels[row][col] = b;
-                    bimg.setRGB(col, row, (int)(b2.intValue() * 255 / maxValue));
-                }
-            }
-        }
-        catch (Exception e){
-            System.out.println(e.getMessage());
-        }
-        return bimg;
-    }
-
-    public BufferedImage readPGMNew(File file) throws IOException {
+    public BufferedImage readPGM(File file) throws IOException {
         //Magic number representing the binary PGM file type.
         final String MAGIC = "P5";
 
@@ -207,9 +148,10 @@ public class ImageUtilities {
                         throw new IOException("Reached end-of-file prematurely.");
                     else if (p < 0 || p > max)
                         throw new IOException("Pixel value " + p + " outside of range [0, " + max + "].");
-                    Color c =  new Color(p,p,p);
 
-                    bimg.setRGB(j, i, c.getRGB());
+                    int rgb = (p << 24) | (p << 16) | (p << 8) | p;
+
+                    bimg.setRGB(j, i, rgb);
                 }
             }
             return bimg;

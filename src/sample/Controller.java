@@ -7,10 +7,8 @@ import javafx.scene.layout.BorderPane;
 import java.io.File;
 import java.io.IOException;
 import java.awt.image.BufferedImage;
-import java.nio.Buffer;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Stack;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javafx.scene.paint.Color;
@@ -66,7 +64,7 @@ public class Controller extends BorderPane {
                         //wimg = this.imageUtilities.readRawImage(bimg,width,height);
                         break;
                     case "pgm":
-                        bimg = this.imageUtilities.readPGMNew(f);
+                        bimg = this.imageUtilities.readPGM(f);
                         leftImage = bimg;
                         break;
                     default:

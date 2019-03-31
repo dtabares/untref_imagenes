@@ -21,8 +21,6 @@ public class ImageUtilities {
         return currentImageFormat;
     }
 
-
-
     public boolean isSupportedFormat(String extension )
     {
         for (String s : supportedFormats)
@@ -316,7 +314,7 @@ public class ImageUtilities {
         return temp;
     }
 
-    public BufferedImage imageSubstraction(BufferedImage bimg1, BufferedImage bimg2)
+    public BufferedImage imageSubtraction(BufferedImage bimg1, BufferedImage bimg2)
     {
         BufferedImage temp = null;
         try
@@ -386,9 +384,9 @@ public class ImageUtilities {
                     int red = (p >> 16) & 0xFF;
                     int green = (p >> 8) & 0xFF;
                     int blue = p & 0xFF;
-                    red = alpha * (int)Math.round(Math.log1p((double) (1 + red)));
-                    green = alpha * (int)Math.round(Math.log1p((double) (1 + green)));
-                    blue = alpha * (int)Math.round(Math.log1p((double) (1 + blue)));
+                    red = (100/alpha) * (int)Math.round(Math.log1p((double) (1 + red)));
+                    green = (100/alpha) * (int)Math.round(Math.log1p((double) (1 + green)));
+                    blue = (100/alpha) * (int)Math.round(Math.log1p((double) (1 + blue)));
                     int rgb = ((red&0x0ff)<<16)|((green&0x0ff)<<8)|(blue&0x0ff);
                     temp.setRGB(i,j,rgb);
                 }

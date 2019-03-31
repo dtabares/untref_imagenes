@@ -4,10 +4,11 @@ import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
-
 import java.io.File;
 import java.io.IOException;
 import java.awt.image.BufferedImage;
+import java.util.LinkedList;
+import java.util.List;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javafx.scene.paint.Color;
@@ -19,11 +20,12 @@ import javafx.stage.Stage;
 import javafx.fxml.FXML;
 import javafx.scene.image.ImageView;
 
+
 public class Controller extends BorderPane {
 
-    private File imageFile = null;
     private BufferedImage leftImage = null;
-    private BufferedImage rightImage = null;
+    private List<BufferedImage> rightPaneImageList;
+    private List<BufferedImage> historyImageList;
     private ImageUtilities imageUtilities;
 
     @FXML private AnchorPane leftPane;
@@ -32,20 +34,16 @@ public class Controller extends BorderPane {
 
     public void initialize()throws IOException{
         System.out.println("Starting...");
+        this.rightPaneImageList = new LinkedList<>();
+        this.historyImageList = new LinkedList<>();
         this.imageUtilities = new ImageUtilities();
-        this.setBottomText("Mensaje de prueba, remover del medotod initialize en Controller");
     }
 
-    public void setBottomText(String string)
-    {
-        this.txtBottom.setText("   " + string);
-    }
+    //Top Menu
 
-    @FXML public BufferedImage openImageFile()
-    {
+    @FXML public BufferedImage openImageFile(){
         Stage browser = new Stage();
         FileChooser fc = new FileChooser();
-        WritableImage wimg = null;
         BufferedImage bimg = null;
         try
         {
@@ -54,7 +52,6 @@ public class Controller extends BorderPane {
             String fileExtension = this.imageUtilities.getImageExtension(f.getName());
             if(this.imageUtilities.isSupportedFormat(fileExtension))
             {
-                imageFile = new File(f.getAbsolutePath());
                 switch(fileExtension)
                 {
                     case "raw":
@@ -66,21 +63,18 @@ public class Controller extends BorderPane {
                                 null, "Height", "Insert Height",
                                 JOptionPane.DEFAULT_OPTION));
                         bimg = this.imageUtilities.openRawImage(f,width,height);
-                        leftImage = rightImage = bimg;
-                        wimg = this.imageUtilities.readRawImage(bimg,width,height);
+                        leftImage = bimg;
+                        //wimg = this.imageUtilities.readRawImage(bimg,width,height);
                         break;
                     case "pgm":
-                        bimg = this.imageUtilities.readPGM(imageFile);
-                        leftImage = rightImage = bimg;
-                        wimg = this.imageUtilities.readImage(bimg);
+                        bimg = this.imageUtilities.readPGM(f);
+                        leftImage = bimg;
                         break;
                     default:
                         bimg = ImageIO.read(f);
-                        leftImage = rightImage = bimg;
-                        wimg = this.imageUtilities.readImage(bimg);
+                        leftImage = bimg;
                 }
-                displayImageInPane(wimg, leftPane);
-                displayImageInPane(wimg, rightPane);
+                this.displayImageInPane(bimg,leftPane);
                 fc.setInitialDirectory(null);
             }
             else
@@ -92,15 +86,10 @@ public class Controller extends BorderPane {
         {
 
             Alerts.showAlert(e.getMessage());
-            imageFile = null;
         }
         return bimg;
     }
-
-
-
-    @FXML public void saveImageFile()
-    {
+    @FXML public void saveImageFile(){
         Stage browser = new Stage();
         FileChooser fc = new FileChooser();
         if (rightImage != null)
@@ -121,19 +110,61 @@ public class Controller extends BorderPane {
                 Alerts.showAlert("There is no image to save");
             }
     }
-
     @FXML public void closeApplication(){
         System.exit(0);
     }
-
-    public void displayImageInPane(WritableImage wimg, AnchorPane pane)
-    {
-        ImageView image = new ImageView(wimg);
-        pane.getChildren().setAll(image);
+    @FXML public void undo(){
+        if(!rightPaneImageList.isEmpty()){
+            historyImageList.add(rightPaneImageList.get(rightPaneImageList.size()-1));
+            rightPaneImageList.remove(rightPaneImageList.size()-1);
+            if(!rightPaneImageList.isEmpty()) {
+                WritableImage wimg = imageUtilities.readImage(rightPaneImageList.get(rightPaneImageList.size()-1));
+                ImageView image = new ImageView(wimg);
+                rightPane.getChildren().setAll(image);
+            }
+            else
+            {
+                rightPane.getChildren().setAll();
+            }
+        }
+        else
+        {
+            Alerts.showAlert("No hay nada para deshacer");
+        }
+    }
+    @FXML public void redo(){
+        if(!historyImageList.isEmpty())
+        {
+            rightPaneImageList.add(historyImageList.get(historyImageList.size()-1));
+            historyImageList.remove(historyImageList.get(historyImageList.size()-1));
+            WritableImage wimg = imageUtilities.readImage(rightPaneImageList.get(rightPaneImageList.size()-1));
+            ImageView image = new ImageView(wimg);
+            rightPane.getChildren().setAll(image);
+        }
+        else{
+            Alerts.showAlert("No hay nada para rehacer");
+        }
+    }
+    @FXML public void reset(){
+        rightPaneImageList = new LinkedList<>();
+        historyImageList = new LinkedList<>();
+        rightPane.getChildren().setAll();
+    }
+    @FXML public void setRightToLeft(){
+        if(!rightPaneImageList.isEmpty()) {
+            leftImage = rightPaneImageList.get(rightPaneImageList.size()-1);
+            rightPaneImageList.remove(rightPaneImageList.size()-1);
+            this.reset();
+            this.displayImageInPane(leftImage,leftPane);
+        }
+        else{
+            Alerts.showAlert("No hay imagen para mover");
+        }
     }
 
-    @FXML public void createImageWithCircle()
-    {
+    //Left Pane
+
+    @FXML public void createImageWithCircle(){
         int width = 200;
         int height = 200;
         int rad = 50;
@@ -165,9 +196,7 @@ public class Controller extends BorderPane {
         }
         fc.setInitialDirectory(null);
     }
-
-    @FXML public void createImageWithSquare()
-    {
+    @FXML public void createImageWithSquare(){
         int width = 200;
         int height = 200;
         Rectangle background = new Rectangle();
@@ -199,104 +228,116 @@ public class Controller extends BorderPane {
         fc.setInitialDirectory(null);
     }
 
-    //Basics
-    public BufferedImage imageAddition()
+        //Basics
+
+        public BufferedImage imageAddition(){
+            BufferedImage bimg = this.openImageFile();
+            BufferedImage result = imageUtilities.imageAddition(leftImage,bimg);
+            this.displayImageInPane(result,rightPane);
+            return result;
+        }
+        public BufferedImage imageSubtraction(){
+            BufferedImage bimg = this.openImageFile();
+            BufferedImage result = imageUtilities.imageSubtraction(leftImage,bimg);
+            this.displayImageInPane(result,rightPane);
+            return result;
+        }
+        public BufferedImage imageScalarProduct(){
+            int scalar = Integer.valueOf(JOptionPane.showInputDialog(
+                    null, "Scalar", "Insert Scalar",
+                    JOptionPane.DEFAULT_OPTION));
+            BufferedImage result = imageUtilities.imageScalarProduct(leftImage,scalar);
+            this.displayImageInPane(result,rightPane);
+            return result;
+        }
+        public BufferedImage dynamicRangeCompression(){
+           int alpha=-1;
+            alpha = Integer.valueOf(JOptionPane.showInputDialog(
+                    null, "Compression", "Insert Compression %",
+                    JOptionPane.DEFAULT_OPTION));
+            while(alpha <= 0 || alpha > 100)
+            {
+                Alerts.showAlert("El valor debe estar entre 1 y 100");
+                alpha = Integer.valueOf(JOptionPane.showInputDialog(
+                        null, "Compression", "Insert Compression %",
+                        JOptionPane.DEFAULT_OPTION));
+                ;
+            }
+            BufferedImage result = imageUtilities.dynamicRangeCompression(leftImage,alpha);
+            this.displayImageInPane(result,rightPane);
+            return result;
+        }
+        @FXML public BufferedImage imagePow(){
+            int gamma=-1;
+    //        alpha = Integer.valueOf(JOptionPane.showInputDialog(
+    //                null, "Compression", "Insert Compression %",
+    //                JOptionPane.DEFAULT_OPTION));
+    //        while(alpha <= 0 || alpha > 100)
+    //        {
+    //            Alerts.showAlert("El valor debe estar entre 1 y 100");
+    //            alpha = Integer.valueOf(JOptionPane.showInputDialog(
+    //                    null, "Compression", "Insert Compression %",
+    //                    JOptionPane.DEFAULT_OPTION));
+    //            ;
+    //        }
+            BufferedImage result = imageUtilities.imagePow(leftImage,5);
+            this.displayImageInPane(result,rightPane);
+            return result;
+        }
+        @FXML public BufferedImage imageNegative(){
+            BufferedImage result = null;
+            if (leftImage != null) {
+                result = imageUtilities.imageNegative(leftImage);
+                WritableImage wimg = imageUtilities.readImage(result);
+                this.displayImageInPane(result, rightPane);
+            }
+            else
+            {
+                Alerts.showAlert("No hay una imagen abierta");
+            }
+            return result;
+        }
+        @FXML public void getPixelInformation(){
+        try{
+            ImageView leftImageView = (ImageView) leftPane.getChildren().get(0);
+                ImageView rightImageView = (ImageView) rightPane.getChildren().get(0);
+
+                leftImageView.setOnMouseClicked(e -> {
+                    System.out.println("Left Coordinates Info: ["+e.getX()+", "+e.getY()+"]");
+                    String message = this.imageUtilities.getPixelInformation(leftImage,(int)e.getX(),(int)e.getY());
+                    this.setBottomText(message);
+                });
+                if (rightImageView !=null) {
+                    rightImageView.setOnMouseClicked(e -> {
+                        System.out.println("Right Coordinates Info:[" + e.getX() + ", " + e.getY() + "]");
+                        String message = this.imageUtilities.getPixelInformation(rightPaneImageList.get(rightPaneImageList.size()), (int) e.getX(), (int) e.getY());
+                        this.setBottomText(message);
+                    });
+                }
+                else{
+                    Alerts.showAlert("No hay una imagen cargada en el panel derecho");
+                }
+            }
+            catch(Exception e){
+            Alerts.showAlert(e.getMessage());
+            }
+        }
+
+    //Panels
+
+    public void displayImageInPane(BufferedImage bimg, AnchorPane pane){
+        if (pane == rightPane) {
+            rightPaneImageList.add(bimg);
+        }
+        WritableImage wimg = imageUtilities.readImage(bimg);
+        ImageView image = new ImageView(wimg);
+        pane.getChildren().setAll(image);
+    }
+
+    //General functions
+
+    public void setBottomText(String string)
     {
-        BufferedImage bimg = this.openImageFile();
-        BufferedImage bimg2 = this.openImageFile();
-        BufferedImage result = imageUtilities.imageAddition(bimg,bimg2);
-        WritableImage wimg = imageUtilities.readImage(result);
-        this.displayImageInPane(wimg,rightPane);
-        return result;
+        this.txtBottom.setText("   " + string);
     }
-
-    public BufferedImage imageSubstraction(){
-        BufferedImage bimg = this.openImageFile();
-        BufferedImage bimg2 = this.openImageFile();
-        BufferedImage result = imageUtilities.imageSubstraction(bimg,bimg2);
-        WritableImage wimg = imageUtilities.readImage(result);
-        this.displayImageInPane(wimg,rightPane);
-        return result;
-    }
-
-    public BufferedImage imageScalarProduct(){
-        BufferedImage bimg = this.openImageFile();
-        int scalar = Integer.valueOf(JOptionPane.showInputDialog(
-                null, "Scalar", "Insert Scalar",
-                JOptionPane.DEFAULT_OPTION));
-        BufferedImage result = imageUtilities.imageScalarProduct(bimg,scalar);
-        WritableImage wimg = imageUtilities.readImage(result);
-        this.displayImageInPane(wimg,rightPane);
-        return result;
-    }
-
-    public BufferedImage dynamicRangeCompression()
-    {
-       int alpha=-1;
-        BufferedImage bimg = this.openImageFile();
-//        alpha = Integer.valueOf(JOptionPane.showInputDialog(
-//                null, "Compression", "Insert Compression %",
-//                JOptionPane.DEFAULT_OPTION));
-//        while(alpha <= 0 || alpha > 100)
-//        {
-//            Alerts.showAlert("El valor debe estar entre 1 y 100");
-//            alpha = Integer.valueOf(JOptionPane.showInputDialog(
-//                    null, "Compression", "Insert Compression %",
-//                    JOptionPane.DEFAULT_OPTION));
-//            ;
-//        }
-        BufferedImage result = imageUtilities.dynamicRangeCompression(bimg,4);
-        WritableImage wimg = imageUtilities.readImage(result);
-        this.displayImageInPane(wimg,rightPane);
-        return result;
-        //return null;
-    }
-
-    public BufferedImage imagePow()
-    {
-        int gamma=-1;
-        BufferedImage bimg = this.openImageFile();
-//        alpha = Integer.valueOf(JOptionPane.showInputDialog(
-//                null, "Compression", "Insert Compression %",
-//                JOptionPane.DEFAULT_OPTION));
-//        while(alpha <= 0 || alpha > 100)
-//        {
-//            Alerts.showAlert("El valor debe estar entre 1 y 100");
-//            alpha = Integer.valueOf(JOptionPane.showInputDialog(
-//                    null, "Compression", "Insert Compression %",
-//                    JOptionPane.DEFAULT_OPTION));
-//            ;
-//        }
-        BufferedImage result = imageUtilities.imagePow(bimg,5);
-        WritableImage wimg = imageUtilities.readImage(result);
-        this.displayImageInPane(wimg,rightPane);
-        return result;
-    }
-    @FXML public BufferedImage imageNegative()
-    {
-        BufferedImage bimg = this.openImageFile();
-        BufferedImage result = imageUtilities.imageNegative(bimg);
-        WritableImage wimg = imageUtilities.readImage(result);
-        this.displayImageInPane(wimg,rightPane);
-        return result;
-    }
-
-    @FXML public void getPixelInformation()
-    {
-        ImageView leftImageView = (ImageView) leftPane.getChildren().get(0);
-        ImageView rightImageView = (ImageView) rightPane.getChildren().get(0);
-
-        leftImageView.setOnMouseClicked(e -> {
-            System.out.println("Left Coordinates Info: ["+e.getX()+", "+e.getY()+"]");
-            String message = this.imageUtilities.getPixelInformation(leftImage,(int)e.getX(),(int)e.getY());
-            this.setBottomText(message);
-        });
-
-        rightImageView.setOnMouseClicked(e -> {
-            System.out.println("Right Coordinates Info:["+e.getX()+", "+e.getY()+"]");
-            String message = this.imageUtilities.getPixelInformation(rightImage,(int)e.getX(),(int)e.getY());
-            this.setBottomText(message);
-        });
-    }
-
 }

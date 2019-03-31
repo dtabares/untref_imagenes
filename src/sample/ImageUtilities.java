@@ -234,13 +234,13 @@ public class ImageUtilities {
         {
             if (bimg1.getType() == bimg2.getType())
             {
-                boolean firstIsWidest = bimg1.getWidth() > bimg2.getWidth();
-                boolean firstIsHigher = bimg1.getHeight() > bimg2.getHeight();
+                boolean firstIsWidest = bimg1.getWidth() >= bimg2.getWidth();
+                boolean firstIsHigher = bimg1.getHeight() >= bimg2.getHeight();
                 int maxWidth;
                 int minWidth;
                 int maxHeight;
                 int minHeight;
-                if (bimg1.getWidth() > bimg2.getWidth())
+                if (bimg1.getWidth() >= bimg2.getWidth())
                 {
                     maxWidth = bimg1.getWidth();
                     minWidth = bimg2.getWidth();
@@ -250,7 +250,7 @@ public class ImageUtilities {
                     maxWidth = bimg2.getWidth();
                     minWidth = bimg1.getWidth();
                 }
-                if(bimg1.getHeight() > bimg2.getHeight())
+                if(bimg1.getHeight() >= bimg2.getHeight())
                 {
                     maxHeight = bimg1.getHeight();
                     minHeight = bimg2.getHeight();
@@ -310,7 +310,7 @@ public class ImageUtilities {
             Alerts.showAlert(e.getMessage());
         }
 
-        return temp;
+        return (temp);
     }
 
     public BufferedImage imageSubtraction(BufferedImage bimg1, BufferedImage bimg2)
@@ -340,7 +340,7 @@ public class ImageUtilities {
         {
             Alerts.showAlert(e.getMessage());
         }
-        return temp;
+        return (temp);
     }
 
     public BufferedImage imageScalarProduct(BufferedImage bimg, int scalar)
@@ -362,15 +362,12 @@ public class ImageUtilities {
         {
             Alerts.showAlert(e.getMessage());
         }
-        return temp;
+        return (temp);
     }
 
     public BufferedImage dynamicRangeCompression(BufferedImage bimg, int alpha)
     {
         BufferedImage temp = null;
-/*        int min = this.getMinRgb(bimg);
-        int max = this.getMaxRgb(bimg);
-        int range = max - min;*/
         try
         {
             temp = new BufferedImage(bimg.getWidth(),bimg.getHeight(),bimg.getType());
@@ -383,13 +380,73 @@ public class ImageUtilities {
                     int red = (p >> 16) & 0xFF;
                     int green = (p >> 8) & 0xFF;
                     int blue = p & 0xFF;
-                    red = (100/alpha) * (int)Math.round(Math.log1p((double) (1 + red)));
-                    green = (100/alpha) * (int)Math.round(Math.log1p((double) (1 + green)));
-                    blue = (100/alpha) * (int)Math.round(Math.log1p((double) (1 + blue)));
+                    red = (100/alpha) * (int)Math.round(Math.log10((double) (1 + red)));
+                    green = (100/alpha) * (int)Math.round(Math.log10((double) (1 + green)));
+                    blue = (100/alpha) * (int)Math.round(Math.log10((double) (1 + blue)));
                     int rgb = ((red&0x0ff)<<16)|((green&0x0ff)<<8)|(blue&0x0ff);
                     temp.setRGB(i,j,rgb);
                 }
             }
+        }
+        catch (Exception e)
+        {
+            Alerts.showAlert(e.getMessage());
+        }
+        return temp;
+    }
+    public BufferedImage adjustDynamicRange(BufferedImage bimg)
+    {
+        BufferedImage temp = null;
+        int pixelCount = bimg.getWidth()*bimg.getHeight();
+        int r[] = new int[pixelCount];
+        int g[] = new int[pixelCount];
+        int b[] = new int[pixelCount];
+        try
+        {
+            temp = new BufferedImage(bimg.getWidth(),bimg.getHeight(),bimg.getType());
+            int counter = 0;
+            for (int i = 0; i < bimg.getWidth(); i++)
+            {
+                for( int j = 0; j < bimg.getHeight(); j++)
+                {
+                    int p = (bimg.getRGB(i,j));
+                    r[counter] = 255 - ((p >> 16) & 0xFF);
+                    g[counter] = 255 - ((p >> 8) & 0xFF);
+                    b[counter] = 255 - (p & 0xFF);
+                    counter++;
+                }
+            }
+            int rmin = this.getChannelMin(r);
+            int rmax = this.getChannelMax(r);
+            int gmin = this.getChannelMin(g);
+            int gmax = this.getChannelMax(g);
+            int bmin = this.getChannelMin(b);
+            int bmax = this.getChannelMax(b);
+
+            int Lr = rmax-rmin;
+            int Lg = gmax-gmin;
+            int Lb = bmax-bmin;
+
+            int cr =(Lr-1)/((int)Math.round(Math.log10(1+rmax)));
+            int cg =(Lg-1)/((int)Math.round(Math.log10(1+gmax)));
+            int cb =(Lb-1)/((int)Math.round(Math.log10(1+bmax)));
+
+            for (int i = 0; i < bimg.getWidth(); i++)
+            {
+                for( int j = 0; j < bimg.getHeight(); j++)
+                {
+                    int p = (bimg.getRGB(i,j));
+                    int red = (p >> 16) & 0xFF;
+                    int green = (p >> 8) & 0xFF;
+                    int blue = p & 0xFF;
+                    red = cr * (int)Math.round(Math.log10((double) (1 + red)));
+                    green = cg * (int)Math.round(Math.log10((double) (1 + green)));
+                    blue = cb * (int)Math.round(Math.log10((double) (1 + blue)));
+                    int rgb = ((red&0x0ff)<<16)|((green&0x0ff)<<8)|(blue&0x0ff);
+                    temp.setRGB(i,j,rgb);
+                }
+            }
+
         }
         catch (Exception e)
         {
@@ -425,7 +482,7 @@ public class ImageUtilities {
         {
             Alerts.showAlert(e.getMessage());
         }
-        return temp;
+        return adjustDynamicRange(temp);
     }
 
     public BufferedImage imageNegative(BufferedImage bimg)
@@ -455,35 +512,27 @@ public class ImageUtilities {
         return temp;
     }
 
-    public int getMaxRgb (BufferedImage bimg)
+    public int getChannelMax (int channel[])
     {
-        int max = 0;
-        for (int i = 0; i < bimg.getWidth(); i++)
+        int max = -1;
+        for (int i = 0; i < channel.length; i++)
         {
-            for( int j = 0; j < bimg.getHeight(); j++)
-            {
-                int temp = bimg.getRGB(i,j);
-                if( temp > max)
-                {
-                    max = temp;
-                }
+            int temp = channel[i];
+            if (temp > max){
+                max = temp;
             }
         }
         return max;
     }
 
-    public int getMinRgb (BufferedImage bimg)
+    public int getChannelMin (int channel[])
     {
-        int min = 255;
-        for (int i = 0; i < bimg.getWidth(); i++)
+        int min = 256;
+        for (int i = 0; i < channel.length; i++)
         {
-            for( int j = 0; j < bimg.getHeight(); j++)
-            {
-                int temp = bimg.getRGB(i,j);
-                if( temp < min)
-                {
-                    min = temp;
-                }
+            int temp = channel[i];
+            if (temp < min){
+                min = temp;
             }
         }
         return min;

@@ -4,11 +4,10 @@ import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.input.MouseEvent;
+
 import java.io.File;
 import java.io.IOException;
 import java.awt.image.BufferedImage;
-import java.util.Optional;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javafx.scene.paint.Color;
@@ -71,7 +70,7 @@ public class Controller extends BorderPane {
                         wimg = this.imageUtilities.readRawImage(bimg,width,height);
                         break;
                     case "pgm":
-                        bimg = this.imageUtilities.readPGMNew(imageFile);
+                        bimg = this.imageUtilities.readPGM(imageFile);
                         leftImage = rightImage = bimg;
                         wimg = this.imageUtilities.readImage(bimg);
                         break;

@@ -207,48 +207,40 @@ public class Controller extends BorderPane {
 
         public BufferedImage imageAddition(){
             BufferedImage bimg = this.openImageFile();
-            BufferedImage bimg2 = this.openImageFile();
-            BufferedImage result = imageUtilities.imageAddition(bimg,bimg2);
-            WritableImage wimg = imageUtilities.readImage(result);
+            BufferedImage result = imageUtilities.imageAddition(leftImage,bimg);
             this.displayImageInPane(result,rightPane);
             return result;
         }
-        public BufferedImage imageSubstraction(){
+        public BufferedImage imageSubtraction(){
             BufferedImage bimg = this.openImageFile();
-            BufferedImage bimg2 = this.openImageFile();
-            BufferedImage result = imageUtilities.imageSubstraction(bimg,bimg2);
+            BufferedImage result = imageUtilities.imageSubtraction(leftImage,bimg);
             this.displayImageInPane(result,rightPane);
             return result;
         }
         public BufferedImage imageScalarProduct(){
-            BufferedImage bimg = this.openImageFile();
             int scalar = Integer.valueOf(JOptionPane.showInputDialog(
                     null, "Scalar", "Insert Scalar",
                     JOptionPane.DEFAULT_OPTION));
-            BufferedImage result = imageUtilities.imageScalarProduct(bimg,scalar);
-            WritableImage wimg = imageUtilities.readImage(result);
+            BufferedImage result = imageUtilities.imageScalarProduct(leftImage,scalar);
             this.displayImageInPane(result,rightPane);
             return result;
         }
         public BufferedImage dynamicRangeCompression(){
            int alpha=-1;
-            BufferedImage bimg = this.openImageFile();
-    //        alpha = Integer.valueOf(JOptionPane.showInputDialog(
-    //                null, "Compression", "Insert Compression %",
-    //                JOptionPane.DEFAULT_OPTION));
-    //        while(alpha <= 0 || alpha > 100)
-    //        {
-    //            Alerts.showAlert("El valor debe estar entre 1 y 100");
-    //            alpha = Integer.valueOf(JOptionPane.showInputDialog(
-    //                    null, "Compression", "Insert Compression %",
-    //                    JOptionPane.DEFAULT_OPTION));
-    //            ;
-    //        }
-            BufferedImage result = imageUtilities.dynamicRangeCompression(bimg,4);
-            WritableImage wimg = imageUtilities.readImage(result);
+            alpha = Integer.valueOf(JOptionPane.showInputDialog(
+                    null, "Compression", "Insert Compression %",
+                    JOptionPane.DEFAULT_OPTION));
+            while(alpha <= 0 || alpha > 100)
+            {
+                Alerts.showAlert("El valor debe estar entre 1 y 100");
+                alpha = Integer.valueOf(JOptionPane.showInputDialog(
+                        null, "Compression", "Insert Compression %",
+                        JOptionPane.DEFAULT_OPTION));
+                ;
+            }
+            BufferedImage result = imageUtilities.dynamicRangeCompression(leftImage,alpha);
             this.displayImageInPane(result,rightPane);
             return result;
-            //return null;
         }
         @FXML public BufferedImage imagePow(){
             int gamma=-1;

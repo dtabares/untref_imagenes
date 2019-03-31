@@ -20,10 +20,12 @@ import javafx.stage.Stage;
 import javafx.fxml.FXML;
 import javafx.scene.image.ImageView;
 
+
 public class Controller extends BorderPane {
 
     private BufferedImage leftImage = null;
-    private List<BufferedImage> bufferedImageList;
+    private List<BufferedImage> rightPaneImageList;
+    private List<BufferedImage> historyImageList;
     private ImageUtilities imageUtilities;
 
     @FXML private AnchorPane leftPane;
@@ -32,7 +34,8 @@ public class Controller extends BorderPane {
 
     public void initialize()throws IOException{
         System.out.println("Starting...");
-        this.bufferedImageList = new LinkedList<>();
+        this.rightPaneImageList = new LinkedList<>();
+        this.historyImageList = new LinkedList<>();
         this.imageUtilities = new ImageUtilities();
     }
 
@@ -112,10 +115,11 @@ public class Controller extends BorderPane {
         System.exit(0);
     }
     @FXML public void undo(){
-        if(!bufferedImageList.isEmpty()){
-            bufferedImageList.remove(bufferedImageList.size()-1);
-            if(!bufferedImageList.isEmpty()) {
-                WritableImage wimg = imageUtilities.readImage(bufferedImageList.get(bufferedImageList.size()-1));
+        if(!rightPaneImageList.isEmpty()){
+            historyImageList.add(rightPaneImageList.get(rightPaneImageList.size()-1));
+            rightPaneImageList.remove(rightPaneImageList.size()-1);
+            if(!rightPaneImageList.isEmpty()) {
+                WritableImage wimg = imageUtilities.readImage(rightPaneImageList.get(rightPaneImageList.size()-1));
                 ImageView image = new ImageView(wimg);
                 rightPane.getChildren().setAll(image);
             }
@@ -129,9 +133,22 @@ public class Controller extends BorderPane {
             Alerts.showAlert("No hay nada para deshacer");
         }
     }
-    @FXML public void redo(){}
+    @FXML public void redo(){
+        if(!historyImageList.isEmpty())
+        {
+            rightPaneImageList.add(historyImageList.get(historyImageList.size()-1));
+            historyImageList.remove(historyImageList.get(historyImageList.size()-1));
+            WritableImage wimg = imageUtilities.readImage(rightPaneImageList.get(rightPaneImageList.size()-1));
+            ImageView image = new ImageView(wimg);
+            rightPane.getChildren().setAll(image);
+        }
+        else{
+            Alerts.showAlert("No hay nada para rehacer");
+        }
+    }
     @FXML public void reset(){
-        bufferedImageList = new LinkedList<>();
+        rightPaneImageList = new LinkedList<>();
+        historyImageList = new LinkedList<>();
         rightPane.getChildren().setAll();
     }
 
@@ -285,7 +302,7 @@ public class Controller extends BorderPane {
                 if (rightImageView !=null) {
                     rightImageView.setOnMouseClicked(e -> {
                         System.out.println("Right Coordinates Info:[" + e.getX() + ", " + e.getY() + "]");
-                        String message = this.imageUtilities.getPixelInformation(bufferedImageList.get(bufferedImageList.size()), (int) e.getX(), (int) e.getY());
+                        String message = this.imageUtilities.getPixelInformation(rightPaneImageList.get(rightPaneImageList.size()), (int) e.getX(), (int) e.getY());
                         this.setBottomText(message);
                     });
                 }
@@ -302,7 +319,7 @@ public class Controller extends BorderPane {
 
     public void displayImageInPane(BufferedImage bimg, AnchorPane pane){
         if (pane == rightPane) {
-            bufferedImageList.add(bimg);
+            rightPaneImageList.add(bimg);
         }
         WritableImage wimg = imageUtilities.readImage(bimg);
         ImageView image = new ImageView(wimg);

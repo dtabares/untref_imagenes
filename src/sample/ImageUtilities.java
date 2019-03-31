@@ -48,10 +48,6 @@ public class ImageUtilities {
             int counter = 0;
             for (int i = 0; i < height; i++) {
                 for (int j = 0; j < width; j++) {
-                    final int red = ColorUtilities.getRed(rawImageContent[counter]);
-                    final int green = ColorUtilities.getGreen(rawImageContent[counter]);
-                    final int blue = ColorUtilities.getBlue(rawImageContent[counter]);
-                    final int rgb = createRGB(red,green,blue);
 
                     bimg.setRGB(j, i, createRGB(rawImageContent[counter]));
 

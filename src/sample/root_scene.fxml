@@ -2,10 +2,10 @@
 
 <?import java.lang.*?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
-
+<?import javafx.scene.text.*?>
 <?import javafx.scene.text.Text?>
+
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1700.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="sample.Controller">
   <bottom>
     <GridPane>
@@ -52,15 +52,15 @@
               <children>
                 <VBox layoutX="0.0" layoutY="0.0" prefHeight="284.0" prefWidth="200.0">
                   <children>
-                    <Button mnemonicParsing="false" prefWidth="205.0" text="Get Pixel Information" onAction="#getPixelInformation"/>
+                    <Button mnemonicParsing="false" onAction="#getPixelInformation" prefWidth="205.0" text="Get Pixel Information" />
                     <Button mnemonicParsing="false" prefWidth="205.0" text="Modify Pixel" />
                     <Button mnemonicParsing="false" prefWidth="205.0" text="Select and Duplicate" />
-                    <Button mnemonicParsing="false" prefWidth="205.0" text="Image Addition" onAction="#imageAddition"/>
-                    <Button mnemonicParsing="false" prefWidth="205.0" text="Image Substraction" onAction="#imageSubstraction"/>
-                    <Button mnemonicParsing="false" prefWidth="205.0" text="Image Scalar Product" onAction="#imageScalarProduct"/>
-                    <Button mnemonicParsing="false" prefWidth="205.0" text="Dynamic Range Compression" onAction="#dynamicRangeCompression"/>
-                    <Button mnemonicParsing="false" prefWidth="205.0" text="Pow Function" onAction="#imagePow"/>
-                    <Button mnemonicParsing="false" prefWidth="205.0" text="Negative" onAction="#imageNegative"/>
+                    <Button mnemonicParsing="false" onAction="#imageAddition" prefWidth="205.0" text="Image Addition" />
+                    <Button mnemonicParsing="false" onAction="#imageSubstraction" prefWidth="205.0" text="Image Substraction" />
+                    <Button mnemonicParsing="false" onAction="#imageScalarProduct" prefWidth="205.0" text="Image Scalar Product" />
+                    <Button mnemonicParsing="false" onAction="#dynamicRangeCompression" prefWidth="205.0" text="Dynamic Range Compression" />
+                    <Button mnemonicParsing="false" onAction="#imagePow" prefWidth="205.0" text="Pow Function" />
+                    <Button mnemonicParsing="false" onAction="#imageNegative" prefWidth="205.0" text="Negative" />
                   </children>
                 </VBox>
               </children>
@@ -137,7 +137,9 @@
         </Menu>
         <Menu mnemonicParsing="false" text="Edit">
           <items>
-            <MenuItem mnemonicParsing="false" text="Delete" />
+            <MenuItem mnemonicParsing="false" text="Undo" onAction="#undo"/>
+            <MenuItem mnemonicParsing="false" text="Redo" onAction="#redo"/>
+            <MenuItem mnemonicParsing="false" text="Reset" onAction="#reset"/>
           </items>
         </Menu>
         <Menu mnemonicParsing="false" text="Help">

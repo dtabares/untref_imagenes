@@ -1,5 +1,6 @@
 package sample;
 
+import com.sun.istack.internal.Nullable;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 
@@ -10,6 +11,9 @@ import java.io.*;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
+
+import static sample.ColorUtilities.createRGB;
+import static sample.InterfaceHelper.getInputDialog;
 
 
 public class ImageUtilities {
@@ -33,28 +37,21 @@ public class ImageUtilities {
         return false;
     }
 
-    public BufferedImage openRawImage(File originalFile, int width,
+    public BufferedImage openRawImage(File f, int width,
                                        int height) {
 
         BufferedImage bimg = null;
-        byte[] bytes;
+        byte[] rawImageContent;
         try {
-            bytes = Files.readAllBytes(originalFile.toPath());
+            rawImageContent = Files.readAllBytes(f.toPath());
 
             bimg = new BufferedImage(width, height,
-                    BufferedImage.TYPE_INT_ARGB);
+                    BufferedImage.TYPE_INT_RGB);
             int counter = 0;
             for (int i = 0; i < height; i++) {
                 for (int j = 0; j < width; j++) {
 
-                    int alpha = -16777216;
-                    int red = ((int) bytes[counter] & 0xff) << 16;
-                    int green = ((int) bytes[counter] & 0xff) << 8;
-                    int blue = ((int) bytes[counter] & 0xff);
-
-                    int color = alpha + red + green + blue;
-
-                    bimg.setRGB(j, i, color);
+                    bimg.setRGB(j, i, createRGB(rawImageContent[counter]));
 
                     counter++;
                 }
@@ -116,7 +113,9 @@ public class ImageUtilities {
             switch(format)
             {
                 case "raw":
-                    //Do Something
+                    int width = Integer.valueOf(getInputDialog("Open Image","Raw Image Information","Insert Image Width"));
+                    int height = Integer.valueOf(getInputDialog("Open Image","Raw Image Information","Insert Image Height"));
+                    this.saveRawImage(image,f, height,width);
                     break;
                 case "ppm":
                     //Do Something
@@ -131,6 +130,30 @@ public class ImageUtilities {
         }
         catch (Exception e){
             System.out.println("Error: " + e.getMessage());
+        }
+    }
+
+    private void saveRawImage(BufferedImage image, File f, int height, int width)
+    {
+        byte[] rawContent = new byte[height*width];
+        int counter = 0;
+
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
+                //System.out.println(ColorUtilities.byteFromRGB(image.getRGB(j,i)));
+                rawContent[counter] = ColorUtilities.byteFromRGB(image.getRGB(j,i));
+                counter++;
+            }
+        }
+
+        try {
+            OutputStream os = new FileOutputStream(f);
+            os.write(rawContent);
+            os.close();
+
+        }
+        catch (Exception e) {
+            System.out.println("Exception: " + e);
         }
     }
 
@@ -160,7 +183,7 @@ public class ImageUtilities {
                     else if (p < 0 || p > max)
                         throw new IOException("Pixel value " + p + " outside of range [0, " + max + "].");
                     System.out.println(p);
-                    int rgb = ColorUtilities.createRGB(p,p,p);
+                    int rgb = createRGB(p,p,p);
 
                     bimg.setRGB(j, i, rgb);
                 }
@@ -226,6 +249,13 @@ public class ImageUtilities {
         System.out.println("Image B:" + blue);
         outPutMessage =  outPutMessage + "Red: " + red + " Green: " + green + " Blue: " + blue;
         return outPutMessage;
+    }
+
+    public BufferedImage modifyPixelInformation(BufferedImage image, int x, int y, int red, int green, int blue)
+    {
+        int newRGB = ColorUtilities.createRGB(red,green,blue);
+        image.setRGB(x,y,newRGB);
+        return image;
     }
 
     public BufferedImage imageAddition(BufferedImage bimg1, BufferedImage bimg2)
@@ -575,5 +605,53 @@ public class ImageUtilities {
             stream.close();
         }
 
+    }
+
+    public BufferedImage createGrayScaleImage()
+    {
+        final int multiplier = 2;
+        final int defaultHeight = 256 * multiplier;
+        final int defaultWidth = 64;
+        int grayColor = 0;
+        BufferedImage grayScale = new BufferedImage(defaultWidth,defaultHeight,BufferedImage.TYPE_BYTE_GRAY);
+
+        for (int i=0; i < defaultHeight; i++)
+        {
+            for(int j=0; j< defaultWidth; j++)
+            {
+                int color = ColorUtilities.createRGB(grayColor,grayColor,grayColor);
+                grayScale.setRGB(j,i,color);
+                //System.out.println("width: " + j + " height: " + i + " color: " +grayColor);
+            }
+
+            if (i % multiplier == 0 && i != 0)
+            {
+                grayColor++;
+            }
+
+        }
+        return grayScale;
+    }
+
+    public BufferedImage createColorScaleImage()
+    {
+        final int step = 2048;
+        final int defaultHeight = 8192;
+        final int defaultWidth = 64;
+        int rgb = -16777216;
+        BufferedImage colorScaleImage = new BufferedImage(defaultWidth,defaultHeight,BufferedImage.TYPE_INT_ARGB);
+
+        for (int i=0; i < defaultHeight; i++)
+        {
+
+            for(int j=0; j< defaultWidth; j++)
+            {
+                colorScaleImage.setRGB(j,i,rgb);
+                System.out.println("width: " + j + " height: " + i + " color: " +rgb);
+            }
+            rgb = rgb + step;
+
+        }
+        return colorScaleImage;
     }
 }

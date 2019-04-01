@@ -26,4 +26,22 @@ public class ColorUtilities {
         final int default_alpha = 255;
         return (default_alpha << 24) | (red << 16) | (green << 8) | blue;
     }
+
+    public static int createRGB(byte byteContent)
+    {
+        final int default_alpha = 255;
+        int alpha = default_alpha << 24;
+        int red = ((int) byteContent & 0xFF) << 16;
+        int green = ((int) byteContent & 0xFF) << 8;
+        int blue = ((int) byteContent & 0xFF);
+
+        int rgb = alpha + red + green + blue;
+        return rgb;
+
+    }
+
+    public static byte byteFromRGB(int rgb)
+    {
+        return (byte) rgb;
+    }
 }

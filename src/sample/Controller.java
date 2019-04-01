@@ -367,10 +367,6 @@ public class Controller extends BorderPane {
             {
                 Alerts.showAlert("No hay una imagen cargada!");
             }
-            if (leftImageView == null && rightImageView == null)
-            {
-                Alerts.showAlert("No hay una imagen cargada!");
-            }
             else
             {
                 int red = Integer.valueOf(getInputDialog("Modify Pixel Information", "Enter a new Value", "Red:"));
@@ -393,6 +389,46 @@ public class Controller extends BorderPane {
                         this.displayImageInPane(modifiedImage,rightPane);
                     });
                 }
+            }
+        }
+        catch(Exception e){
+            Alerts.showAlert(e.getMessage());
+        }
+    }
+
+    @FXML public void copyImageSelection()
+    {
+        try{
+            ImageView leftImageView = null;
+            if (!leftPane.getChildren().isEmpty())
+            {
+                leftImageView = (ImageView) leftPane.getChildren().get(0);
+            }
+            if (leftImageView == null)
+            {
+                Alerts.showAlert("No hay una imagen cargada!");
+            }
+            else
+            {
+                ImageSelection selection = new ImageSelection();
+                leftImageView.setOnMouseClicked(e -> {
+                    System.out.println("Left Coordinates Info: ["+e.getX()+", "+e.getY()+"]");
+                    selection.submitClickCoordinates((int)e.getX(), (int) e.getY());
+
+                    if(selection.allCoordinatesSubmitted())
+                    {
+                        //Calculate 4 points
+                        selection.calculateWithAndHeight();
+
+                        //Create new buffered image from those 4 points
+                        BufferedImage imageSelection = leftImage.getSubimage(selection.getxOrigin(),selection.getyOrigin(),selection.getWidth(),selection.getHeight());
+
+                        // Display it on the right pane and add it to the list
+
+                        this.displayImageInPane(imageSelection,rightPane);
+                        selection.reset();
+                    }
+                });
             }
         }
         catch(Exception e){

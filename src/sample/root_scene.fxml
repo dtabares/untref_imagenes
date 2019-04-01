@@ -54,7 +54,7 @@
                   <children>
                     <Button mnemonicParsing="false" onAction="#getPixelInformation" prefWidth="205.0" text="Get Pixel Information" />
                     <Button mnemonicParsing="false" prefWidth="205.0" text="Modify Pixel" onAction="#modifyPixelInformation"/>
-                    <Button mnemonicParsing="false" prefWidth="205.0" text="Select and Duplicate" />
+                    <Button mnemonicParsing="false" prefWidth="205.0" text="Select and Duplicate" onAction="#copyImageSelection"/>
                     <Button mnemonicParsing="false" onAction="#imageAddition" prefWidth="205.0" text="Image Addition" />
                     <Button mnemonicParsing="false" onAction="#imageSubtraction" prefWidth="205.0" text="Image Substraction" />
                     <Button mnemonicParsing="false" onAction="#imageScalarProduct" prefWidth="205.0" text="Image Scalar Product" />

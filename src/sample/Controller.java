@@ -22,6 +22,8 @@ import javafx.stage.Stage;
 import javafx.fxml.FXML;
 import javafx.scene.image.ImageView;
 
+import static sample.InterfaceHelper.getInputDialog;
+
 
 public class Controller extends BorderPane {
 
@@ -90,7 +92,6 @@ public class Controller extends BorderPane {
         Stage browser = new Stage();
         FileChooser fc = new FileChooser();
         BufferedImage imageToBeSaved = this.getLastModifiedImage();
-
         if (imageToBeSaved != null)
         {
             try {
@@ -372,9 +373,9 @@ public class Controller extends BorderPane {
             }
             else
             {
-                int red = Integer.valueOf(this.getInputDialog("Modify Pixel Information", "Enter a new Value", "Red:"));
-                int green = Integer.valueOf(this.getInputDialog("Modify Pixel Information", "Enter a new Value", "Green:"));
-                int blue = Integer.valueOf(this.getInputDialog("Modify Pixel Information", "Enter a new Value", "Blue:"));
+                int red = Integer.valueOf(getInputDialog("Modify Pixel Information", "Enter a new Value", "Red:"));
+                int green = Integer.valueOf(getInputDialog("Modify Pixel Information", "Enter a new Value", "Green:"));
+                int blue = Integer.valueOf(getInputDialog("Modify Pixel Information", "Enter a new Value", "Blue:"));
                 if (leftImageView != null)
                 {
                     leftImageView.setOnMouseClicked(e -> {
@@ -425,20 +426,6 @@ public class Controller extends BorderPane {
             lastModifiedImage = rightPaneImageList.get(rightPaneImageList.size() - 1);
         }
         return lastModifiedImage;
-
-    }
-
-    // Dialog
-    public String getInputDialog(String title, String header, String inputRequest)
-    {
-        TextInputDialog dialog = new TextInputDialog();
-        dialog.setTitle(title);
-        dialog.setHeaderText(header);
-        dialog.setContentText(inputRequest);
-
-        Optional<String> result = dialog.showAndWait();
-
-        return result.get();
 
     }
 }

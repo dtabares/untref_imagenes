@@ -1,5 +1,6 @@
 package sample;
 
+import com.sun.istack.internal.Nullable;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 
@@ -12,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static sample.ColorUtilities.createRGB;
+import static sample.InterfaceHelper.getInputDialog;
 
 
 public class ImageUtilities {
@@ -111,7 +113,9 @@ public class ImageUtilities {
             switch(format)
             {
                 case "raw":
-                    //Do Something
+                    int width = Integer.valueOf(getInputDialog("Open Image","Raw Image Information","Insert Image Width"));
+                    int height = Integer.valueOf(getInputDialog("Open Image","Raw Image Information","Insert Image Height"));
+                    this.saveRawImage(image,f, height,width);
                     break;
                 case "ppm":
                     //Do Something
@@ -126,6 +130,30 @@ public class ImageUtilities {
         }
         catch (Exception e){
             System.out.println("Error: " + e.getMessage());
+        }
+    }
+
+    private void saveRawImage(BufferedImage image, File f, int height, int width)
+    {
+        byte[] rawContent = new byte[height*width];
+        int counter = 0;
+
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
+                //System.out.println(ColorUtilities.byteFromRGB(image.getRGB(j,i)));
+                rawContent[counter] = ColorUtilities.byteFromRGB(image.getRGB(j,i));
+                counter++;
+            }
+        }
+
+        try {
+            OutputStream os = new FileOutputStream(f);
+            os.write(rawContent);
+            os.close();
+
+        }
+        catch (Exception e) {
+            System.out.println("Exception: " + e);
         }
     }
 

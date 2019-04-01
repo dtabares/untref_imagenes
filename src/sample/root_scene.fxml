@@ -88,7 +88,7 @@
                 <VBox layoutX="0.0" layoutY="0.0" prefHeight="284.0" prefWidth="200.0">
                   <children>
                     <Button mnemonicParsing="false" prefWidth="200.0" text="Grey Scale" onAction="#createGrayScaleImage"/>
-                    <Button mnemonicParsing="false" prefWidth="200.0" text="Color Scale" />
+                    <Button mnemonicParsing="false" prefWidth="200.0" text="Color Scale" onAction="#createColorScaleImage"/>
                   </children>
                 </VBox>
               </children>

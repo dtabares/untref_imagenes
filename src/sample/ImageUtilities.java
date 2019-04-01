@@ -630,8 +630,28 @@ public class ImageUtilities {
             }
 
         }
-
-
         return grayScale;
+    }
+
+    public BufferedImage createColorScaleImage()
+    {
+        final int step = 2048;
+        final int defaultHeight = 8192;
+        final int defaultWidth = 64;
+        int rgb = -16777216;
+        BufferedImage colorScaleImage = new BufferedImage(defaultWidth,defaultHeight,BufferedImage.TYPE_INT_ARGB);
+
+        for (int i=0; i < defaultHeight; i++)
+        {
+
+            for(int j=0; j< defaultWidth; j++)
+            {
+                colorScaleImage.setRGB(j,i,rgb);
+                System.out.println("width: " + j + " height: " + i + " color: " +rgb);
+            }
+            rgb = rgb + step;
+
+        }
+        return colorScaleImage;
     }
 }

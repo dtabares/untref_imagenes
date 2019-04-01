@@ -223,6 +223,13 @@ public class ImageUtilities {
         return outPutMessage;
     }
 
+    public BufferedImage modifyPixelInformation(BufferedImage image, int x, int y, int red, int green, int blue)
+    {
+        int newRGB = ColorUtilities.createRGB(red,green,blue);
+        image.setRGB(x,y,newRGB);
+        return image;
+    }
+
     public BufferedImage imageAddition(BufferedImage bimg1, BufferedImage bimg2)
     {
         BufferedImage temp = null;

@@ -318,7 +318,7 @@ public class Controller extends BorderPane {
 
             if (leftImageView == null && rightImageView == null)
             {
-                Alerts.showAlert("No hay una imagen cargada en el panel derecho");
+                Alerts.showAlert("No hay una imagen cargada!");
             }
             else
             {
@@ -341,6 +341,58 @@ public class Controller extends BorderPane {
                 }
             }
 
+        }
+        catch(Exception e){
+            Alerts.showAlert(e.getMessage());
+        }
+    }
+
+    @FXML public void modifyPixelInformation()
+    {
+        try{
+            ImageView leftImageView = null;
+            ImageView rightImageView = null;
+            if (!leftPane.getChildren().isEmpty())
+            {
+                leftImageView = (ImageView) leftPane.getChildren().get(0);
+            }
+
+            if (!rightPane.getChildren().isEmpty())
+            {
+                rightImageView = (ImageView) rightPane.getChildren().get(0);
+            }
+
+            if (leftImageView == null && rightImageView == null)
+            {
+                Alerts.showAlert("No hay una imagen cargada!");
+            }
+            if (leftImageView == null && rightImageView == null)
+            {
+                Alerts.showAlert("No hay una imagen cargada!");
+            }
+            else
+            {
+                int red = Integer.valueOf(this.getInputDialog("Modify Pixel Information", "Enter a new Value", "Red:"));
+                int green = Integer.valueOf(this.getInputDialog("Modify Pixel Information", "Enter a new Value", "Green:"));
+                int blue = Integer.valueOf(this.getInputDialog("Modify Pixel Information", "Enter a new Value", "Blue:"));
+                if (leftImageView != null)
+                {
+                    leftImageView.setOnMouseClicked(e -> {
+                        System.out.println("Left Coordinates Info: ["+e.getX()+", "+e.getY()+"]");
+                        BufferedImage modifiedImage = this.imageUtilities.modifyPixelInformation(leftImage,(int)e.getX(),(int)e.getY(),red,green,blue);
+                        this.displayImageInPane(modifiedImage,rightPane);
+                    });
+                }
+
+
+                if (rightImageView != null) {
+                    rightImageView.setOnMouseClicked(e -> {
+                        System.out.println("Right Coordinates Info:[" + e.getX() + ", " + e.getY() + "]");
+                        BufferedImage modifiedImage = this.imageUtilities.modifyPixelInformation(rightPaneImageList.get(rightPaneImageList.size()), (int) e.getX(), (int) e.getY(),red,green,blue);
+                        this.displayImageInPane(modifiedImage,rightPane);
+                    });
+                }
+            }
         }
         catch(Exception e){
             Alerts.showAlert(e.getMessage());

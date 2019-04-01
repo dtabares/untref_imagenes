@@ -606,4 +606,32 @@ public class ImageUtilities {
         }
 
     }
+
+    public BufferedImage createGrayScaleImage()
+    {
+        final int multiplier = 2;
+        final int defaultHeight = 256 * multiplier;
+        final int defaultWidth = 64;
+        int grayColor = 0;
+        BufferedImage grayScale = new BufferedImage(defaultWidth,defaultHeight,BufferedImage.TYPE_BYTE_GRAY);
+
+        for (int i=0; i < defaultHeight; i++)
+        {
+            for(int j=0; j< defaultWidth; j++)
+            {
+                int color = ColorUtilities.createRGB(grayColor,grayColor,grayColor);
+                grayScale.setRGB(j,i,color);
+                //System.out.println("width: " + j + " height: " + i + " color: " +grayColor);
+            }
+
+            if (i % multiplier == 0 && i != 0)
+            {
+                grayColor++;
+            }
+
+        }
+
+
+        return grayScale;
+    }
 }

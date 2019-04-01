@@ -436,6 +436,12 @@ public class Controller extends BorderPane {
         }
     }
 
+    @FXML public void createGrayScaleImage()
+    {
+        BufferedImage grayScaleImage = this.imageUtilities.createGrayScaleImage();
+        this.displayImageInPane(grayScaleImage,rightPane);
+    }
+
     //Panels
 
     public void displayImageInPane(BufferedImage bimg, AnchorPane pane){

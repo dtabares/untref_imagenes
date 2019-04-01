@@ -14,7 +14,7 @@ import java.util.List;
 
 public class ImageUtilities {
 
-    private String supportedFormats[] = { "raw", "ppm", "pgm", "bmp", "png" };
+    private String supportedFormats[] = { "raw", "ppm", "pgm", "bmp", "png","jpg" };
     private String currentImageFormat;
 
     public String getCurrentImageFormat() {

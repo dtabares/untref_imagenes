@@ -39,4 +39,9 @@ public class ColorUtilities {
         return rgb;
 
     }
+
+    public static byte byteFromRGB(int rgb)
+    {
+        return (byte) rgb;
+    }
 }

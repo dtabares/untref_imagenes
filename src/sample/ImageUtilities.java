@@ -635,23 +635,134 @@ public class ImageUtilities {
 
     public BufferedImage createColorScaleImage()
     {
-        final int step = 2048;
-        final int defaultHeight = 8192;
+        final int step = 5;
+        final int defaultHeight = 363;
         final int defaultWidth = 64;
-        int rgb = -16777216;
+        int red = 0;
+        int green = 0;
+        int blue = 0;
+        int rgb;
+        int counter = 0;
         BufferedImage colorScaleImage = new BufferedImage(defaultWidth,defaultHeight,BufferedImage.TYPE_INT_ARGB);
 
-        for (int i=0; i < defaultHeight; i++)
+ /*       for (int i=0; i < defaultHeight; i++)
         {
 
             for(int j=0; j< defaultWidth; j++)
             {
+                rgb = ColorUtilities.createRGB(255,0,0);
                 colorScaleImage.setRGB(j,i,rgb);
-                System.out.println("width: " + j + " height: " + i + " color: " +rgb);
+                //System.out.println("width: " + j + " height: " + i + " color: " +rgb);
             }
-            rgb = rgb + step;
 
+        }*/
+        int i = 0;
+
+        //Arrancamos en Negro
+        //(0,0,0)
+        while(green < 256)
+        {
+            for(int j=0; j< defaultWidth; j++)
+            {
+                rgb = ColorUtilities.createRGB(red,green,blue);
+                colorScaleImage.setRGB(j,i,rgb);
+            }
+            System.out.println("red: " + red + " green: " + green + " blue: " + blue);
+            green = green + step;
+            i++;
+            counter++;
         }
+        green = green - step;
+        //(0,255,0)
+        //Terminamos en verde y vamos agregando rojo para llegar al amarillo
+        while (red < 256)
+        {
+            for(int j=0; j< defaultWidth; j++)
+            {
+                rgb = ColorUtilities.createRGB(red,green,blue);
+                colorScaleImage.setRGB(j,i,rgb);
+            }
+            red = red + step;
+            System.out.println("red: " + red + " green: " + green + " blue: " + blue);
+            i++;
+            counter++;
+        }
+        red = red - step;
+        //(255,255,0)
+        //Terminamos en amarillo y vamos sacando verde para llegar al rojo
+        while(green > 0)
+        {
+            for(int j=0; j< defaultWidth; j++)
+            {
+                rgb = ColorUtilities.createRGB(red,green,blue);
+                colorScaleImage.setRGB(j,i,rgb);
+            }
+            green = green - step;
+            System.out.println("red: " + red + " green: " + green + " blue: " + blue);
+            i++;
+            counter++;
+        }
+        //(255,0,0)
+        //Terminamos en rojo y vamos agregando azul para llegar al magenta
+        while(blue<256)
+        {
+            for(int j=0; j< defaultWidth; j++)
+            {
+                rgb = ColorUtilities.createRGB(red,green,blue);
+                colorScaleImage.setRGB(j,i,rgb);
+            }
+            blue = blue + step;
+            System.out.println("red: " + red + " green: " + green + " blue: " + blue);
+            i++;
+            counter++;
+        }
+        blue = blue - step;
+        //(255,0,255)
+        //Terminamos en magenta y vamos sacando rojo para llegar al azul
+        while (red > 0)
+        {
+            for(int j=0; j< defaultWidth; j++)
+            {
+                rgb = ColorUtilities.createRGB(red,green,blue);
+                colorScaleImage.setRGB(j,i,rgb);
+            }
+            red = red - step;
+            System.out.println("red: " + red + " green: " + green + " blue: " + blue);
+            i++;
+            counter++;
+        }
+        //(0,0,255)
+        //Terminamos en azul y vamos agregando verde para llegar al cyan
+        while(green < 256)
+        {
+            for(int j=0; j< defaultWidth; j++)
+            {
+                rgb = ColorUtilities.createRGB(red,green,blue);
+                colorScaleImage.setRGB(j,i,rgb);
+            }
+            green = green + step;
+            System.out.println("red: " + red + " green: " + green + " blue: " + blue);
+            i++;
+            counter++;
+        }
+        green = green - step;
+        //(0,255,255)
+        //Terminamos en cyan y vamos agregando rojo para llegar al blanco
+        while (red < 256)
+        {
+            for(int j=0; j< defaultWidth; j++)
+            {
+                rgb = ColorUtilities.createRGB(red,green,blue);
+                colorScaleImage.setRGB(j,i,rgb);
+            }
+            red = red + step;
+            System.out.println("red: " + red + " green: " + green + " blue: " + blue);
+            i++;
+            counter++;
+        }
+        //(255,255,255)
+
+        //System.out.println("counter: " + counter);
         return colorScaleImage;
     }
 }

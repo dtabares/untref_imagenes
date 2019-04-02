@@ -1,7 +1,9 @@
 package sample;
 
 import javafx.embed.swing.SwingFXUtils;
-import javafx.scene.control.TextInputDialog;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
@@ -10,7 +12,6 @@ import java.io.IOException;
 import java.awt.image.BufferedImage;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javafx.scene.paint.Color;
@@ -446,6 +447,51 @@ public class Controller extends BorderPane {
     {
         BufferedImage colorScaleImage = this.imageUtilities.createColorScaleImage();
         this.displayImageInPane(colorScaleImage,rightPane);
+    }
+
+    @FXML public void RGBtoHSV()
+    {
+        if(leftPane.getChildren().isEmpty())
+        {
+            Alerts.showAlert("No hay una imagen cargada!");
+        }
+        else
+        {
+            float[] hsv = ColorUtilities.RGBtoHSV(255,10,40);
+            System.out.println("Hue: " + hsv[0] + " Saturation: " + hsv[1] + " Value: " + hsv[2]);
+            int[] backrgb = ColorUtilities.HSVtoRGB(hsv[0],hsv[1],hsv[2]);
+            System.out.println("Red: " + backrgb[0] + " Green: " + backrgb[1] + " Blue: " + backrgb[2]);
+            BufferedImage[] rgbSeparateBandsImages = this.imageUtilities.separateInRGBbands(leftImage);
+            BufferedImage[] hsvSeparateBandsImages = this.imageUtilities.separateInHSVBands(leftImage);
+            try {
+                FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("separate_rgb_band.fxml"));
+                Parent separateBandRoot = (Parent) fxmlLoader.load();
+                SeparateBandController separateBandController = fxmlLoader.<SeparateBandController>getController();
+                Stage separatedRGBBandStage = new Stage();
+                separatedRGBBandStage.setTitle("RGB Bands");
+                separatedRGBBandStage.setScene(new Scene(separateBandRoot));
+                separateBandController.setLabel("RGB Bands");
+                separateBandController.displayImages(rgbSeparateBandsImages[0],rgbSeparateBandsImages[1],rgbSeparateBandsImages[2]);
+                separatedRGBBandStage.show();
+
+                FXMLLoader fxmlLoader2 = new FXMLLoader(getClass().getResource("separate_hsv_band.fxml"));
+                Parent separateHSVBandRoot = (Parent) fxmlLoader2.load();
+                SeparateHSVBandController separatedHSVBandController = fxmlLoader2.<SeparateHSVBandController>getController();
+                Stage separatedHSVBandStage = new Stage();
+                separatedHSVBandStage.setTitle("HSV Bands");
+                separatedHSVBandStage.setScene(new Scene(separateHSVBandRoot));
+                separatedHSVBandController.setLabel("HSV Bands");
+                separatedHSVBandController.displayImages(hsvSeparateBandsImages[0],hsvSeparateBandsImages[1],hsvSeparateBandsImages[2]);
+                separatedHSVBandStage.show();
+
+
+            }
+            catch (Exception e)
+            {
+                System.out.println("Can't open new Window");
+                e.printStackTrace();
+            }
+        }
     }
 
     //Panels

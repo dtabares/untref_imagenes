@@ -12,6 +12,7 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.awt.image.BufferedImage.TYPE_BYTE_GRAY;
 import static sample.ColorUtilities.createRGB;
 import static sample.InterfaceHelper.getInputDialog;
 
@@ -172,7 +173,7 @@ public class ImageUtilities {
             final int col = Integer.parseInt(next(stream));
             final int row = Integer.parseInt(next(stream));
             final int max = Integer.parseInt(next(stream));
-            bimg = new BufferedImage(col, row, BufferedImage.TYPE_BYTE_GRAY);
+            bimg = new BufferedImage(col, row, TYPE_BYTE_GRAY);
             if (max < 0 || max > MAXVAL)
                 throw new IOException("The image's maximum gray value must be in range [0, " + MAXVAL + "].");
             for (int i = 0; i < row; ++i) {
@@ -613,7 +614,7 @@ public class ImageUtilities {
         final int defaultHeight = 256 * multiplier;
         final int defaultWidth = 64;
         int grayColor = 0;
-        BufferedImage grayScale = new BufferedImage(defaultWidth,defaultHeight,BufferedImage.TYPE_BYTE_GRAY);
+        BufferedImage grayScale = new BufferedImage(defaultWidth,defaultHeight, TYPE_BYTE_GRAY);
 
         for (int i=0; i < defaultHeight; i++)
         {
@@ -644,18 +645,6 @@ public class ImageUtilities {
         int rgb;
         int counter = 0;
         BufferedImage colorScaleImage = new BufferedImage(defaultWidth,defaultHeight,BufferedImage.TYPE_INT_ARGB);
-
- /*       for (int i=0; i < defaultHeight; i++)
-        {
-
-            for(int j=0; j< defaultWidth; j++)
-            {
-                rgb = ColorUtilities.createRGB(255,0,0);
-                colorScaleImage.setRGB(j,i,rgb);
-                //System.out.println("width: " + j + " height: " + i + " color: " +rgb);
-            }
-
-        }*/
         int i = 0;
 
         //Arrancamos en Negro
@@ -764,5 +753,74 @@ public class ImageUtilities {
 
         //System.out.println("counter: " + counter);
         return colorScaleImage;
+    }
+
+    public BufferedImage[] separateInRGBbands(BufferedImage original)
+    {
+        BufferedImage[] rgbBufferedImages = new BufferedImage[3];
+        int width = original.getWidth();
+        int height = original.getHeight();
+        int red;
+        int green;
+        int blue;
+        int rgb;
+        BufferedImage redBandImage = new BufferedImage(width,height,original.getType());
+        BufferedImage greenBandImage = new BufferedImage(width,height,original.getType());
+        BufferedImage blueBandImage = new BufferedImage(width,height,original.getType());
+
+        for(int i=0; i < height; i++)
+        {
+            for(int j=0; j < width; j++)
+            {
+                rgb = original.getRGB(j,i);
+                red = ColorUtilities.getRed(rgb);
+                green = ColorUtilities.getGreen(rgb);
+                blue = ColorUtilities.getBlue(rgb);
+
+                redBandImage.setRGB(j,i,ColorUtilities.createRGB(red,0,0));
+                greenBandImage.setRGB(j,i,ColorUtilities.createRGB(0,green,0));
+                blueBandImage.setRGB(j,i,ColorUtilities.createRGB(0,0,blue));
+            }
+        }
+
+        rgbBufferedImages[0] = redBandImage;
+        rgbBufferedImages[1] = greenBandImage;
+        rgbBufferedImages[2] = blueBandImage;
+
+        return rgbBufferedImages;
+
+    }
+
+    public BufferedImage[] separateInHSVBands(BufferedImage original)
+    {
+        BufferedImage[] hsvBufferedImages = new BufferedImage[3];
+        int width = original.getWidth();
+        int height = original.getHeight();
+        int rgb;
+        float[] hsv;
+        int[] hueOnly, saturationOnly, valueOnly;
+        BufferedImage hueBandImage = new BufferedImage(width,height,TYPE_BYTE_GRAY);
+        BufferedImage saturationBandImage = new BufferedImage(width,height,TYPE_BYTE_GRAY);
+        BufferedImage valueBandImage = new BufferedImage(width,height,TYPE_BYTE_GRAY);
+
+        for(int i=0; i < height; i++)
+        {
+            for(int j=0; j < width; j++)
+            {
+                rgb = original.getRGB(j,i);
+                hsv = ColorUtilities.RGBtoHSV(rgb);
+                hueOnly = ColorUtilities.HSVtoRGB(hsv[0],hsv[0],hsv[0]);
+                saturationOnly = ColorUtilities.HSVtoRGB(hsv[1],hsv[1],hsv[1]);
+                valueOnly = ColorUtilities.HSVtoRGB(hsv[2],hsv[2],hsv[2]);
+                hueBandImage.setRGB(j,i,ColorUtilities.createRGB(hueOnly[0],hueOnly[1],hueOnly[2]));
+                saturationBandImage.setRGB(j,i,ColorUtilities.createRGB(saturationOnly[0],saturationOnly[1],saturationOnly[2]));
+                valueBandImage.setRGB(j,i,ColorUtilities.createRGB(valueOnly[0],valueOnly[1],valueOnly[2]));
+            }
+        }
+
+        hsvBufferedImages[0] = hueBandImage;
+        hsvBufferedImages[1] = saturationBandImage;
+        hsvBufferedImages[2] = valueBandImage;
+        return hsvBufferedImages;
     }
 }

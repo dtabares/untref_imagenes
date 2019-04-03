@@ -42,6 +42,8 @@ public class Controller extends BorderPane {
         this.rightPaneImageList = new LinkedList<>();
         this.historyImageList = new LinkedList<>();
         this.imageUtilities = new ImageUtilities();
+//        BufferedImage test = ImageIO.read(new File("C:\\Users\\Fernando.Ares\\Desktop\\Imagenes\\cameraman.png"));
+//        imageUtilities.printChannelMatrix(imageUtilities.getChannelMatrix(test));
     }
 
     //Top Menu
@@ -356,6 +358,21 @@ public class Controller extends BorderPane {
                     null, "Threshold", "Insert Threshold",
                     JOptionPane.DEFAULT_OPTION));
             result = imageUtilities.imageBinary(leftImage, (int) threshold);
+            this.displayImageInPane(result,rightPane);
+        }
+        else
+        {
+            Alerts.showAlert("No hay una imagen abierta");
+        }
+        return result;
+    }
+    @FXML public BufferedImage imageContrast(){
+        BufferedImage result = null;
+        if (leftImage != null) {
+//            int threshold = Integer.valueOf(JOptionPane.showInputDialog(
+//                    null, "Threshold", "Insert Threshold",
+//                    JOptionPane.DEFAULT_OPTION));
+            result = imageUtilities.imageContrast(leftImage, 85,170);
             this.displayImageInPane(result,rightPane);
         }
         else

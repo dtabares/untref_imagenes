@@ -465,6 +465,40 @@ public class ImageUtilities {
         return temp;
     }
 
+    public int[][] getChannelMatrix(BufferedImage bimg){
+        int rgb;
+        int length = bimg.getWidth()*bimg.getHeight();
+        int matrix[][] = new int[3][length];
+        int counter = 0;
+        for (int i = 0; i < bimg.getWidth(); i++) {
+            for (int j = 0; j < bimg.getHeight(); j++) {
+                rgb = bimg.getRGB(i, j);
+                matrix[0][counter] = ColorUtilities.getRed(rgb);
+                matrix[1][counter] = ColorUtilities.getGreen(rgb);
+                matrix[2][counter] = ColorUtilities.getBlue(rgb);
+                counter++;
+            }
+        }
+        return matrix;
+    }
+
+    public void printChannelMatrix(int [][] matrix){
+        try{
+            BufferedWriter writer = new BufferedWriter(new FileWriter("C:\\Users\\Fernando.Ares\\Desktop\\Imagenes\\matrix.txt"));
+            for (int i = 0; i < 1; i++){
+                for (int j = 0; j < matrix[0].length; j++){
+                    writer.write(matrix[i][j] + ",");
+                }
+                writer.write("\n");
+            }
+            writer.close();
+        }
+        catch(Exception e) {
+
+        }
+
+    }
+
     public int getChannelMax(int channel[]) {
         int max = -1;
         for (int i = 0; i < channel.length; i++) {
@@ -751,100 +785,162 @@ public class ImageUtilities {
         }
         return true;
     }
-        public BufferedImage[] separateInRGBbands (BufferedImage original)
-        {
-            BufferedImage[] rgbBufferedImages = new BufferedImage[3];
-            int width = original.getWidth();
-            int height = original.getHeight();
-            int red;
-            int green;
-            int blue;
-            int rgb;
-            BufferedImage redBandImage = new BufferedImage(width, height, original.getType());
-            BufferedImage greenBandImage = new BufferedImage(width, height, original.getType());
-            BufferedImage blueBandImage = new BufferedImage(width, height, original.getType());
 
-            for (int i = 0; i < height; i++) {
-                for (int j = 0; j < width; j++) {
-                    rgb = original.getRGB(j, i);
-                    red = ColorUtilities.getRed(rgb);
-                    green = ColorUtilities.getGreen(rgb);
-                    blue = ColorUtilities.getBlue(rgb);
+    public BufferedImage[] separateInRGBbands (BufferedImage original)
+    {
+        BufferedImage[] rgbBufferedImages = new BufferedImage[3];
+        int width = original.getWidth();
+        int height = original.getHeight();
+        int red;
+        int green;
+        int blue;
+        int rgb;
+        BufferedImage redBandImage = new BufferedImage(width, height, original.getType());
+        BufferedImage greenBandImage = new BufferedImage(width, height, original.getType());
+        BufferedImage blueBandImage = new BufferedImage(width, height, original.getType());
 
-                    redBandImage.setRGB(j, i, ColorUtilities.createRGB(red, 0, 0));
-                    greenBandImage.setRGB(j, i, ColorUtilities.createRGB(0, green, 0));
-                    blueBandImage.setRGB(j, i, ColorUtilities.createRGB(0, 0, blue));
-                }
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
+                rgb = original.getRGB(j, i);
+                red = ColorUtilities.getRed(rgb);
+                green = ColorUtilities.getGreen(rgb);
+                blue = ColorUtilities.getBlue(rgb);
+
+                redBandImage.setRGB(j, i, ColorUtilities.createRGB(red, 0, 0));
+                greenBandImage.setRGB(j, i, ColorUtilities.createRGB(0, green, 0));
+                blueBandImage.setRGB(j, i, ColorUtilities.createRGB(0, 0, blue));
             }
-
-            rgbBufferedImages[0] = redBandImage;
-            rgbBufferedImages[1] = greenBandImage;
-            rgbBufferedImages[2] = blueBandImage;
-
-            return rgbBufferedImages;
-
         }
 
-        public BufferedImage[] separateInHSVBands (BufferedImage original)
-        {
-            BufferedImage[] hsvBufferedImages = new BufferedImage[3];
-            int width = original.getWidth();
-            int height = original.getHeight();
-            int rgb;
-            float[] hsv;
-            int[] hueOnly, saturationOnly, valueOnly;
-            BufferedImage hueBandImage = new BufferedImage(width, height, TYPE_BYTE_GRAY);
-            BufferedImage saturationBandImage = new BufferedImage(width, height, TYPE_BYTE_GRAY);
-            BufferedImage valueBandImage = new BufferedImage(width, height, TYPE_BYTE_GRAY);
+        rgbBufferedImages[0] = redBandImage;
+        rgbBufferedImages[1] = greenBandImage;
+        rgbBufferedImages[2] = blueBandImage;
 
-            for (int i = 0; i < height; i++) {
-                for (int j = 0; j < width; j++) {
-                    rgb = original.getRGB(j, i);
-                    hsv = ColorUtilities.RGBtoHSV(rgb);
-                    hueOnly = ColorUtilities.HSVtoRGB(hsv[0], hsv[0], hsv[0]);
-                    saturationOnly = ColorUtilities.HSVtoRGB(hsv[1], hsv[1], hsv[1]);
-                    valueOnly = ColorUtilities.HSVtoRGB(hsv[2], hsv[2], hsv[2]);
-                    hueBandImage.setRGB(j, i, ColorUtilities.createRGB(hueOnly[0], hueOnly[1], hueOnly[2]));
-                    saturationBandImage.setRGB(j, i, ColorUtilities.createRGB(saturationOnly[0], saturationOnly[1], saturationOnly[2]));
-                    valueBandImage.setRGB(j, i, ColorUtilities.createRGB(valueOnly[0], valueOnly[1], valueOnly[2]));
-                }
+        return rgbBufferedImages;
+
+    }
+
+    public BufferedImage[] separateInHSVBands (BufferedImage original)
+    {
+        BufferedImage[] hsvBufferedImages = new BufferedImage[3];
+        int width = original.getWidth();
+        int height = original.getHeight();
+        int rgb;
+        float[] hsv;
+        int[] hueOnly, saturationOnly, valueOnly;
+        BufferedImage hueBandImage = new BufferedImage(width, height, TYPE_BYTE_GRAY);
+        BufferedImage saturationBandImage = new BufferedImage(width, height, TYPE_BYTE_GRAY);
+        BufferedImage valueBandImage = new BufferedImage(width, height, TYPE_BYTE_GRAY);
+
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
+                rgb = original.getRGB(j, i);
+                hsv = ColorUtilities.RGBtoHSV(rgb);
+                hueOnly = ColorUtilities.HSVtoRGB(hsv[0], hsv[0], hsv[0]);
+                saturationOnly = ColorUtilities.HSVtoRGB(hsv[1], hsv[1], hsv[1]);
+                valueOnly = ColorUtilities.HSVtoRGB(hsv[2], hsv[2], hsv[2]);
+                hueBandImage.setRGB(j, i, ColorUtilities.createRGB(hueOnly[0], hueOnly[1], hueOnly[2]));
+                saturationBandImage.setRGB(j, i, ColorUtilities.createRGB(saturationOnly[0], saturationOnly[1], saturationOnly[2]));
+                valueBandImage.setRGB(j, i, ColorUtilities.createRGB(valueOnly[0], valueOnly[1], valueOnly[2]));
             }
-
-            hsvBufferedImages[0] = hueBandImage;
-            hsvBufferedImages[1] = saturationBandImage;
-            hsvBufferedImages[2] = valueBandImage;
-            return hsvBufferedImages;
         }
 
-        public float[] averagePerBand (BufferedImage image)
-        {
-            int width = image.getWidth();
-            int height = image.getHeight();
-            int rgb;
-            int imageSize = width * height;
-            int redSum = 0;
-            int greenSum = 0;
-            int blueSum = 0;
-            float redAverage, greenAverage, blueAverage;
-            float[] colorBandAverages = new float[3];
-            for (int i = 0; i < height; i++) {
-                for (int j = 0; j < width; j++) {
-                    rgb = image.getRGB(j, i);
-                    redSum += ColorUtilities.getRed(rgb);
-                    greenSum += ColorUtilities.getGreen(rgb);
-                    blueSum += ColorUtilities.getBlue(rgb);
+        hsvBufferedImages[0] = hueBandImage;
+        hsvBufferedImages[1] = saturationBandImage;
+        hsvBufferedImages[2] = valueBandImage;
+        return hsvBufferedImages;
+    }
+
+    public float[] averagePerBand (BufferedImage image)
+    {
+        int width = image.getWidth();
+        int height = image.getHeight();
+        int rgb;
+        int imageSize = width * height;
+        int redSum = 0;
+        int greenSum = 0;
+        int blueSum = 0;
+        float redAverage, greenAverage, blueAverage;
+        float[] colorBandAverages = new float[3];
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
+                rgb = image.getRGB(j, i);
+                redSum += ColorUtilities.getRed(rgb);
+                greenSum += ColorUtilities.getGreen(rgb);
+                blueSum += ColorUtilities.getBlue(rgb);
+            }
+        }
+
+        redAverage = (float) redSum / imageSize;
+        greenAverage = (float) greenSum / imageSize;
+        blueAverage = (float) blueSum / imageSize;
+
+        colorBandAverages[0] = redAverage;
+        colorBandAverages[1] = greenAverage;
+        colorBandAverages[2] = blueAverage;
+
+        return colorBandAverages;
+    }
+
+    public BufferedImage imageContrast(BufferedImage bimg, int r1, int r2){
+        BufferedImage result = null;
+        int [][] matrix = this.getChannelMatrix(bimg);
+        int r,g,b;
+        if (isGreyImage(bimg)) {
+            result = new BufferedImage(bimg.getWidth(), bimg.getHeight(), bimg.getType());
+            int median = getMedian(matrix[1]);
+            int deviation = (this.getStandardDeviation(matrix[1]));
+            int R1 = median - deviation;
+            int R2 = median + deviation;
+            double pOscuros = 0.60;
+            double pClaros = 3;
+            //r1 mayor a s1 y r2 menor a s2
+            double s1 = (int) Math.round(R1*pOscuros);
+            double s2 = (int) Math.round(R2*pClaros);
+            double m = (s2 - s1) / (R2 - R1);
+            double c = s1 - (m * R1);
+            for (int i = 0; i < bimg.getWidth(); i++) {
+                for (int j = 0; j < bimg.getHeight(); j++) {
+                    r = ColorUtilities.getRed(bimg.getRGB(i,j));
+                    g = ColorUtilities.getGreen(bimg.getRGB(i,j));
+                    b = ColorUtilities.getBlue(bimg.getRGB(i,j));
+                    if (bimg.getRGB(i, j) < R1) {
+                        result.setRGB(i, j, ColorUtilities.createRGB((int)Math.round((pOscuros*r)),(int)Math.round(pOscuros*g),(int)Math.round(pOscuros*b)));
+                    }
+                    else if(bimg.getRGB(i, j) > R2){
+                        result.setRGB(i, j, ColorUtilities.createRGB((int)Math.round(pClaros*r),(int)Math.round(pClaros*g), (int)Math.round(pClaros*b)));
+                    }
+                    else {
+                        //result.setRGB(i, j, bimg.getRGB(i,j));
+                        result.setRGB(i, j, ColorUtilities.createRGB((int)Math.round((m*r)+c),(int)Math.round((m*g)+c), (int)Math.round((m*b)+c)));
+                    }
                 }
             }
-
-            redAverage = (float) redSum / imageSize;
-            greenAverage = (float) greenSum / imageSize;
-            blueAverage = (float) blueSum / imageSize;
-
-            colorBandAverages[0] = redAverage;
-            colorBandAverages[1] = greenAverage;
-            colorBandAverages[2] = blueAverage;
-
-            return colorBandAverages;
         }
+        else {
+            Alerts.showAlert("No es una imagen en escala de grises");
+        }
+        return result;
+    }
+
+    public int getMedian(int[] channel){
+        int median = 0;
+        for (int i = 0; i < channel.length; i++) {
+            median = median + channel[i];
+        }
+        median = median/channel.length;
+        return median;
+    }
+
+    public int getStandardDeviation(int[] channel){
+        int deviation = 0;
+        int median = this.getMedian(channel);
+        for (int i = 0; i < channel.length; i++) {
+            deviation = deviation + (int) Math.pow((channel[i] - median),2);
+        }
+        deviation = (int) Math.sqrt(deviation/channel.length);
+        return deviation;
+    }
+
 }
 

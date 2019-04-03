@@ -6,7 +6,7 @@
 <?import javafx.scene.text.*?>
 <?import javafx.scene.text.Text?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1700.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="sample.Controller">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1700.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
   <bottom>
     <GridPane>
       <children>
@@ -53,8 +53,8 @@
                 <VBox layoutX="0.0" layoutY="0.0" prefHeight="284.0" prefWidth="200.0">
                   <children>
                     <Button mnemonicParsing="false" onAction="#getPixelInformation" prefWidth="205.0" text="Get Pixel Information" />
-                    <Button mnemonicParsing="false" prefWidth="205.0" text="Modify Pixel" onAction="#modifyPixelInformation"/>
-                    <Button mnemonicParsing="false" prefWidth="205.0" text="Select and Duplicate" onAction="#copyImageSelection"/>
+                    <Button mnemonicParsing="false" onAction="#modifyPixelInformation" prefWidth="205.0" text="Modify Pixel" />
+                    <Button mnemonicParsing="false" onAction="#copyImageSelection" prefWidth="205.0" text="Select and Duplicate" />
                     <Button mnemonicParsing="false" onAction="#imageAddition" prefWidth="205.0" text="Image Addition" />
                     <Button mnemonicParsing="false" onAction="#imageSubtraction" prefWidth="205.0" text="Image Substraction" />
                     <Button mnemonicParsing="false" onAction="#imageScalarProduct" prefWidth="205.0" text="Image Scalar Product" />
@@ -88,8 +88,8 @@
               <children>
                 <VBox layoutX="0.0" layoutY="0.0" prefHeight="284.0" prefWidth="200.0">
                   <children>
-                    <Button mnemonicParsing="false" prefWidth="200.0" text="Grey Scale" onAction="#createGrayScaleImage"/>
-                    <Button mnemonicParsing="false" prefWidth="200.0" text="Color Scale" onAction="#createColorScaleImage"/>
+                    <Button mnemonicParsing="false" onAction="#createGrayScaleImage" prefWidth="200.0" text="Grey Scale" />
+                    <Button mnemonicParsing="false" onAction="#createColorScaleImage" prefWidth="200.0" text="Color Scale" />
                   </children>
                 </VBox>
               </children>
@@ -102,7 +102,7 @@
               <children>
                 <VBox layoutX="0.0" layoutY="0.0" prefHeight="284.0" prefWidth="200.0">
                   <children>
-                    <Button mnemonicParsing="false" prefWidth="200.0" text="RGB to HSV" />
+                    <Button mnemonicParsing="false" onAction="#RGBtoHSV" prefWidth="200.0" text="RGB to HSV" />
                   </children>
                 </VBox>
               </children>
@@ -117,6 +117,7 @@
                   <children>
                     <Button mnemonicParsing="false" prefWidth="200.0" text="Grey level average" />
                     <Button mnemonicParsing="false" prefWidth="200.0" text="Color band average" />
+                    <Button mnemonicParsing="false" prefWidth="200.0" text="Band Average" onAction="#averagePerBand" />
                     <Button mnemonicParsing="false" prefWidth="200.0" text="Histogram" onAction="#showHistogram" />
                   </children>
                 </VBox>
@@ -139,10 +140,10 @@
         </Menu>
         <Menu mnemonicParsing="false" text="Edit">
           <items>
-            <MenuItem mnemonicParsing="false" text="Undo" onAction="#undo"/>
-            <MenuItem mnemonicParsing="false" text="Redo" onAction="#redo"/>
-            <MenuItem mnemonicParsing="false" text="Reset" onAction="#reset"/>
-            <MenuItem mnemonicParsing="false" text="Set Right to Left" onAction="#setRightToLeft"/>
+            <MenuItem mnemonicParsing="false" onAction="#undo" text="Undo" />
+            <MenuItem mnemonicParsing="false" onAction="#redo" text="Redo" />
+            <MenuItem mnemonicParsing="false" onAction="#reset" text="Reset" />
+            <MenuItem mnemonicParsing="false" onAction="#setRightToLeft" text="Set Right to Left" />
           </items>
         </Menu>
         <Menu mnemonicParsing="false" text="Help">

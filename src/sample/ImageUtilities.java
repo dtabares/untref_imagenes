@@ -18,25 +18,23 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.awt.image.BufferedImage.TYPE_BYTE_GRAY;
 import static sample.ColorUtilities.createRGB;
 import static sample.InterfaceHelper.getInputDialog;
 
 
 public class ImageUtilities {
 
-    private String supportedFormats[] = { "raw", "ppm", "pgm", "bmp", "png","jpg" };
+    private String supportedFormats[] = {"raw", "ppm", "pgm", "bmp", "png", "jpg"};
     private String currentImageFormat;
 
     public String getCurrentImageFormat() {
         return currentImageFormat;
     }
 
-    public boolean isSupportedFormat(String extension )
-    {
-        for (String s : supportedFormats)
-        {
-            if (extension.toLowerCase().equals(s))
-            {
+    public boolean isSupportedFormat(String extension) {
+        for (String s : supportedFormats) {
+            if (extension.toLowerCase().equals(s)) {
                 return true;
             }
         }
@@ -44,7 +42,7 @@ public class ImageUtilities {
     }
 
     public BufferedImage openRawImage(File f, int width,
-                                       int height) {
+                                      int height) {
 
         BufferedImage bimg = null;
         byte[] rawImageContent;
@@ -70,8 +68,7 @@ public class ImageUtilities {
         return bimg;
     }
 
-    public WritableImage readImage(BufferedImage bimg)
-    {
+    public WritableImage readImage(BufferedImage bimg) {
         WritableImage wimg = null;
         try {
             if (bimg != null) {
@@ -83,71 +80,63 @@ public class ImageUtilities {
                     }
                 }
             }
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
         }
         return wimg;
     }
 
-    public WritableImage readRawImage(BufferedImage bimg, int width, int height)
-    {
+    public WritableImage readRawImage(BufferedImage bimg, int width, int height) {
         WritableImage wimg = null;
         try {
             if (bimg != null) {
                 wimg = new WritableImage(width, height);
                 PixelWriter pw = wimg.getPixelWriter();
                 for (int x = 0; x < width; x++) {
-                    for (int y = 0; y < height; y++)
-                    {
+                    for (int y = 0; y < height; y++) {
                         pw.setArgb(x, y, bimg.getRGB(x, y));
                     }
                 }
             }
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
         }
         return wimg;
     }
 
-    public void WriteImage(BufferedImage image, File f)
-    {
+    public void WriteImage(BufferedImage image, File f) {
         String format = this.getImageExtension(f.getName());
 
         try {
-            switch(format)
-            {
+            switch (format) {
                 case "raw":
-                    int width = Integer.valueOf(getInputDialog("Open Image","Raw Image Information","Insert Image Width"));
-                    int height = Integer.valueOf(getInputDialog("Open Image","Raw Image Information","Insert Image Height"));
-                    this.saveRawImage(image,f, height,width);
+                    int width = Integer.valueOf(getInputDialog("Open Image", "Raw Image Information", "Insert Image Width"));
+                    int height = Integer.valueOf(getInputDialog("Open Image", "Raw Image Information", "Insert Image Height"));
+                    this.saveRawImage(image, f, height, width);
                     break;
                 case "ppm":
                     //Do Something
                     break;
                 case "pgm":
-                    this.savePgmImage(image,f);
+                    this.savePgmImage(image, f);
                     break;
                 default:
                     ImageIO.write(image, format, f);
                     System.out.println("Writing complete");
             }
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
         }
     }
 
-    private void saveRawImage(BufferedImage image, File f, int height, int width)
-    {
-        byte[] rawContent = new byte[height*width];
+    private void saveRawImage(BufferedImage image, File f, int height, int width) {
+        byte[] rawContent = new byte[height * width];
         int counter = 0;
 
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
                 //System.out.println(ColorUtilities.byteFromRGB(image.getRGB(j,i)));
-                rawContent[counter] = ColorUtilities.byteFromRGB(image.getRGB(j,i));
+                rawContent[counter] = ColorUtilities.byteFromRGB(image.getRGB(j, i));
                 counter++;
             }
         }
@@ -157,8 +146,7 @@ public class ImageUtilities {
             os.write(rawContent);
             os.close();
 
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             System.out.println("Exception: " + e);
         }
     }
@@ -178,7 +166,7 @@ public class ImageUtilities {
             final int col = Integer.parseInt(next(stream));
             final int row = Integer.parseInt(next(stream));
             final int max = Integer.parseInt(next(stream));
-            bimg = new BufferedImage(col, row, BufferedImage.TYPE_BYTE_GRAY);
+            bimg = new BufferedImage(col, row, TYPE_BYTE_GRAY);
             if (max < 0 || max > MAXVAL)
                 throw new IOException("The image's maximum gray value must be in range [0, " + MAXVAL + "].");
             for (int i = 0; i < row; ++i) {
@@ -189,14 +177,13 @@ public class ImageUtilities {
                     else if (p < 0 || p > max)
                         throw new IOException("Pixel value " + p + " outside of range [0, " + max + "].");
                     System.out.println(p);
-                    int rgb = createRGB(p,p,p);
+                    int rgb = createRGB(p, p, p);
 
                     bimg.setRGB(j, i, rgb);
                 }
             }
             return bimg;
-        }
-        finally {
+        } finally {
             stream.close();
         }
     }
@@ -233,18 +220,16 @@ public class ImageUtilities {
         return new String(bytesArray);
     }
 
-    public String getImageExtension(String filename)
-    {
+    public String getImageExtension(String filename) {
         String[] splittedName = filename.split("\\.");
-        this.currentImageFormat = splittedName[splittedName.length -1].toLowerCase();
+        this.currentImageFormat = splittedName[splittedName.length - 1].toLowerCase();
         return this.currentImageFormat;
     }
 
-    public String getPixelInformation(BufferedImage image, int x, int y)
-    {
+    public String getPixelInformation(BufferedImage image, int x, int y) {
         String outPutMessage = "Pixel Information: ";
-        final int rgb = image.getRGB(x,y);
-        System.out.println("Pixel RGB:" + image.getRGB(x,y));
+        final int rgb = image.getRGB(x, y);
+        System.out.println("Pixel RGB:" + image.getRGB(x, y));
         System.out.println("Color Model:" + image.getColorModel());
         System.out.println("Image Type:" + image.getType());
         final int red = ColorUtilities.getRed(rgb);
@@ -253,200 +238,147 @@ public class ImageUtilities {
         System.out.println("Image R:" + red);
         System.out.println("Image G:" + green);
         System.out.println("Image B:" + blue);
-        outPutMessage =  outPutMessage + "Red: " + red + " Green: " + green + " Blue: " + blue;
+        outPutMessage = outPutMessage + "Red: " + red + " Green: " + green + " Blue: " + blue;
         return outPutMessage;
     }
 
-    public BufferedImage modifyPixelInformation(BufferedImage image, int x, int y, int red, int green, int blue)
-    {
-        int newRGB = ColorUtilities.createRGB(red,green,blue);
-        image.setRGB(x,y,newRGB);
+    public BufferedImage modifyPixelInformation(BufferedImage image, int x, int y, int red, int green, int blue) {
+        int newRGB = ColorUtilities.createRGB(red, green, blue);
+        image.setRGB(x, y, newRGB);
         return image;
     }
 
-    public BufferedImage imageAddition(BufferedImage bimg1, BufferedImage bimg2)
-    {
+    public BufferedImage imageAddition(BufferedImage bimg1, BufferedImage bimg2) {
         BufferedImage temp = null;
-        try
-        {
-            if (bimg1.getType() == bimg2.getType())
-            {
+        try {
+            if (bimg1.getType() == bimg2.getType()) {
                 boolean firstIsWidest = bimg1.getWidth() >= bimg2.getWidth();
                 boolean firstIsHigher = bimg1.getHeight() >= bimg2.getHeight();
                 int maxWidth;
                 int minWidth;
                 int maxHeight;
                 int minHeight;
-                if (bimg1.getWidth() >= bimg2.getWidth())
-                {
+                if (bimg1.getWidth() >= bimg2.getWidth()) {
                     maxWidth = bimg1.getWidth();
                     minWidth = bimg2.getWidth();
-                }
-                else
-                {
+                } else {
                     maxWidth = bimg2.getWidth();
                     minWidth = bimg1.getWidth();
                 }
-                if(bimg1.getHeight() >= bimg2.getHeight())
-                {
+                if (bimg1.getHeight() >= bimg2.getHeight()) {
                     maxHeight = bimg1.getHeight();
                     minHeight = bimg2.getHeight();
-                }
-                else
-                {
+                } else {
                     maxHeight = bimg2.getHeight();
                     minHeight = bimg1.getHeight();
                 }
-                temp = new BufferedImage(maxWidth,maxHeight,bimg1.getType());
+                temp = new BufferedImage(maxWidth, maxHeight, bimg1.getType());
 
-                for (int i = 0; i < maxWidth; i++)
-                {
-                    for( int j = 0; j < maxHeight; j++)
-                    {
-                        if (i < minWidth && j < minHeight)
-                        {
-                            temp.setRGB(i,j,bimg1.getRGB(i,j) + bimg2.getRGB(i,j));
-                        }
-                        else if (i < minWidth && j >= minHeight)
-                        {
-                            if(firstIsHigher)
-                            {
-                                temp.setRGB(i,j,bimg1.getRGB(i,j));
+                for (int i = 0; i < maxWidth; i++) {
+                    for (int j = 0; j < maxHeight; j++) {
+                        if (i < minWidth && j < minHeight) {
+                            temp.setRGB(i, j, bimg1.getRGB(i, j) + bimg2.getRGB(i, j));
+                        } else if (i < minWidth && j >= minHeight) {
+                            if (firstIsHigher) {
+                                temp.setRGB(i, j, bimg1.getRGB(i, j));
+                            } else {
+                                temp.setRGB(i, j, bimg2.getRGB(i, j));
                             }
-                            else
-                            {
-                                temp.setRGB(i,j,bimg2.getRGB(i,j));
+                        } else if (i >= minWidth && j < minHeight) {
+                            if (firstIsWidest) {
+                                temp.setRGB(i, j, bimg1.getRGB(i, j));
+                            } else {
+                                temp.setRGB(i, j, bimg2.getRGB(i, j));
                             }
-                        }
-                        else if (i >= minWidth && j < minHeight)
-                        {
-                            if(firstIsWidest)
-                            {
-                                temp.setRGB(i,j,bimg1.getRGB(i,j));
-                            }
-                            else
-                            {
-                                temp.setRGB(i,j,bimg2.getRGB(i,j));
-                            }
-                        }
-                        else
-                        {
-                            temp.setRGB(i,j,0	);
+                        } else {
+                            temp.setRGB(i, j, 0);
                         }
                     }
 
                 }
-            }
-            else
-            {
+            } else {
                 Alerts.showAlert("No se pueden sumar formatos diferentes");
             }
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             Alerts.showAlert(e.getMessage());
         }
 
         return (temp);
     }
 
-    public BufferedImage imageSubtraction(BufferedImage bimg1, BufferedImage bimg2)
-    {
+    public BufferedImage imageSubtraction(BufferedImage bimg1, BufferedImage bimg2) {
         BufferedImage temp = null;
-        try
-        {
-            if (bimg1.getType() == bimg2.getType())
-            {
-                temp = new BufferedImage(bimg1.getWidth(),bimg1.getHeight(),bimg1.getType());
+        try {
+            if (bimg1.getType() == bimg2.getType()) {
+                temp = new BufferedImage(bimg1.getWidth(), bimg1.getHeight(), bimg1.getType());
 
-                for (int i = 0; i < bimg1.getWidth(); i++)
-                {
-                    for( int j = 0; j < bimg1.getHeight(); j++)
-                    {
-                        temp.setRGB(i,j,bimg1.getRGB(i,j) - bimg2.getRGB(i,j));
+                for (int i = 0; i < bimg1.getWidth(); i++) {
+                    for (int j = 0; j < bimg1.getHeight(); j++) {
+                        temp.setRGB(i, j, bimg1.getRGB(i, j) - bimg2.getRGB(i, j));
                     }
 
                 }
-            }
-            else
-            {
+            } else {
                 Alerts.showAlert("No se pueden sumar formatos diferentes");
             }
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             Alerts.showAlert(e.getMessage());
         }
         return (temp);
     }
 
-    public BufferedImage imageScalarProduct(BufferedImage bimg, int scalar)
-    {
+    public BufferedImage imageScalarProduct(BufferedImage bimg, int scalar) {
         BufferedImage temp = null;
-        try
-        {
-            temp = new BufferedImage(bimg.getWidth(),bimg.getHeight(),bimg.getType());
+        try {
+            temp = new BufferedImage(bimg.getWidth(), bimg.getHeight(), bimg.getType());
 
-            for (int i = 0; i < bimg.getWidth(); i++)
-            {
-                for( int j = 0; j < bimg.getHeight(); j++)
-                {
-                        temp.setRGB(i,j,bimg.getRGB(i,j)*scalar);
+            for (int i = 0; i < bimg.getWidth(); i++) {
+                for (int j = 0; j < bimg.getHeight(); j++) {
+                    temp.setRGB(i, j, bimg.getRGB(i, j) * scalar);
                 }
             }
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             Alerts.showAlert(e.getMessage());
         }
         return (temp);
     }
 
-    public BufferedImage dynamicRangeCompression(BufferedImage bimg, int alpha)
-    {
+    public BufferedImage dynamicRangeCompression(BufferedImage bimg, int alpha) {
         BufferedImage temp = null;
-        try
-        {
-            temp = new BufferedImage(bimg.getWidth(),bimg.getHeight(),bimg.getType());
+        try {
+            temp = new BufferedImage(bimg.getWidth(), bimg.getHeight(), bimg.getType());
 
-            for (int i = 0; i < bimg.getWidth(); i++)
-            {
-                for( int j = 0; j < bimg.getHeight(); j++)
-                {
-                    int p = (bimg.getRGB(i,j));
+            for (int i = 0; i < bimg.getWidth(); i++) {
+                for (int j = 0; j < bimg.getHeight(); j++) {
+                    int p = (bimg.getRGB(i, j));
                     int red = (p >> 16) & 0xFF;
                     int green = (p >> 8) & 0xFF;
                     int blue = p & 0xFF;
-                    red = (100/alpha) * (int)Math.round(Math.log10((double) (1 + red)));
-                    green = (100/alpha) * (int)Math.round(Math.log10((double) (1 + green)));
-                    blue = (100/alpha) * (int)Math.round(Math.log10((double) (1 + blue)));
-                    int rgb = ((red&0x0ff)<<16)|((green&0x0ff)<<8)|(blue&0x0ff);
-                    temp.setRGB(i,j,rgb);
+                    red = (100 / alpha) * (int) Math.round(Math.log10((double) (1 + red)));
+                    green = (100 / alpha) * (int) Math.round(Math.log10((double) (1 + green)));
+                    blue = (100 / alpha) * (int) Math.round(Math.log10((double) (1 + blue)));
+                    int rgb = ((red & 0x0ff) << 16) | ((green & 0x0ff) << 8) | (blue & 0x0ff);
+                    temp.setRGB(i, j, rgb);
                 }
             }
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             Alerts.showAlert(e.getMessage());
         }
         return temp;
     }
-    public BufferedImage adjustDynamicRange(BufferedImage bimg)
-    {
+
+    public BufferedImage adjustDynamicRange(BufferedImage bimg) {
         BufferedImage temp = null;
-        int pixelCount = bimg.getWidth()*bimg.getHeight();
+        int pixelCount = bimg.getWidth() * bimg.getHeight();
         int r[] = new int[pixelCount];
         int g[] = new int[pixelCount];
         int b[] = new int[pixelCount];
-        try
-        {
-            temp = new BufferedImage(bimg.getWidth(),bimg.getHeight(),bimg.getType());
+        try {
+            temp = new BufferedImage(bimg.getWidth(), bimg.getHeight(), bimg.getType());
             int counter = 0;
-            for (int i = 0; i < bimg.getWidth(); i++)
-            {
-                for( int j = 0; j < bimg.getHeight(); j++)
-                {
-                    int p = (bimg.getRGB(i,j));
+            for (int i = 0; i < bimg.getWidth(); i++) {
+                for (int j = 0; j < bimg.getHeight(); j++) {
+                    int p = (bimg.getRGB(i, j));
                     r[counter] = 255 - ((p >> 16) & 0xFF);
                     g[counter] = 255 - ((p >> 8) & 0xFF);
                     b[counter] = 255 - (p & 0xFF);
@@ -460,129 +392,107 @@ public class ImageUtilities {
             int bmin = this.getChannelMin(b);
             int bmax = this.getChannelMax(b);
 
-            int Lr = rmax-rmin;
-            int Lg = gmax-gmin;
-            int Lb = bmax-bmin;
+            int Lr = rmax - rmin;
+            int Lg = gmax - gmin;
+            int Lb = bmax - bmin;
 
-            int cr =(Lr-1)/((int)Math.round(Math.log10(1+rmax)));
-            int cg =(Lg-1)/((int)Math.round(Math.log10(1+gmax)));
-            int cb =(Lb-1)/((int)Math.round(Math.log10(1+bmax)));
+            int cr = (Lr - 1) / ((int) Math.round(Math.log10(1 + rmax)));
+            int cg = (Lg - 1) / ((int) Math.round(Math.log10(1 + gmax)));
+            int cb = (Lb - 1) / ((int) Math.round(Math.log10(1 + bmax)));
 
-            for (int i = 0; i < bimg.getWidth(); i++)
-            {
-                for( int j = 0; j < bimg.getHeight(); j++)
-                {
-                    int p = (bimg.getRGB(i,j));
+            for (int i = 0; i < bimg.getWidth(); i++) {
+                for (int j = 0; j < bimg.getHeight(); j++) {
+                    int p = (bimg.getRGB(i, j));
                     int red = (p >> 16) & 0xFF;
                     int green = (p >> 8) & 0xFF;
                     int blue = p & 0xFF;
-                    red = cr * (int)Math.round(Math.log10((double) (1 + red)));
-                    green = cg * (int)Math.round(Math.log10((double) (1 + green)));
-                    blue = cb * (int)Math.round(Math.log10((double) (1 + blue)));
-                    int rgb = ((red&0x0ff)<<16)|((green&0x0ff)<<8)|(blue&0x0ff);
-                    temp.setRGB(i,j,rgb);
+                    red = cr * (int) Math.round(Math.log10((double) (1 + red)));
+                    green = cg * (int) Math.round(Math.log10((double) (1 + green)));
+                    blue = cb * (int) Math.round(Math.log10((double) (1 + blue)));
+                    int rgb = ((red & 0x0ff) << 16) | ((green & 0x0ff) << 8) | (blue & 0x0ff);
+                    temp.setRGB(i, j, rgb);
                 }
             }
 
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             Alerts.showAlert(e.getMessage());
         }
         return temp;
     }
 
-    public BufferedImage imagePow(BufferedImage bimg, int gamma)
-    {
+    public BufferedImage imagePow(BufferedImage bimg, int gamma) {
         BufferedImage temp = null;
-        try
-        {
-            temp = new BufferedImage(bimg.getWidth(),bimg.getHeight(),bimg.getType());
+        try {
+            temp = new BufferedImage(bimg.getWidth(), bimg.getHeight(), bimg.getType());
 
-            for (int i = 0; i < bimg.getWidth(); i++)
-            {
-                for( int j = 0; j < bimg.getHeight(); j++)
-                {
-                    int p = (bimg.getRGB(i,j));
+            for (int i = 0; i < bimg.getWidth(); i++) {
+                for (int j = 0; j < bimg.getHeight(); j++) {
+                    int p = (bimg.getRGB(i, j));
                     int red = (p >> 16) & 0xFF;
                     int green = (p >> 8) & 0xFF;
                     int blue = p & 0xFF;
-                    red = (int)Math.round(Math.pow((double) (1 + red), gamma));
-                    green = (int)Math.round(Math.pow((double) (1 + green), gamma));
-                    blue = (int)Math.round(Math.pow((double) (1 + blue), gamma));
-                    int rgb = ((red&0x0ff)<<16)|((green&0x0ff)<<8)|(blue&0x0ff);
-                    temp.setRGB(i,j,rgb);
+                    red = (int) Math.round(Math.pow((double) (1 + red), gamma));
+                    green = (int) Math.round(Math.pow((double) (1 + green), gamma));
+                    blue = (int) Math.round(Math.pow((double) (1 + blue), gamma));
+                    int rgb = ((red & 0x0ff) << 16) | ((green & 0x0ff) << 8) | (blue & 0x0ff);
+                    temp.setRGB(i, j, rgb);
                 }
             }
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             Alerts.showAlert(e.getMessage());
         }
         return adjustDynamicRange(temp);
     }
 
-    public BufferedImage imageNegative(BufferedImage bimg)
-    {
+    public BufferedImage imageNegative(BufferedImage bimg) {
         BufferedImage temp = null;
-        try
-        {
-            temp = new BufferedImage(bimg.getWidth(),bimg.getHeight(),bimg.getType());
+        try {
+            temp = new BufferedImage(bimg.getWidth(), bimg.getHeight(), bimg.getType());
 
-            for (int i = 0; i < bimg.getWidth(); i++)
-            {
-                for( int j = 0; j < bimg.getHeight(); j++)
-                {
-                    int p = (bimg.getRGB(i,j));
+            for (int i = 0; i < bimg.getWidth(); i++) {
+                for (int j = 0; j < bimg.getHeight(); j++) {
+                    int p = (bimg.getRGB(i, j));
                     int red = 255 - ((p >> 16) & 0xFF);
                     int green = 255 - ((p >> 8) & 0xFF);
                     int blue = 255 - (p & 0xFF);
-                    int rgb = ((red&0x0ff)<<16)|((green&0x0ff)<<8)|(blue&0x0ff);
-                    temp.setRGB(i,j,rgb);
+                    int rgb = ((red & 0x0ff) << 16) | ((green & 0x0ff) << 8) | (blue & 0x0ff);
+                    temp.setRGB(i, j, rgb);
                 }
             }
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             Alerts.showAlert(e.getMessage());
         }
         return temp;
     }
 
-    public int getChannelMax (int channel[])
-    {
+    public int getChannelMax(int channel[]) {
         int max = -1;
-        for (int i = 0; i < channel.length; i++)
-        {
+        for (int i = 0; i < channel.length; i++) {
             int temp = channel[i];
-            if (temp > max){
+            if (temp > max) {
                 max = temp;
             }
         }
         return max;
     }
 
-    public int getChannelMin (int channel[])
-    {
+    public int getChannelMin(int channel[]) {
         int min = 256;
-        for (int i = 0; i < channel.length; i++)
-        {
+        for (int i = 0; i < channel.length; i++) {
             int temp = channel[i];
-            if (temp < min){
+            if (temp < min) {
                 min = temp;
             }
         }
         return min;
     }
 
-    public void savePgmImage(BufferedImage image, File f) throws IOException
-    {
+    public void savePgmImage(BufferedImage image, File f) throws IOException {
         final String MAGIC = "P5";
         final int MAXVAL = 255;
         BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(f));
 
-        try
-        {
+        try {
             stream.write(MAGIC.getBytes());
             stream.write("\n".getBytes());
             stream.write(Integer.toString(image.getHeight()).getBytes());
@@ -593,7 +503,7 @@ public class ImageUtilities {
             stream.write("\n".getBytes());
             for (int i = 0; i < image.getHeight(); ++i) {
                 for (int j = 0; j < image.getWidth(); ++j) {
-                    final int p = image.getRGB(j,i);
+                    final int p = image.getRGB(j, i);
                     final int red = ColorUtilities.getRed(p);
                     final int green = ColorUtilities.getGreen(p);
                     final int blue = ColorUtilities.getBlue(p);
@@ -607,31 +517,27 @@ public class ImageUtilities {
                 }
             }
 
-        }finally {
+        } finally {
             stream.close();
         }
 
     }
 
-    public BufferedImage createGrayScaleImage()
-    {
+    public BufferedImage createGrayScaleImage() {
         final int multiplier = 2;
         final int defaultHeight = 256 * multiplier;
         final int defaultWidth = 64;
         int grayColor = 0;
-        BufferedImage grayScale = new BufferedImage(defaultWidth,defaultHeight,BufferedImage.TYPE_BYTE_GRAY);
+        BufferedImage grayScale = new BufferedImage(defaultWidth, defaultHeight, TYPE_BYTE_GRAY);
 
-        for (int i=0; i < defaultHeight; i++)
-        {
-            for(int j=0; j< defaultWidth; j++)
-            {
-                int color = ColorUtilities.createRGB(grayColor,grayColor,grayColor);
-                grayScale.setRGB(j,i,color);
+        for (int i = 0; i < defaultHeight; i++) {
+            for (int j = 0; j < defaultWidth; j++) {
+                int color = ColorUtilities.createRGB(grayColor, grayColor, grayColor);
+                grayScale.setRGB(j, i, color);
                 //System.out.println("width: " + j + " height: " + i + " color: " +grayColor);
             }
 
-            if (i % multiplier == 0 && i != 0)
-            {
+            if (i % multiplier == 0 && i != 0) {
                 grayColor++;
             }
 
@@ -639,8 +545,7 @@ public class ImageUtilities {
         return grayScale;
     }
 
-    public BufferedImage createColorScaleImage()
-    {
+    public BufferedImage createColorScaleImage() {
         final int step = 5;
         final int defaultHeight = 363;
         final int defaultWidth = 64;
@@ -649,29 +554,15 @@ public class ImageUtilities {
         int blue = 0;
         int rgb;
         int counter = 0;
-        BufferedImage colorScaleImage = new BufferedImage(defaultWidth,defaultHeight,BufferedImage.TYPE_INT_ARGB);
-
- /*       for (int i=0; i < defaultHeight; i++)
-        {
-
-            for(int j=0; j< defaultWidth; j++)
-            {
-                rgb = ColorUtilities.createRGB(255,0,0);
-                colorScaleImage.setRGB(j,i,rgb);
-                //System.out.println("width: " + j + " height: " + i + " color: " +rgb);
-            }
-
-        }*/
+        BufferedImage colorScaleImage = new BufferedImage(defaultWidth, defaultHeight, BufferedImage.TYPE_INT_ARGB);
         int i = 0;
 
         //Arrancamos en Negro
         //(0,0,0)
-        while(green < 256)
-        {
-            for(int j=0; j< defaultWidth; j++)
-            {
-                rgb = ColorUtilities.createRGB(red,green,blue);
-                colorScaleImage.setRGB(j,i,rgb);
+        while (green < 256) {
+            for (int j = 0; j < defaultWidth; j++) {
+                rgb = ColorUtilities.createRGB(red, green, blue);
+                colorScaleImage.setRGB(j, i, rgb);
             }
             System.out.println("red: " + red + " green: " + green + " blue: " + blue);
             green = green + step;
@@ -681,12 +572,10 @@ public class ImageUtilities {
         green = green - step;
         //(0,255,0)
         //Terminamos en verde y vamos agregando rojo para llegar al amarillo
-        while (red < 256)
-        {
-            for(int j=0; j< defaultWidth; j++)
-            {
-                rgb = ColorUtilities.createRGB(red,green,blue);
-                colorScaleImage.setRGB(j,i,rgb);
+        while (red < 256) {
+            for (int j = 0; j < defaultWidth; j++) {
+                rgb = ColorUtilities.createRGB(red, green, blue);
+                colorScaleImage.setRGB(j, i, rgb);
             }
             red = red + step;
             System.out.println("red: " + red + " green: " + green + " blue: " + blue);
@@ -696,12 +585,10 @@ public class ImageUtilities {
         red = red - step;
         //(255,255,0)
         //Terminamos en amarillo y vamos sacando verde para llegar al rojo
-        while(green > 0)
-        {
-            for(int j=0; j< defaultWidth; j++)
-            {
-                rgb = ColorUtilities.createRGB(red,green,blue);
-                colorScaleImage.setRGB(j,i,rgb);
+        while (green > 0) {
+            for (int j = 0; j < defaultWidth; j++) {
+                rgb = ColorUtilities.createRGB(red, green, blue);
+                colorScaleImage.setRGB(j, i, rgb);
             }
             green = green - step;
             System.out.println("red: " + red + " green: " + green + " blue: " + blue);
@@ -710,12 +597,10 @@ public class ImageUtilities {
         }
         //(255,0,0)
         //Terminamos en rojo y vamos agregando azul para llegar al magenta
-        while(blue<256)
-        {
-            for(int j=0; j< defaultWidth; j++)
-            {
-                rgb = ColorUtilities.createRGB(red,green,blue);
-                colorScaleImage.setRGB(j,i,rgb);
+        while (blue < 256) {
+            for (int j = 0; j < defaultWidth; j++) {
+                rgb = ColorUtilities.createRGB(red, green, blue);
+                colorScaleImage.setRGB(j, i, rgb);
             }
             blue = blue + step;
             System.out.println("red: " + red + " green: " + green + " blue: " + blue);
@@ -725,12 +610,10 @@ public class ImageUtilities {
         blue = blue - step;
         //(255,0,255)
         //Terminamos en magenta y vamos sacando rojo para llegar al azul
-        while (red > 0)
-        {
-            for(int j=0; j< defaultWidth; j++)
-            {
-                rgb = ColorUtilities.createRGB(red,green,blue);
-                colorScaleImage.setRGB(j,i,rgb);
+        while (red > 0) {
+            for (int j = 0; j < defaultWidth; j++) {
+                rgb = ColorUtilities.createRGB(red, green, blue);
+                colorScaleImage.setRGB(j, i, rgb);
             }
             red = red - step;
             System.out.println("red: " + red + " green: " + green + " blue: " + blue);
@@ -739,12 +622,10 @@ public class ImageUtilities {
         }
         //(0,0,255)
         //Terminamos en azul y vamos agregando verde para llegar al cyan
-        while(green < 256)
-        {
-            for(int j=0; j< defaultWidth; j++)
-            {
-                rgb = ColorUtilities.createRGB(red,green,blue);
-                colorScaleImage.setRGB(j,i,rgb);
+        while (green < 256) {
+            for (int j = 0; j < defaultWidth; j++) {
+                rgb = ColorUtilities.createRGB(red, green, blue);
+                colorScaleImage.setRGB(j, i, rgb);
             }
             green = green + step;
             System.out.println("red: " + red + " green: " + green + " blue: " + blue);
@@ -754,12 +635,10 @@ public class ImageUtilities {
         green = green - step;
         //(0,255,255)
         //Terminamos en cyan y vamos agregando rojo para llegar al blanco
-        while (red < 256)
-        {
-            for(int j=0; j< defaultWidth; j++)
-            {
-                rgb = ColorUtilities.createRGB(red,green,blue);
-                colorScaleImage.setRGB(j,i,rgb);
+        while (red < 256) {
+            for (int j = 0; j < defaultWidth; j++) {
+                rgb = ColorUtilities.createRGB(red, green, blue);
+                colorScaleImage.setRGB(j, i, rgb);
             }
             red = red + step;
             System.out.println("red: " + red + " green: " + green + " blue: " + blue);
@@ -772,86 +651,80 @@ public class ImageUtilities {
         return colorScaleImage;
     }
 
-    public BufferedImage imageBinary(BufferedImage bimg, int threshold){
+    public BufferedImage imageBinary(BufferedImage bimg, int threshold) {
         BufferedImage result = null;
-        if(isGreyImage(bimg)){
-            result = new BufferedImage(bimg.getWidth(),bimg.getHeight(),bimg.getType());
-            int thr = ColorUtilities.createRGB(threshold,threshold,threshold);
-            for (int i=0; i < bimg.getWidth(); i++){
-                for(int j=0; j < bimg.getHeight(); j++){
-                    if(bimg.getRGB(i,j) < thr){
-                        result.setRGB(i,j,ColorUtilities.createRGB(255,255,255));
-                    }
-                    else
-                    {
-                        result.setRGB(i,j,ColorUtilities.createRGB(0,0,0));
+        if (isGreyImage(bimg)) {
+            result = new BufferedImage(bimg.getWidth(), bimg.getHeight(), bimg.getType());
+            int thr = ColorUtilities.createRGB(threshold, threshold, threshold);
+            for (int i = 0; i < bimg.getWidth(); i++) {
+                for (int j = 0; j < bimg.getHeight(); j++) {
+                    if (bimg.getRGB(i, j) < thr) {
+                        result.setRGB(i, j, ColorUtilities.createRGB(255, 255, 255));
+                    } else {
+                        result.setRGB(i, j, ColorUtilities.createRGB(0, 0, 0));
                     }
                 }
             }
-        }
-        else{
+        } else {
             Alerts.showAlert("No es una imagen en escala de grises");
         }
         return result;
     }
 
-    public BufferedImage getHistogram(BufferedImage bimg){
+    public BufferedImage getHistogram(BufferedImage bimg) {
         int rgb, red, green, blue;
         boolean grey = this.isGreyImage(bimg);
         BufferedImage result = null;
         int redHistogram[] = new int[256];
         int greenHistogram[] = new int[256];
         int blueHistogram[] = new int[256];
-        for(int i = 0; i < bimg.getWidth(); i++){
-            for (int j = 0; j < bimg.getHeight(); j++){
-                rgb = bimg.getRGB(i,j);
+        for (int i = 0; i < bimg.getWidth(); i++) {
+            for (int j = 0; j < bimg.getHeight(); j++) {
+                rgb = bimg.getRGB(i, j);
                 red = ColorUtilities.getRed(rgb);
                 green = ColorUtilities.getGreen(rgb);
                 blue = ColorUtilities.getBlue(rgb);
-                if(grey){
+                if (grey) {
                     redHistogram[red]++;
-                }
-                else{
+                } else {
                     redHistogram[red]++;
                     greenHistogram[green]++;
                     blueHistogram[blue]++;
                 }
             }
         }
-        if(grey){
-            displayHistogram(redHistogram,ColorUtilities.createRGB(0,0,0));
-        }
-        else {
-            displayHistogram(redHistogram, ColorUtilities.createRGB(255,0,0));
-            displayHistogram(greenHistogram, ColorUtilities.createRGB(0,255,0));
-            displayHistogram(blueHistogram, ColorUtilities.createRGB(0,0,255));
+        if (grey) {
+            displayHistogram(redHistogram, ColorUtilities.createRGB(0, 0, 0));
+        } else {
+            displayHistogram(redHistogram, ColorUtilities.createRGB(255, 0, 0));
+            displayHistogram(greenHistogram, ColorUtilities.createRGB(0, 255, 0));
+            displayHistogram(blueHistogram, ColorUtilities.createRGB(0, 0, 255));
         }
         return result;
     }
 
-    public void displayHistogram(int[] histogram,int color){
+    public void displayHistogram(int[] histogram, int color) {
         AnchorPane secondaryLayout = new AnchorPane();
         Scene secondScene = new Scene(secondaryLayout, 512, 300);
         // New window (Stage)
         Stage newWindow = new Stage();
         newWindow.setTitle("Histograma");
         newWindow.setScene(secondScene);
-        BufferedImage result = new BufferedImage(512,300,BufferedImage.TYPE_INT_ARGB);
+        BufferedImage result = new BufferedImage(512, 300, BufferedImage.TYPE_INT_ARGB);
         //System.out.println("negro: " + ColorUtilities.createRGB(0,0,0) + " blanco: " + ColorUtilities.createRGB(255,255,255) );
         int max = getChannelMax(histogram);
         int scale = max / 300;
         int counter = 300;
-        for(int i = 0; i < 512; i++) {
+        for (int i = 0; i < 512; i++) {
             for (int j = 0; j < 300; j++) {
-                if (counter > (int)(histogram[(int)i/2])/scale){
-                    result.setRGB(i,j,-1);
-                }
-                else{
-                    result.setRGB(i,j,color);
+                if (counter > (int) (histogram[(int) i / 2]) / scale) {
+                    result.setRGB(i, j, -1);
+                } else {
+                    result.setRGB(i, j, color);
                 }
                 counter--;
             }
-            System.out.println(histogram[(int)(i/2)]);
+            System.out.println(histogram[(int) (i / 2)]);
             counter = 300;
         }
         WritableImage wimg = this.readImage(result);
@@ -860,22 +733,118 @@ public class ImageUtilities {
         newWindow.show();
     }
 
-    public boolean isGreyImage(BufferedImage bimg){
+    public boolean isGreyImage(BufferedImage bimg) {
         int rgb;
         int red;
         int green;
         int blue;
-        for(int i = 0; i < bimg.getWidth(); i++){
-            for (int j = 0; j < bimg.getHeight(); j++){
-                rgb = bimg.getRGB(i,j);
+        for (int i = 0; i < bimg.getWidth(); i++) {
+            for (int j = 0; j < bimg.getHeight(); j++) {
+                rgb = bimg.getRGB(i, j);
                 red = ColorUtilities.getRed(rgb);
                 green = ColorUtilities.getGreen(rgb);
                 blue = ColorUtilities.getBlue(rgb);
-                if(red != green || red != blue){
+                if (red != green || red != blue) {
                     return false;
                 }
             }
         }
         return true;
     }
+        public BufferedImage[] separateInRGBbands (BufferedImage original)
+        {
+            BufferedImage[] rgbBufferedImages = new BufferedImage[3];
+            int width = original.getWidth();
+            int height = original.getHeight();
+            int red;
+            int green;
+            int blue;
+            int rgb;
+            BufferedImage redBandImage = new BufferedImage(width, height, original.getType());
+            BufferedImage greenBandImage = new BufferedImage(width, height, original.getType());
+            BufferedImage blueBandImage = new BufferedImage(width, height, original.getType());
+
+            for (int i = 0; i < height; i++) {
+                for (int j = 0; j < width; j++) {
+                    rgb = original.getRGB(j, i);
+                    red = ColorUtilities.getRed(rgb);
+                    green = ColorUtilities.getGreen(rgb);
+                    blue = ColorUtilities.getBlue(rgb);
+
+                    redBandImage.setRGB(j, i, ColorUtilities.createRGB(red, 0, 0));
+                    greenBandImage.setRGB(j, i, ColorUtilities.createRGB(0, green, 0));
+                    blueBandImage.setRGB(j, i, ColorUtilities.createRGB(0, 0, blue));
+                }
+            }
+
+            rgbBufferedImages[0] = redBandImage;
+            rgbBufferedImages[1] = greenBandImage;
+            rgbBufferedImages[2] = blueBandImage;
+
+            return rgbBufferedImages;
+
+        }
+
+        public BufferedImage[] separateInHSVBands (BufferedImage original)
+        {
+            BufferedImage[] hsvBufferedImages = new BufferedImage[3];
+            int width = original.getWidth();
+            int height = original.getHeight();
+            int rgb;
+            float[] hsv;
+            int[] hueOnly, saturationOnly, valueOnly;
+            BufferedImage hueBandImage = new BufferedImage(width, height, TYPE_BYTE_GRAY);
+            BufferedImage saturationBandImage = new BufferedImage(width, height, TYPE_BYTE_GRAY);
+            BufferedImage valueBandImage = new BufferedImage(width, height, TYPE_BYTE_GRAY);
+
+            for (int i = 0; i < height; i++) {
+                for (int j = 0; j < width; j++) {
+                    rgb = original.getRGB(j, i);
+                    hsv = ColorUtilities.RGBtoHSV(rgb);
+                    hueOnly = ColorUtilities.HSVtoRGB(hsv[0], hsv[0], hsv[0]);
+                    saturationOnly = ColorUtilities.HSVtoRGB(hsv[1], hsv[1], hsv[1]);
+                    valueOnly = ColorUtilities.HSVtoRGB(hsv[2], hsv[2], hsv[2]);
+                    hueBandImage.setRGB(j, i, ColorUtilities.createRGB(hueOnly[0], hueOnly[1], hueOnly[2]));
+                    saturationBandImage.setRGB(j, i, ColorUtilities.createRGB(saturationOnly[0], saturationOnly[1], saturationOnly[2]));
+                    valueBandImage.setRGB(j, i, ColorUtilities.createRGB(valueOnly[0], valueOnly[1], valueOnly[2]));
+                }
+            }
+
+            hsvBufferedImages[0] = hueBandImage;
+            hsvBufferedImages[1] = saturationBandImage;
+            hsvBufferedImages[2] = valueBandImage;
+            return hsvBufferedImages;
+        }
+
+        public float[] averagePerBand (BufferedImage image)
+        {
+            int width = image.getWidth();
+            int height = image.getHeight();
+            int rgb;
+            int imageSize = width * height;
+            int redSum = 0;
+            int greenSum = 0;
+            int blueSum = 0;
+            float redAverage, greenAverage, blueAverage;
+            float[] colorBandAverages = new float[3];
+            for (int i = 0; i < height; i++) {
+                for (int j = 0; j < width; j++) {
+                    rgb = image.getRGB(j, i);
+                    redSum += ColorUtilities.getRed(rgb);
+                    greenSum += ColorUtilities.getGreen(rgb);
+                    blueSum += ColorUtilities.getBlue(rgb);
+                }
+            }
+
+            redAverage = (float) redSum / imageSize;
+            greenAverage = (float) greenSum / imageSize;
+            blueAverage = (float) blueSum / imageSize;
+
+            colorBandAverages[0] = redAverage;
+            colorBandAverages[1] = greenAverage;
+            colorBandAverages[2] = blueAverage;
+
+            return colorBandAverages;
+        }
 }
+

@@ -74,6 +74,7 @@ public class Controller extends BorderPane {
                         leftImage = bimg;
                 }
                 this.displayImageInPane(bimg,leftPane);
+                System.out.println(imageUtilities.isGreyImage(bimg));
                 fc.setInitialDirectory(null);
             }
             else
@@ -347,6 +348,21 @@ public class Controller extends BorderPane {
             Alerts.showAlert(e.getMessage());
         }
     }
+    @FXML public BufferedImage imageBinary(){
+        BufferedImage result = null;
+        if (leftImage != null) {
+            int threshold = Integer.valueOf(JOptionPane.showInputDialog(
+                    null, "Threshold", "Insert Threshold",
+                    JOptionPane.DEFAULT_OPTION));
+            result = imageUtilities.imageBinary(leftImage, (int) threshold);
+            this.displayImageInPane(result,rightPane);
+        }
+        else
+        {
+            Alerts.showAlert("No hay una imagen abierta");
+        }
+        return result;
+    }
 
     @FXML public void modifyPixelInformation()
     {
@@ -446,6 +462,17 @@ public class Controller extends BorderPane {
     {
         BufferedImage colorScaleImage = this.imageUtilities.createColorScaleImage();
         this.displayImageInPane(colorScaleImage,rightPane);
+    }
+
+    //Information
+    @FXML public void showHistogram(){
+        if(leftImage!=null){
+            imageUtilities.getHistogram(leftImage);
+        }
+        else{
+            Alerts.showAlert("No hay ninguna imagen cargada");
+        }
+
     }
 
     //Panels

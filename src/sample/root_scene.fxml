@@ -61,6 +61,7 @@
                     <Button mnemonicParsing="false" onAction="#dynamicRangeCompression" prefWidth="205.0" text="Dynamic Range Compression" />
                     <Button mnemonicParsing="false" onAction="#imagePow" prefWidth="205.0" text="Pow Function" />
                     <Button mnemonicParsing="false" onAction="#imageNegative" prefWidth="205.0" text="Negative" />
+                    <Button mnemonicParsing="false" onAction="#imageBinary" prefWidth="205.0" text="Binary" />
                   </children>
                 </VBox>
               </children>
@@ -116,6 +117,7 @@
                   <children>
                     <Button mnemonicParsing="false" prefWidth="200.0" text="Grey level average" />
                     <Button mnemonicParsing="false" prefWidth="200.0" text="Color band average" />
+                    <Button mnemonicParsing="false" prefWidth="200.0" text="Histogram" onAction="#showHistogram" />
                   </children>
                 </VBox>
               </children>

@@ -1,5 +1,7 @@
 package sample;
 
+import java.awt.image.BufferedImage;
+
 public class ColorUtilities {
 
     public static int getRed(int rgb_pixel)

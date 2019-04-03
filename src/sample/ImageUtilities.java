@@ -1,13 +1,19 @@
 package sample;
 
 import com.sun.istack.internal.Nullable;
+import javafx.scene.Scene;
+import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.StackPane;
+import javafx.stage.Stage;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.nio.Buffer;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
@@ -764,5 +770,112 @@ public class ImageUtilities {
 
         //System.out.println("counter: " + counter);
         return colorScaleImage;
+    }
+
+    public BufferedImage imageBinary(BufferedImage bimg, int threshold){
+        BufferedImage result = null;
+        if(isGreyImage(bimg)){
+            result = new BufferedImage(bimg.getWidth(),bimg.getHeight(),bimg.getType());
+            int thr = ColorUtilities.createRGB(threshold,threshold,threshold);
+            for (int i=0; i < bimg.getWidth(); i++){
+                for(int j=0; j < bimg.getHeight(); j++){
+                    if(bimg.getRGB(i,j) < thr){
+                        result.setRGB(i,j,ColorUtilities.createRGB(255,255,255));
+                    }
+                    else
+                    {
+                        result.setRGB(i,j,ColorUtilities.createRGB(0,0,0));
+                    }
+                }
+            }
+        }
+        else{
+            Alerts.showAlert("No es una imagen en escala de grises");
+        }
+        return result;
+    }
+
+    public BufferedImage getHistogram(BufferedImage bimg){
+        int rgb, red, green, blue;
+        boolean grey = this.isGreyImage(bimg);
+        BufferedImage result = null;
+        int redHistogram[] = new int[256];
+        int greenHistogram[] = new int[256];
+        int blueHistogram[] = new int[256];
+        for(int i = 0; i < bimg.getWidth(); i++){
+            for (int j = 0; j < bimg.getHeight(); j++){
+                rgb = bimg.getRGB(i,j);
+                red = ColorUtilities.getRed(rgb);
+                green = ColorUtilities.getGreen(rgb);
+                blue = ColorUtilities.getBlue(rgb);
+                if(grey){
+                    redHistogram[red]++;
+                }
+                else{
+                    redHistogram[red]++;
+                    greenHistogram[green]++;
+                    blueHistogram[blue]++;
+                }
+            }
+        }
+        if(grey){
+            displayHistogram(redHistogram,ColorUtilities.createRGB(0,0,0));
+        }
+        else {
+            displayHistogram(redHistogram, ColorUtilities.createRGB(255,0,0));
+            displayHistogram(greenHistogram, ColorUtilities.createRGB(0,255,0));
+            displayHistogram(blueHistogram, ColorUtilities.createRGB(0,0,255));
+        }
+        return result;
+    }
+
+    public void displayHistogram(int[] histogram,int color){
+        AnchorPane secondaryLayout = new AnchorPane();
+        Scene secondScene = new Scene(secondaryLayout, 512, 300);
+        // New window (Stage)
+        Stage newWindow = new Stage();
+        newWindow.setTitle("Histograma");
+        newWindow.setScene(secondScene);
+        BufferedImage result = new BufferedImage(512,300,BufferedImage.TYPE_INT_ARGB);
+        //System.out.println("negro: " + ColorUtilities.createRGB(0,0,0) + " blanco: " + ColorUtilities.createRGB(255,255,255) );
+        int max = getChannelMax(histogram);
+        int scale = max / 300;
+        int counter = 300;
+        for(int i = 0; i < 512; i++) {
+            for (int j = 0; j < 300; j++) {
+                if (counter > (int)(histogram[(int)i/2])/scale){
+                    result.setRGB(i,j,-1);
+                }
+                else{
+                    result.setRGB(i,j,color);
+                }
+                counter--;
+            }
+            System.out.println(histogram[(int)(i/2)]);
+            counter = 300;
+        }
+        WritableImage wimg = this.readImage(result);
+        ImageView image = new ImageView(wimg);
+        secondaryLayout.getChildren().setAll(image);
+        newWindow.show();
+    }
+
+    public boolean isGreyImage(BufferedImage bimg){
+        int rgb;
+        int red;
+        int green;
+        int blue;
+        for(int i = 0; i < bimg.getWidth(); i++){
+            for (int j = 0; j < bimg.getHeight(); j++){
+                rgb = bimg.getRGB(i,j);
+                red = ColorUtilities.getRed(rgb);
+                green = ColorUtilities.getGreen(rgb);
+                blue = ColorUtilities.getBlue(rgb);
+                if(red != green || red != blue){
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 }

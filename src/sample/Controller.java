@@ -399,6 +399,7 @@ public class Controller extends BorderPane {
 
     @FXML public void copyImageSelection()
     {
+
         try{
             ImageView leftImageView = null;
             if (!leftPane.getChildren().isEmpty())
@@ -425,7 +426,6 @@ public class Controller extends BorderPane {
                         BufferedImage imageSelection = leftImage.getSubimage(selection.getxOrigin(),selection.getyOrigin(),selection.getWidth(),selection.getHeight());
 
                         // Display it on the right pane and add it to the list
-
                         this.displayImageInPane(imageSelection,rightPane);
                         selection.reset();
                     }
@@ -494,6 +494,57 @@ public class Controller extends BorderPane {
         }
     }
 
+    @FXML public void averagePerBand()
+    {
+        try{
+            ImageView leftImageView = null;
+            if (!leftPane.getChildren().isEmpty())
+            {
+                leftImageView = (ImageView) leftPane.getChildren().get(0);
+            }
+            if (leftImageView == null)
+            {
+                Alerts.showAlert("No hay una imagen cargada!");
+            }
+            else
+            {
+                ImageSelection selection = new ImageSelection();
+                leftImageView.setOnMouseClicked(e -> {
+                    System.out.println("Left Coordinates Info: ["+e.getX()+", "+e.getY()+"]");
+                    selection.submitClickCoordinates((int)e.getX(), (int) e.getY());
+
+                    if(selection.allCoordinatesSubmitted())
+                    {
+                        //Calculate 4 points
+                        selection.calculateWithAndHeight();
+
+                        //Create new buffered image from those 4 points
+                        BufferedImage imageSelection = leftImage.getSubimage(selection.getxOrigin(),selection.getyOrigin(),selection.getWidth(),selection.getHeight());
+
+                        // Display it on the right pane and add it to the list
+                        float[] averages = this.imageUtilities.averagePerBand(imageSelection);
+
+                        int imageSize = selection.getHeight() * selection.getWidth();
+                        String message = "Selection Size: " + imageSize + " ---- ";
+
+                        if (averages[0] == averages[1] && averages[0] == averages[2])
+                        {
+                            message = message + "Grey average: " + averages[0];
+                        }
+                        else
+                        {
+                            message = message + "Red average: " + averages[0] + " Green average: " + averages[1] + " Blue average: " + averages[2];
+                        }
+                        this.setBottomText(message);
+                        selection.reset();
+                    }
+                });
+            }
+        }
+        catch(Exception e){
+            Alerts.showAlert(e.getMessage());
+        }
+    }
     //Panels
 
     public void displayImageInPane(BufferedImage bimg, AnchorPane pane){

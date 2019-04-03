@@ -823,4 +823,37 @@ public class ImageUtilities {
         hsvBufferedImages[2] = valueBandImage;
         return hsvBufferedImages;
     }
+
+    public float[] averagePerBand(BufferedImage image)
+    {
+        int width = image.getWidth();
+        int height = image.getHeight();
+        int rgb;
+        int imageSize = width * height;
+        int redSum = 0;
+        int greenSum = 0;
+        int blueSum = 0;
+        float redAverage, greenAverage, blueAverage;
+        float[] colorBandAverages = new float[3];
+        for(int i=0; i < height; i++)
+        {
+            for(int j=0; j < width; j++)
+            {
+                rgb = image.getRGB(j,i);
+                redSum += ColorUtilities.getRed(rgb);
+                greenSum += ColorUtilities.getGreen(rgb);
+                blueSum += ColorUtilities.getBlue(rgb);
+            }
+        }
+
+        redAverage = (float) redSum / imageSize;
+        greenAverage = (float) greenSum / imageSize;
+        blueAverage = (float) blueSum / imageSize;
+
+        colorBandAverages[0] = redAverage;
+        colorBandAverages[1] = greenAverage;
+        colorBandAverages[2] = blueAverage;
+
+        return colorBandAverages;
+    }
 }

@@ -41,8 +41,7 @@ public class ImageUtilities {
         return false;
     }
 
-    public BufferedImage openRawImage(File f, int width,
-                                      int height) {
+    public BufferedImage openRawImage(File f, int width, int height) {
 
         BufferedImage bimg = null;
         byte[] rawImageContent;
@@ -340,24 +339,24 @@ public class ImageUtilities {
         } catch (Exception e) {
             Alerts.showAlert(e.getMessage());
         }
-        return (temp);
+        return adjustDynamicRange(temp);
     }
 
     public BufferedImage dynamicRangeCompression(BufferedImage bimg, int alpha) {
         BufferedImage temp = null;
         try {
             temp = new BufferedImage(bimg.getWidth(), bimg.getHeight(), bimg.getType());
-
+            int p, red, green, blue;
             for (int i = 0; i < bimg.getWidth(); i++) {
                 for (int j = 0; j < bimg.getHeight(); j++) {
-                    int p = (bimg.getRGB(i, j));
-                    int red = (p >> 16) & 0xFF;
-                    int green = (p >> 8) & 0xFF;
-                    int blue = p & 0xFF;
-                    red = (100 / alpha) * (int) Math.round(Math.log10((double) (1 + red)));
-                    green = (100 / alpha) * (int) Math.round(Math.log10((double) (1 + green)));
-                    blue = (100 / alpha) * (int) Math.round(Math.log10((double) (1 + blue)));
-                    int rgb = ((red & 0x0ff) << 16) | ((green & 0x0ff) << 8) | (blue & 0x0ff);
+                    p = (bimg.getRGB(i, j));
+                    red = ColorUtilities.getRed(p);
+                    green = ColorUtilities.getGreen(p);
+                    blue = ColorUtilities.getBlue(p);
+                    red = (int)Math.round((100 / alpha) * Math.log10(1 + red));
+                    green = (int) Math.round((100 / alpha) * Math.log10(1 + green));
+                    blue = (int) Math.round((100 / alpha) * Math.log10(1 + blue));
+                    int rgb = ColorUtilities.createRGB(red, green, blue);
                     temp.setRGB(i, j, rgb);
                 }
             }
@@ -374,17 +373,19 @@ public class ImageUtilities {
         int g[] = new int[pixelCount];
         int b[] = new int[pixelCount];
         try {
+            int p;
             temp = new BufferedImage(bimg.getWidth(), bimg.getHeight(), bimg.getType());
             int counter = 0;
             for (int i = 0; i < bimg.getWidth(); i++) {
                 for (int j = 0; j < bimg.getHeight(); j++) {
-                    int p = (bimg.getRGB(i, j));
-                    r[counter] = 255 - ((p >> 16) & 0xFF);
-                    g[counter] = 255 - ((p >> 8) & 0xFF);
-                    b[counter] = 255 - (p & 0xFF);
+                    p = (bimg.getRGB(i, j));
+                    r[counter] = ColorUtilities.getRed(p);
+                    g[counter] = ColorUtilities.getGreen(p);
+                    b[counter] = ColorUtilities.getBlue(p);
                     counter++;
                 }
             }
+
             int rmin = this.getChannelMin(r);
             int rmax = this.getChannelMax(r);
             int gmin = this.getChannelMin(g);
@@ -392,24 +393,22 @@ public class ImageUtilities {
             int bmin = this.getChannelMin(b);
             int bmax = this.getChannelMax(b);
 
-            int Lr = rmax - rmin;
-            int Lg = gmax - gmin;
-            int Lb = bmax - bmin;
+            double cr = 255 / Math.log10(1 + rmax);
+            double cg = 255 / Math.log10(1 + gmax);
+            double cb = 255 / Math.log10(1 + bmax);
 
-            int cr = (Lr - 1) / ((int) Math.round(Math.log10(1 + rmax)));
-            int cg = (Lg - 1) / ((int) Math.round(Math.log10(1 + gmax)));
-            int cb = (Lb - 1) / ((int) Math.round(Math.log10(1 + bmax)));
+            int red, green, blue, rgb;
 
             for (int i = 0; i < bimg.getWidth(); i++) {
                 for (int j = 0; j < bimg.getHeight(); j++) {
-                    int p = (bimg.getRGB(i, j));
-                    int red = (p >> 16) & 0xFF;
-                    int green = (p >> 8) & 0xFF;
-                    int blue = p & 0xFF;
-                    red = cr * (int) Math.round(Math.log10((double) (1 + red)));
-                    green = cg * (int) Math.round(Math.log10((double) (1 + green)));
-                    blue = cb * (int) Math.round(Math.log10((double) (1 + blue)));
-                    int rgb = ((red & 0x0ff) << 16) | ((green & 0x0ff) << 8) | (blue & 0x0ff);
+                    p = (bimg.getRGB(i, j));
+                    red = ColorUtilities.getRed(p);
+                    green = ColorUtilities.getGreen(p);
+                    blue = ColorUtilities.getBlue(p);
+                    red = (int) Math.round(cr * Math.log10((1 + red)));
+                    green = (int) Math.round(cg * Math.log10((1 + green)));
+                    blue = (int) Math.round(cb * Math.log10((1 + blue)));
+                    rgb = ColorUtilities.createRGB(red,green,blue);
                     temp.setRGB(i, j, rgb);
                 }
             }

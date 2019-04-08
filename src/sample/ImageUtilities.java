@@ -297,7 +297,9 @@ public class ImageUtilities {
                             if( b > max ){
                                 max = b;
                             }
-                        } else if (i < minWidth && j >= minHeight) {
+                        }
+                        //A
+                        else if (i < minWidth && j >= minHeight) {
                             if (firstIsHigher) {
                                 redMatrix[i][j] = ColorUtilities.getRed(bimg1.getRGB(i, j));
                                 greenMatrix[i][j] = ColorUtilities.getGreen(bimg1.getRGB(i, j));
@@ -307,7 +309,9 @@ public class ImageUtilities {
                                 greenMatrix[i][j] = ColorUtilities.getGreen(bimg2.getRGB(i, j));
                                 blueMatrix[i][j] = ColorUtilities.getBlue(bimg2.getRGB(i, j));
                             }
-                        } else if (i >= minWidth && j < minHeight) {
+                        }
+                        //B
+                        else if (i >= minWidth && j < minHeight) {
                             if (firstIsWidest) {
                                 redMatrix[i][j] = ColorUtilities.getRed(bimg1.getRGB(i, j));
                                 greenMatrix[i][j] = ColorUtilities.getGreen(bimg1.getRGB(i, j));
@@ -317,10 +321,24 @@ public class ImageUtilities {
                                 greenMatrix[i][j] = ColorUtilities.getGreen(bimg2.getRGB(i, j));
                                 blueMatrix[i][j] = ColorUtilities.getBlue(bimg2.getRGB(i, j));
                             }
-                        } else {
-                            redMatrix[i][j] = 0;
-                            greenMatrix[i][j] = 0;
-                            blueMatrix[i][j] = 0;
+                        }
+                        else {
+                            if (firstIsWidest && firstIsHigher){
+                                redMatrix[i][j] = ColorUtilities.getRed(bimg1.getRGB(i, j));
+                                greenMatrix[i][j] = ColorUtilities.getGreen(bimg1.getRGB(i, j));
+                                blueMatrix[i][j] = ColorUtilities.getBlue(bimg1.getRGB(i, j));
+                            }
+                            else if (!firstIsWidest && !firstIsHigher){
+                                redMatrix[i][j] = ColorUtilities.getRed(bimg2.getRGB(i, j));
+                                greenMatrix[i][j] = ColorUtilities.getGreen(bimg2.getRGB(i, j));
+                                blueMatrix[i][j] = ColorUtilities.getBlue(bimg2.getRGB(i, j));
+                            }
+                            else{
+                                redMatrix[i][j] = 0;
+                                greenMatrix[i][j] = 0;
+                                blueMatrix[i][j] = 0;
+                            }
+
                         }
                     }
 
@@ -387,7 +405,8 @@ public class ImageUtilities {
         return adjustDynamicRange(temp);
     }
 
-    public BufferedImage dynamicRangeCompression(BufferedImage bimg, int alpha) {
+    //reemplaza c por un escalar
+    public BufferedImage dynamicRangeCompression(BufferedImage bimg, int multiplier) {
         BufferedImage temp = null;
         try {
             temp = new BufferedImage(bimg.getWidth(), bimg.getHeight(), bimg.getType());
@@ -398,9 +417,9 @@ public class ImageUtilities {
                     red = ColorUtilities.getRed(p);
                     green = ColorUtilities.getGreen(p);
                     blue = ColorUtilities.getBlue(p);
-                    red = (int)Math.round((100 / alpha) * Math.log10(1 + red));
-                    green = (int) Math.round((100 / alpha) * Math.log10(1 + green));
-                    blue = (int) Math.round((100 / alpha) * Math.log10(1 + blue));
+                    red = (int)Math.round((100 / multiplier) * Math.log10(1 + red));
+                    green = (int) Math.round((100 / multiplier) * Math.log10(1 + green));
+                    blue = (int) Math.round((100 / multiplier) * Math.log10(1 + blue));
                     int rgb = ColorUtilities.createRGB(red, green, blue);
                     temp.setRGB(i, j, rgb);
                 }
@@ -411,6 +430,7 @@ public class ImageUtilities {
         return temp;
     }
 
+    //usa la formula entera
     public BufferedImage adjustDynamicRange(BufferedImage bimg) {
         BufferedImage temp = null;
         int pixelCount = bimg.getWidth() * bimg.getHeight();
@@ -430,12 +450,9 @@ public class ImageUtilities {
                     counter++;
                 }
             }
-
-            int rmin = this.getChannelMin(r);
+            
             int rmax = this.getChannelMax(r);
-            int gmin = this.getChannelMin(g);
             int gmax = this.getChannelMax(g);
-            int bmin = this.getChannelMin(b);
             int bmax = this.getChannelMax(b);
 
             double cr = 255 / Math.log10(1 + rmax);
@@ -1001,7 +1018,7 @@ public class ImageUtilities {
         return colorBandAverages;
     }
 
-    public BufferedImage imageContrast(BufferedImage bimg, int r1, int r2){
+    public BufferedImage imageContrast(BufferedImage bimg){
         BufferedImage result = null;
         int [][] matrix = this.getChannelMatrix(bimg);
         int r,g,b;
@@ -1011,12 +1028,14 @@ public class ImageUtilities {
             int deviation = (this.getStandardDeviation(matrix[1]));
             int R1 = median - deviation;
             int R2 = median + deviation;
+            //Parametrizar de acuerdo a las pendientes de las recatas
             double pOscuros = 0.60;
             double pClaros = 3;
             //r1 mayor a s1 y r2 menor a s2
             double s1 = (int) Math.round(R1*pOscuros);
             double s2 = (int) Math.round(R2*pClaros);
             double m = (s2 - s1) / (R2 - R1);
+            //lo llamo c porque el b lo usamos para rgb
             double c = s1 - (m * R1);
             for (int i = 0; i < bimg.getWidth(); i++) {
                 for (int j = 0; j < bimg.getHeight(); j++) {

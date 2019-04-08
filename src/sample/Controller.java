@@ -372,7 +372,7 @@ public class Controller extends BorderPane {
 //            int threshold = Integer.valueOf(JOptionPane.showInputDialog(
 //                    null, "Threshold", "Insert Threshold",
 //                    JOptionPane.DEFAULT_OPTION));
-            result = imageUtilities.imageContrast(leftImage, 85,170);
+            result = imageUtilities.imageContrast(leftImage);
             this.displayImageInPane(result,rightPane);
         }
         else

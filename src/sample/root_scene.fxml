@@ -120,6 +120,7 @@
                     <Button mnemonicParsing="false" prefWidth="200.0" text="Color band average" />
                     <Button mnemonicParsing="false" prefWidth="200.0" text="Band Average" onAction="#averagePerBand" />
                     <Button mnemonicParsing="false" prefWidth="200.0" text="Histogram" onAction="#showHistogram" />
+                    <Button mnemonicParsing="false" prefWidth="200.0" text="Equalize Histogram" onAction="#equalizeHistogram" />
                   </children>
                 </VBox>
               </children>

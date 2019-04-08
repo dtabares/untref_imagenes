@@ -42,8 +42,8 @@ public class Controller extends BorderPane {
         this.rightPaneImageList = new LinkedList<>();
         this.historyImageList = new LinkedList<>();
         this.imageUtilities = new ImageUtilities();
-//        BufferedImage test = ImageIO.read(new File("C:\\Users\\Fernando.Ares\\Desktop\\Imagenes\\cameraman.png"));
-//        imageUtilities.printChannelMatrix(imageUtilities.getChannelMatrix(test));
+//        BufferedImage test = imageUtilities.openRawImage(new File("C:\\Users\\Fernando.Ares\\Desktop\\Imagenes\\Lena.raw"),256,256);
+//        imageUtilities.getEqualizedHistogram(test);
     }
 
     //Top Menu
@@ -492,6 +492,20 @@ public class Controller extends BorderPane {
         }
 
     }
+
+    @FXML public BufferedImage equalizeHistogram(){
+        BufferedImage result = null;
+        if(leftImage!=null){
+            imageUtilities.getEqualizedHistogram(leftImage);
+            result = imageUtilities.getEqualizedHistogram(leftImage);
+            this.displayImageInPane(result,rightPane);
+        }
+        else{
+            Alerts.showAlert("No hay ninguna imagen cargada");
+        }
+        return result;
+    }
+
 
     @FXML public void RGBtoHSV()
     {

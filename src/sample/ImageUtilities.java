@@ -509,7 +509,7 @@ public class ImageUtilities {
         return channels;
     }
 
-    public BufferedImage imagePow(BufferedImage bimg, int gamma) {
+    public BufferedImage gammaPowFunction(BufferedImage bimg, double gamma) {
         BufferedImage temp = null;
         try {
             temp = new BufferedImage(bimg.getWidth(), bimg.getHeight(), bimg.getType());
@@ -517,13 +517,13 @@ public class ImageUtilities {
             for (int i = 0; i < bimg.getWidth(); i++) {
                 for (int j = 0; j < bimg.getHeight(); j++) {
                     int p = (bimg.getRGB(i, j));
-                    int red = (p >> 16) & 0xFF;
-                    int green = (p >> 8) & 0xFF;
-                    int blue = p & 0xFF;
-                    red = (int) Math.round(Math.pow((double) (1 + red), gamma));
-                    green = (int) Math.round(Math.pow((double) (1 + green), gamma));
-                    blue = (int) Math.round(Math.pow((double) (1 + blue), gamma));
-                    int rgb = ((red & 0x0ff) << 16) | ((green & 0x0ff) << 8) | (blue & 0x0ff);
+                    int red = ColorUtilities.getRed(p);
+                    int green = ColorUtilities.getGreen(p);
+                    int blue = ColorUtilities.getBlue(p);
+                    red = (int) (Math.pow((double) 255, (1.0 - gamma)) * Math.pow(red,gamma));
+                    green = (int) (Math.pow((double) 255, (1.0 - gamma)) * Math.pow(green,gamma));
+                    blue = (int) (Math.pow((double) 255, (1.0 - gamma)) * Math.pow(blue,gamma));
+                    int rgb = ColorUtilities.createRGB(red,green,blue);
                     temp.setRGB(i, j, rgb);
                 }
             }

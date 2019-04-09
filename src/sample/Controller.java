@@ -278,19 +278,9 @@ public class Controller extends BorderPane {
         return result;
     }
     @FXML public BufferedImage imagePow(){
-        int gamma=-1;
-        //        alpha = Integer.valueOf(JOptionPane.showInputDialog(
-        //                null, "Compression", "Insert Compression %",
-        //                JOptionPane.DEFAULT_OPTION));
-        //        while(alpha <= 0 || alpha > 100)
-        //        {
-        //            Alerts.showAlert("El valor debe estar entre 1 y 100");
-        //            alpha = Integer.valueOf(JOptionPane.showInputDialog(
-        //                    null, "Compression", "Insert Compression %",
-        //                    JOptionPane.DEFAULT_OPTION));
-        //            ;
-        //        }
-        BufferedImage result = imageUtilities.imagePow(leftImage,5);
+
+        double gamma = Double.valueOf(getInputDialog("Gamma Power Function", "Enter a new Value", "Gamma:"));
+        BufferedImage result = imageUtilities.gammaPowFunction(leftImage,gamma);
         this.displayImageInPane(result,rightPane);
         return result;
     }

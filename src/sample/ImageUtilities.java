@@ -390,19 +390,54 @@ public class ImageUtilities {
     }
 
     public BufferedImage imageScalarProduct(BufferedImage bimg, int scalar) {
-        BufferedImage temp = null;
+        BufferedImage temp = new BufferedImage(bimg.getWidth(), bimg.getHeight(), bimg.getType());
+        boolean adjustDynamicRangeRequired = false;
+        Channel redChannel = new Channel(bimg.getWidth(), bimg.getHeight());
+        Channel greenChannel = new Channel(bimg.getWidth(), bimg.getHeight());
+        Channel blueChannel = new Channel(bimg.getWidth(), bimg.getHeight());
+        Channel[] adjustedChannels;
+        int rgb;
+
         try {
             temp = new BufferedImage(bimg.getWidth(), bimg.getHeight(), bimg.getType());
 
             for (int i = 0; i < bimg.getWidth(); i++) {
                 for (int j = 0; j < bimg.getHeight(); j++) {
-                    temp.setRGB(i, j, bimg.getRGB(i, j) * scalar);
+                    int newRed = ColorUtilities.getRed(bimg.getRGB(i,j)) * scalar;
+                    int newGreen = ColorUtilities.getGreen(bimg.getRGB(i,j)) * scalar;
+                    int newBlue = ColorUtilities.getBlue(bimg.getRGB(i,j)) * scalar;
+                    redChannel.setValue(i,j,newRed) ;
+                    greenChannel.setValue(i,j,newGreen);
+                    blueChannel.setValue(i,j,newBlue);
+
+                    if(newRed > 255 || newGreen > 255 || newBlue > 255)
+                    {
+                        adjustDynamicRangeRequired = true;
+                    }
+
+                }
+            }
+
+            if (adjustDynamicRangeRequired)
+            {
+                adjustedChannels = this.adjustDynamicRange(redChannel,greenChannel,blueChannel);
+                redChannel = adjustedChannels[0];
+                greenChannel = adjustedChannels[1];
+                blueChannel = adjustedChannels[2];
+            }
+
+
+            // recorro las matrices y armo la buffered image
+            for (int i = 0; i < bimg.getWidth(); i++) {
+                for (int j = 0; j < bimg.getHeight(); j++) {
+                    rgb = ColorUtilities.createRGB(redChannel.getValue(i,j), greenChannel.getValue(i,j),blueChannel.getValue(i,j));
+                    temp.setRGB(i,j,rgb);
                 }
             }
         } catch (Exception e) {
             Alerts.showAlert(e.getMessage());
         }
-        return adjustDynamicRange(temp);
+        return (temp);
     }
 
     //reemplaza c por un escalar
@@ -431,54 +466,47 @@ public class ImageUtilities {
     }
 
     //usa la formula entera
-    public BufferedImage adjustDynamicRange(BufferedImage bimg) {
-        BufferedImage temp = null;
-        int pixelCount = bimg.getWidth() * bimg.getHeight();
-        int r[] = new int[pixelCount];
-        int g[] = new int[pixelCount];
-        int b[] = new int[pixelCount];
+    public Channel[] adjustDynamicRange(Channel redChannel, Channel greenChannel, Channel blueChannel) {
+        Channel[] channels = new Channel[3];
         try {
-            int p;
-            temp = new BufferedImage(bimg.getWidth(), bimg.getHeight(), bimg.getType());
-            int counter = 0;
-            for (int i = 0; i < bimg.getWidth(); i++) {
-                for (int j = 0; j < bimg.getHeight(); j++) {
-                    p = (bimg.getRGB(i, j));
-                    r[counter] = ColorUtilities.getRed(p);
-                    g[counter] = ColorUtilities.getGreen(p);
-                    b[counter] = ColorUtilities.getBlue(p);
-                    counter++;
-                }
-            }
             
-            int rmax = this.getChannelMax(r);
-            int gmax = this.getChannelMax(g);
-            int bmax = this.getChannelMax(b);
+            int rmax = redChannel.getMaxValue();
+            int gmax = greenChannel.getMaxValue();
+            int bmax = blueChannel.getMaxValue();
+            int red,green,blue;
+
+            Channel adjustedRedChannel, adjustedGreenChannel,  adjustedBlueChannel;
+            adjustedRedChannel = new Channel(redChannel.getWidth(),redChannel.getHeight());
+            adjustedGreenChannel = new Channel(greenChannel.getWidth(),greenChannel.getHeight());
+            adjustedBlueChannel = new Channel(blueChannel.getWidth(),blueChannel.getHeight());
 
             double cr = 255 / Math.log10(1 + rmax);
             double cg = 255 / Math.log10(1 + gmax);
             double cb = 255 / Math.log10(1 + bmax);
 
-            int red, green, blue, rgb;
+            for (int i = 0; i < redChannel.getWidth(); i++) {
+                for (int j = 0; j < redChannel.getHeight(); j++) {
+                    red = (int) Math.round(cr * Math.log10((1 + redChannel.getValue(i,j))));
+                    green = (int) Math.round(cg * Math.log10((1 + greenChannel.getValue(i,j))));
+                    blue = (int) Math.round(cb * Math.log10((1 + blueChannel.getValue(i,j))));
 
-            for (int i = 0; i < bimg.getWidth(); i++) {
-                for (int j = 0; j < bimg.getHeight(); j++) {
-                    p = (bimg.getRGB(i, j));
-                    red = ColorUtilities.getRed(p);
-                    green = ColorUtilities.getGreen(p);
-                    blue = ColorUtilities.getBlue(p);
-                    red = (int) Math.round(cr * Math.log10((1 + red)));
-                    green = (int) Math.round(cg * Math.log10((1 + green)));
-                    blue = (int) Math.round(cb * Math.log10((1 + blue)));
-                    rgb = ColorUtilities.createRGB(red,green,blue);
-                    temp.setRGB(i, j, rgb);
+                    adjustedRedChannel.setValue(i,j,red);
+                    adjustedGreenChannel.setValue(i,j,green);
+                    adjustedBlueChannel.setValue(i,j,blue);
+
                 }
             }
+
+            channels[0] = adjustedRedChannel;
+            channels[1] = adjustedGreenChannel;
+            channels[2] = adjustedBlueChannel;
 
         } catch (Exception e) {
             Alerts.showAlert(e.getMessage());
         }
-        return temp;
+
+
+        return channels;
     }
 
     public BufferedImage imagePow(BufferedImage bimg, int gamma) {
@@ -502,7 +530,8 @@ public class ImageUtilities {
         } catch (Exception e) {
             Alerts.showAlert(e.getMessage());
         }
-        return adjustDynamicRange(temp);
+        //return adjustDynamicRange(temp);
+        return (temp);
     }
 
     public BufferedImage imageNegative(BufferedImage bimg) {

@@ -42,8 +42,8 @@ public class Controller extends BorderPane {
         this.rightPaneImageList = new LinkedList<>();
         this.historyImageList = new LinkedList<>();
         this.imageUtilities = new ImageUtilities();
-//        BufferedImage test = imageUtilities.openRawImage(new File("C:\\Users\\Fernando.Ares\\Desktop\\Imagenes\\Lena.raw"),256,256);
-//        imageUtilities.getEqualizedHistogram(test);
+        BufferedImage test = imageUtilities.openRawImage(new File("C:\\Users\\Fernando.Ares\\Desktop\\Imagenes\\Lena.raw"),256,256);
+        imageUtilities.imageEqualization(test);
     }
 
     //Top Menu
@@ -243,11 +243,11 @@ public class Controller extends BorderPane {
         this.displayImageInPane(leftImage, leftPane);
         return result;
     }
-    public BufferedImage imageSubtraction(){
+    public BufferedImage imageDifference(){
         BufferedImage temp = leftImage;
         BufferedImage bimg = this.openImageFile();
         leftImage = temp;
-        BufferedImage result = imageUtilities.imageSubtraction(leftImage,bimg);
+        BufferedImage result = imageUtilities.imageDifference(leftImage,bimg);
         this.displayImageInPane(result,rightPane);
         this.displayImageInPane(leftImage, leftPane);
         return result;
@@ -288,7 +288,6 @@ public class Controller extends BorderPane {
         BufferedImage result = null;
         if (leftImage != null) {
             result = imageUtilities.imageNegative(leftImage);
-            WritableImage wimg = imageUtilities.readImage(result);
             this.displayImageInPane(result, rightPane);
         }
         else
@@ -486,8 +485,7 @@ public class Controller extends BorderPane {
     @FXML public BufferedImage equalizeHistogram(){
         BufferedImage result = null;
         if(leftImage!=null){
-            imageUtilities.getEqualizedHistogram(leftImage);
-            result = imageUtilities.getEqualizedHistogram(leftImage);
+            result = imageUtilities.imageEqualization(leftImage);
             this.displayImageInPane(result,rightPane);
         }
         else{

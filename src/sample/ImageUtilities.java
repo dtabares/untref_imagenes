@@ -13,8 +13,10 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.math.RoundingMode;
 import java.nio.Buffer;
 import java.nio.file.Files;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -368,17 +370,133 @@ public class ImageUtilities {
         return temp;
     }
 
-    public BufferedImage imageSubtraction(BufferedImage bimg1, BufferedImage bimg2) {
+    public BufferedImage imageDifference(BufferedImage bimg1, BufferedImage bimg2) {
         BufferedImage temp = null;
         try {
             if (bimg1.getType() == bimg2.getType()) {
-                temp = new BufferedImage(bimg1.getWidth(), bimg1.getHeight(), bimg1.getType());
+                boolean firstIsWidest = bimg1.getWidth() >= bimg2.getWidth();
+                boolean firstIsHigher = bimg1.getHeight() >= bimg2.getHeight();
+                int maxWidth;
+                int minWidth;
+                int maxHeight;
+                int minHeight;
+                if (bimg1.getWidth() >= bimg2.getWidth()) {
+                    maxWidth = bimg1.getWidth();
+                    minWidth = bimg2.getWidth();
+                } else {
+                    maxWidth = bimg2.getWidth();
+                    minWidth = bimg1.getWidth();
+                }
+                if (bimg1.getHeight() >= bimg2.getHeight()) {
+                    maxHeight = bimg1.getHeight();
+                    minHeight = bimg2.getHeight();
+                } else {
+                    maxHeight = bimg2.getHeight();
+                    minHeight = bimg1.getHeight();
+                }
+                temp = new BufferedImage(maxWidth, maxHeight, bimg1.getType());
 
-                for (int i = 0; i < bimg1.getWidth(); i++) {
-                    for (int j = 0; j < bimg1.getHeight(); j++) {
-                        temp.setRGB(i, j, bimg1.getRGB(i, j) - bimg2.getRGB(i, j));
+                int [][] redMatrix = new int [maxWidth][maxHeight];
+                int [][] greenMatrix = new int [maxWidth][maxHeight];
+                int [][] blueMatrix = new int [maxWidth][maxHeight];
+
+                int r,b,g;
+                int max = 0, min = 255;
+                for (int i = 0; i < maxWidth; i++) {
+                    for (int j = 0; j < maxHeight; j++) {
+                        if (i < minWidth && j < minHeight) {
+                            r = ColorUtilities.getRed(bimg1.getRGB(i, j)) - ColorUtilities.getRed(bimg2.getRGB(i, j));
+                            g = ColorUtilities.getGreen(bimg1.getRGB(i, j)) - ColorUtilities.getGreen(bimg2.getRGB(i, j));
+                            b = ColorUtilities.getBlue(bimg1.getRGB(i, j)) - ColorUtilities.getBlue(bimg2.getRGB(i, j));
+                            redMatrix[i][j]=r;
+                            greenMatrix[i][j]=g;
+                            blueMatrix[i][j]=b;
+                            if( r > max ){
+                                max = r;
+                            }
+                            if( g > max ){
+                                max = g;
+                            }
+                            if( b > max ){
+                                max = b;
+                            }
+                            if( r < min){
+                                min = r;
+                            }
+                            if( g < min ){
+                                min = g;
+                            }
+                            if( b < min ){
+                                min = b;
+                            }
+                        }
+                        //A
+                        else if (i < minWidth && j >= minHeight) {
+                            if (firstIsHigher) {
+                                redMatrix[i][j] = ColorUtilities.getRed(bimg1.getRGB(i, j));
+                                greenMatrix[i][j] = ColorUtilities.getGreen(bimg1.getRGB(i, j));
+                                blueMatrix[i][j] = ColorUtilities.getBlue(bimg1.getRGB(i, j));
+                            } else {
+                                redMatrix[i][j] = ColorUtilities.getRed(bimg2.getRGB(i, j));
+                                greenMatrix[i][j] = ColorUtilities.getGreen(bimg2.getRGB(i, j));
+                                blueMatrix[i][j] = ColorUtilities.getBlue(bimg2.getRGB(i, j));
+                            }
+                        }
+                        //B
+                        else if (i >= minWidth && j < minHeight) {
+                            if (firstIsWidest) {
+                                redMatrix[i][j] = ColorUtilities.getRed(bimg1.getRGB(i, j));
+                                greenMatrix[i][j] = ColorUtilities.getGreen(bimg1.getRGB(i, j));
+                                blueMatrix[i][j] = ColorUtilities.getBlue(bimg1.getRGB(i, j));
+                            } else {
+                                redMatrix[i][j] = ColorUtilities.getRed(bimg2.getRGB(i, j));
+                                greenMatrix[i][j] = ColorUtilities.getGreen(bimg2.getRGB(i, j));
+                                blueMatrix[i][j] = ColorUtilities.getBlue(bimg2.getRGB(i, j));
+                            }
+                        }
+                        else {
+                            if (firstIsWidest && firstIsHigher){
+                                redMatrix[i][j] = ColorUtilities.getRed(bimg1.getRGB(i, j));
+                                greenMatrix[i][j] = ColorUtilities.getGreen(bimg1.getRGB(i, j));
+                                blueMatrix[i][j] = ColorUtilities.getBlue(bimg1.getRGB(i, j));
+                            }
+                            else if (!firstIsWidest && !firstIsHigher){
+                                redMatrix[i][j] = ColorUtilities.getRed(bimg2.getRGB(i, j));
+                                greenMatrix[i][j] = ColorUtilities.getGreen(bimg2.getRGB(i, j));
+                                blueMatrix[i][j] = ColorUtilities.getBlue(bimg2.getRGB(i, j));
+                            }
+                            else{
+                                redMatrix[i][j] = 0;
+                                greenMatrix[i][j] = 0;
+                                blueMatrix[i][j] = 0;
+                            }
+
+                        }
                     }
 
+                }
+                int newR,newG,newB;
+                for (int i = 0; i < temp.getWidth(); i++){
+                    for (int j = 0; j < temp.getHeight(); j++){
+                        if (min < 0){
+                            if (max !=0) {
+                                newR = (((redMatrix[i][j] + 255) * 255) / Math.abs(max));
+                                newG = (((greenMatrix[i][j] + 255) * 255) / Math.abs(max));
+                                newB = (((blueMatrix[i][j] + 255) * 255) / Math.abs(max));
+                                temp.setRGB(i, j, ColorUtilities.createRGB(newR, newG, newB));
+                            }
+                            else{
+                                newR = (redMatrix[i][j] + 255);
+                                newG = (greenMatrix[i][j] + 255);
+                                newB = (blueMatrix[i][j] + 255);
+                                temp.setRGB(i, j, ColorUtilities.createRGB(newR, newG, newB));
+                            }
+                        }
+                        else{
+                            temp.setRGB(i,j,ColorUtilities.createRGB(redMatrix[i][j], greenMatrix[i][j], blueMatrix[i][j]));
+                        }
+
+                    }
                 }
             } else {
                 Alerts.showAlert("No se pueden sumar formatos diferentes");
@@ -386,7 +504,8 @@ public class ImageUtilities {
         } catch (Exception e) {
             Alerts.showAlert(e.getMessage());
         }
-        return (temp);
+
+        return temp;
     }
 
     public BufferedImage imageScalarProduct(BufferedImage bimg, int scalar) {
@@ -542,10 +661,10 @@ public class ImageUtilities {
             for (int i = 0; i < bimg.getWidth(); i++) {
                 for (int j = 0; j < bimg.getHeight(); j++) {
                     int p = (bimg.getRGB(i, j));
-                    int red = 255 - ((p >> 16) & 0xFF);
-                    int green = 255 - ((p >> 8) & 0xFF);
-                    int blue = 255 - (p & 0xFF);
-                    int rgb = ((red & 0x0ff) << 16) | ((green & 0x0ff) << 8) | (blue & 0x0ff);
+                    int red = 255 - ColorUtilities.getRed(p);
+                    int green = 255 -  ColorUtilities.getGreen(p);
+                    int blue = 255 -  ColorUtilities.getBlue(p);
+                    int rgb = ColorUtilities.createRGB(red,green,blue);
                     temp.setRGB(i, j, rgb);
                 }
             }
@@ -873,7 +992,7 @@ public class ImageUtilities {
         newWindow.show();
     }
 
-    public BufferedImage getEqualizedHistogram(BufferedImage bimg){
+    public BufferedImage imageEqualization(BufferedImage bimg){
 
         int rgb, red, green, blue;
         boolean grey = this.isGreyImage(bimg);
@@ -900,16 +1019,20 @@ public class ImageUtilities {
         printChannelVector(redHistogram);
         int accumulatedDistribution[] = getAccumulatedDistribution(redHistogram);
         printChannelVector(accumulatedDistribution);
-        float sk[] = new float[256];
-        sk[0] = (accumulatedDistribution[0]/pixelCount);
+        double sk[] = new double[256];
+        sk[0] = (accumulatedDistribution[0]/pixelCount) *1000;
+
         if(grey){
+            int smin=255;
             for (int i = 1; i < 256; i++){
-                System.out.println("i: " + i + " sk: " + sk[i-1] + " acumulado: " + accumulatedDistribution[i] + " result: " + (sk[i-1] + (accumulatedDistribution[i]/pixelCount)) + " round: " +  Math.round((accumulatedDistribution[i]/pixelCount)));
-                sk[i] = (sk[i-1] + (accumulatedDistribution[i]/pixelCount));
+                sk[i] = sk[i-1] + ((accumulatedDistribution[i]/pixelCount)*1000);
+                if(sk[i]<smin){
+                    smin = (int) Math.round(sk[i])/1000;
+                }
+                System.out.println("posicion: " + i + " sk: " + sk[i] + " acumulado: " + accumulatedDistribution[i] + " result: " + (sk[i-1] + (accumulatedDistribution[i]/pixelCount)) + " round: " +  Math.round((accumulatedDistribution[i]/pixelCount)));
             }
-            //int smin = getChannelMin(sk);
             for (int i = 1; i < 256; i++){
-              //  sk[i] = (int) Math.round((((sk[i] -  smin)/(1-smin))*255)+ 0.5);
+                sk[i] = (int) Math.round((((sk[i] - smin)/(1-smin))*255)+ 0.5)/1000;
             }
             //printChannelVector(sk);
             for (int i = 0; i < bimg.getWidth(); i++){
@@ -1051,8 +1174,8 @@ public class ImageUtilities {
         BufferedImage result = null;
         int [][] matrix = this.getChannelMatrix(bimg);
         int r,g,b;
+        result = new BufferedImage(bimg.getWidth(), bimg.getHeight(), bimg.getType());
         if (isGreyImage(bimg)) {
-            result = new BufferedImage(bimg.getWidth(), bimg.getHeight(), bimg.getType());
             int median = getMedian(matrix[1]);
             int deviation = (this.getStandardDeviation(matrix[1]));
             int R1 = median - deviation;
@@ -1078,14 +1201,59 @@ public class ImageUtilities {
                         result.setRGB(i, j, ColorUtilities.createRGB((int)Math.round(pClaros*r),(int)Math.round(pClaros*g), (int)Math.round(pClaros*b)));
                     }
                     else {
-                        //result.setRGB(i, j, bimg.getRGB(i,j));
                         result.setRGB(i, j, ColorUtilities.createRGB((int)Math.round((m*r)+c),(int)Math.round((m*g)+c), (int)Math.round((m*b)+c)));
                     }
                 }
             }
         }
         else {
-            Alerts.showAlert("No es una imagen en escala de grises");
+            int rMedian = getMedian(matrix[0]);
+            int gMedian = getMedian(matrix[1]);
+            int bMedian = getMedian(matrix[2]);
+            int rDeviation = (this.getStandardDeviation(matrix[0]));
+            int gDeviation = (this.getStandardDeviation(matrix[1]));
+            int bDeviation = (this.getStandardDeviation(matrix[2]));
+            int rR1 = rMedian - rDeviation;
+            int rR2 = rMedian + rDeviation;
+            int gR1 = gMedian - gDeviation;
+            int gR2 = gMedian + gDeviation;
+            int bR1 = bMedian - bDeviation;
+            int bR2 = bMedian + bDeviation;
+            //Parametrizar de acuerdo a las pendientes de las rectas
+            double pOscuros = 0.80;
+            double pClaros = 2;
+            //r1 mayor a s1 y r2 menor a s2
+            double rS1 = (int) Math.round(rR1*pOscuros);
+            double rS2 = (int) Math.round(rR2*pClaros);
+            double gS1 = (int) Math.round(gR1*pOscuros);
+            double gS2 = (int) Math.round(gR2*pClaros);
+            double bS1 = (int) Math.round(bR1*pOscuros);
+            double bS2 = (int) Math.round(gR2*pClaros);
+            //Calculo la pendiente por cada canal
+            double rM = (rS2 - rS1) / (rR2 - rR1);
+            double gM = (gS2 - gS1) / (gR2 - gR1);
+            double bM = (bS2 - bS1) / (bR2 - bR1);
+            //Calculo la ordenada al origen por cada canal
+            double rB = rS1 - (rM * rR1);
+            double gB = gS1 - (gM * gR1);
+            double bB = bS1 - (bM * bR1);
+            for (int i = 0; i < bimg.getWidth(); i++) {
+                for (int j = 0; j < bimg.getHeight(); j++) {
+                    r = ColorUtilities.getRed(bimg.getRGB(i,j));
+                    g = ColorUtilities.getGreen(bimg.getRGB(i,j));
+                    b = ColorUtilities.getBlue(bimg.getRGB(i,j));
+                    //Estamos usando los parametros del canal rojo, hay que ver si usamos la maxima desviacion o la minima
+                    if (bimg.getRGB(i, j) < rR1) {
+                        result.setRGB(i, j, ColorUtilities.createRGB((int)Math.round((pOscuros*r)),(int)Math.round(pOscuros*g),(int)Math.round(pOscuros*b)));
+                    }
+                    else if(bimg.getRGB(i, j) > rR2){
+                        result.setRGB(i, j, ColorUtilities.createRGB((int)Math.round(pClaros*r),(int)Math.round(pClaros*g), (int)Math.round(pClaros*b)));
+                    }
+                    else {
+                        result.setRGB(i, j, ColorUtilities.createRGB((int)Math.round((rM*r)+rB),(int)Math.round((rM*g)+rB), (int)Math.round((rM*b)+rB)));
+                    }
+                }
+            }
         }
         return result;
     }

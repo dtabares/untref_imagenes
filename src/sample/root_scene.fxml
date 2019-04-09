@@ -56,7 +56,7 @@
                     <Button mnemonicParsing="false" onAction="#modifyPixelInformation" prefWidth="205.0" text="Modify Pixel" />
                     <Button mnemonicParsing="false" onAction="#copyImageSelection" prefWidth="205.0" text="Select and Duplicate" />
                     <Button mnemonicParsing="false" onAction="#imageAddition" prefWidth="205.0" text="Image Addition" />
-                    <Button mnemonicParsing="false" onAction="#imageSubtraction" prefWidth="205.0" text="Image Substraction" />
+                    <Button mnemonicParsing="false" onAction="#imageDifference" prefWidth="205.0" text="Image Difference" />
                     <Button mnemonicParsing="false" onAction="#imageScalarProduct" prefWidth="205.0" text="Image Scalar Product" />
                     <Button mnemonicParsing="false" onAction="#dynamicRangeCompression" prefWidth="205.0" text="Dynamic Range Compression" />
                     <Button mnemonicParsing="false" onAction="#imagePow" prefWidth="205.0" text="Pow Function" />

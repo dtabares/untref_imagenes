@@ -251,9 +251,7 @@ public class Controller extends BorderPane {
         return result;
     }
     public BufferedImage imageScalarProduct(){
-        int scalar = Integer.valueOf(JOptionPane.showInputDialog(
-                null, "Scalar", "Insert Scalar",
-                JOptionPane.DEFAULT_OPTION));
+        int scalar = Integer.valueOf(getInputDialog("Scalar Product", "Enter new Value", "scalar:"));
         BufferedImage result = imageUtilities.imageScalarProduct(leftImage,scalar);
         this.displayImageInPane(result,rightPane);
         return result;

@@ -249,44 +249,57 @@ public class ImageUtilities {
         return image;
     }
 
-    public BufferedImage imageAddition(BufferedImage bimg1, BufferedImage bimg2) {
-        BufferedImage temp = null;
+    public BufferedImage imageAddition(BufferedImage i1, BufferedImage i2) {
+        Image image1 = new Image(i1);
+        Image image2 = new Image(i2);
+        BufferedImage result = null;
         try {
-            if (bimg1.getType() == bimg2.getType()) {
-                boolean firstIsWidest = bimg1.getWidth() >= bimg2.getWidth();
-                boolean firstIsHigher = bimg1.getHeight() >= bimg2.getHeight();
+            if (image1.getImageType() == image2.getImageType()) {
+                boolean firstIsWidest = image1.getWidth() >= image2.getWidth();
+                boolean firstIsHigher = image1.getHeight() >= image2.getHeight();
                 int maxWidth;
                 int minWidth;
                 int maxHeight;
                 int minHeight;
-                if (bimg1.getWidth() >= bimg2.getWidth()) {
-                    maxWidth = bimg1.getWidth();
-                    minWidth = bimg2.getWidth();
+                if (image1.getWidth() >= image2.getWidth()) {
+                    maxWidth = image1.getWidth();
+                    minWidth = image2.getWidth();
                 } else {
-                    maxWidth = bimg2.getWidth();
-                    minWidth = bimg1.getWidth();
+                    maxWidth = image2.getWidth();
+                    minWidth = image1.getWidth();
                 }
-                if (bimg1.getHeight() >= bimg2.getHeight()) {
-                    maxHeight = bimg1.getHeight();
-                    minHeight = bimg2.getHeight();
+                if (image1.getHeight() >= image2.getHeight()) {
+                    maxHeight = image1.getHeight();
+                    minHeight = image2.getHeight();
                 } else {
-                    maxHeight = bimg2.getHeight();
-                    minHeight = bimg1.getHeight();
+                    maxHeight = image2.getHeight();
+                    minHeight = image1.getHeight();
                 }
-                temp = new BufferedImage(maxWidth, maxHeight, bimg1.getType());
+                result = new BufferedImage(maxWidth, maxHeight, image1.getImageType());
+
+
 
                 int [][] redMatrix = new int [maxWidth][maxHeight];
                 int [][] greenMatrix = new int [maxWidth][maxHeight];
                 int [][] blueMatrix = new int [maxWidth][maxHeight];
+                int [][] image1RedMatrix = image1.getRedDataMatrixChannel();
+                int [][] image1GreenMatrix = image1.getGreenDataMatrixChannel();
+                int [][] image1BlueMatrix = image1.getBlueDataMatrixChannel();
+                int [][] image2RedMatrix = image2.getRedDataMatrixChannel();
+                int [][] image2GreenMatrix = image2.getGreenDataMatrixChannel();
+                int [][] image2BlueMatrix = image2.getBlueDataMatrixChannel();
 
                 int r,b,g;
-                int max = 0;
+                int max= 0;
+                int min = 255;
                 for (int i = 0; i < maxWidth; i++) {
                     for (int j = 0; j < maxHeight; j++) {
+                        System.out.println("Max: " + max + " Min: " + min);
                         if (i < minWidth && j < minHeight) {
-                            r = ColorUtilities.getRed(bimg1.getRGB(i, j)) + ColorUtilities.getRed(bimg2.getRGB(i, j));
-                            g = ColorUtilities.getGreen(bimg1.getRGB(i, j)) + ColorUtilities.getGreen(bimg2.getRGB(i, j));
-                            b = ColorUtilities.getBlue(bimg1.getRGB(i, j)) + ColorUtilities.getBlue(bimg2.getRGB(i, j));
+                            r = image1RedMatrix[i][j] + image2RedMatrix[i][j];
+                            g = image1GreenMatrix[i][j] + image2GreenMatrix[i][j];
+                            b = image1BlueMatrix[i][j] + image2BlueMatrix[i][j];
+                            System.out.println("r: " + r + " g: " + g + " b: " + b);
                             redMatrix[i][j]=r;
                             greenMatrix[i][j]=g;
                             blueMatrix[i][j]=b;
@@ -299,67 +312,144 @@ public class ImageUtilities {
                             if( b > max ){
                                 max = b;
                             }
+                            if( r < min ){
+                                min = r;
+                            }
+                            if( g < min ){
+                                min = g;
+                            }
+                            if( b < min ){
+                                min = b;
+                            }
                         }
                         //A
                         else if (i < minWidth && j >= minHeight) {
                             if (firstIsHigher) {
-                                redMatrix[i][j] = ColorUtilities.getRed(bimg1.getRGB(i, j));
-                                greenMatrix[i][j] = ColorUtilities.getGreen(bimg1.getRGB(i, j));
-                                blueMatrix[i][j] = ColorUtilities.getBlue(bimg1.getRGB(i, j));
+                                redMatrix[i][j] = image1RedMatrix[i][j];
+                                greenMatrix[i][j] = image1GreenMatrix[i][j];
+                                blueMatrix[i][j] = image1BlueMatrix[i][j];
                             } else {
-                                redMatrix[i][j] = ColorUtilities.getRed(bimg2.getRGB(i, j));
-                                greenMatrix[i][j] = ColorUtilities.getGreen(bimg2.getRGB(i, j));
-                                blueMatrix[i][j] = ColorUtilities.getBlue(bimg2.getRGB(i, j));
+                                redMatrix[i][j] = image2RedMatrix[i][j];
+                                greenMatrix[i][j] = image2GreenMatrix[i][j];
+                                blueMatrix[i][j] = image2BlueMatrix[i][j];
+                            }
+                            if( redMatrix[i][j] > max ){
+                                max = redMatrix[i][j];
+                            }
+                            if( greenMatrix[i][j] > max ){
+                                max = greenMatrix[i][j];
+                            }
+                            if( blueMatrix[i][j] > max ){
+                                max = blueMatrix[i][j];
+                            }
+                            if( redMatrix[i][j] < min ){
+                                min = redMatrix[i][j];
+                            }
+                            if( greenMatrix[i][j] < min ){
+                                min = greenMatrix[i][j];
+                            }
+                            if( blueMatrix[i][j] < min ){
+                                min = blueMatrix[i][j];
                             }
                         }
                         //B
                         else if (i >= minWidth && j < minHeight) {
                             if (firstIsWidest) {
-                                redMatrix[i][j] = ColorUtilities.getRed(bimg1.getRGB(i, j));
-                                greenMatrix[i][j] = ColorUtilities.getGreen(bimg1.getRGB(i, j));
-                                blueMatrix[i][j] = ColorUtilities.getBlue(bimg1.getRGB(i, j));
+                                redMatrix[i][j] = image1RedMatrix[i][j];
+                                greenMatrix[i][j] = image1GreenMatrix[i][j];
+                                blueMatrix[i][j] = image1BlueMatrix[i][j];
                             } else {
-                                redMatrix[i][j] = ColorUtilities.getRed(bimg2.getRGB(i, j));
-                                greenMatrix[i][j] = ColorUtilities.getGreen(bimg2.getRGB(i, j));
-                                blueMatrix[i][j] = ColorUtilities.getBlue(bimg2.getRGB(i, j));
+                                redMatrix[i][j] = image2RedMatrix[i][j];
+                                greenMatrix[i][j] = image2GreenMatrix[i][j];
+                                blueMatrix[i][j] = image2BlueMatrix[i][j];
+                            }
+                            if( redMatrix[i][j] > max ){
+                                max = redMatrix[i][j];
+                            }
+                            if( greenMatrix[i][j] > max ){
+                                max = greenMatrix[i][j];
+                            }
+                            if( blueMatrix[i][j] > max ){
+                                max = blueMatrix[i][j];
+                            }
+                            if( redMatrix[i][j] < min ){
+                                min = redMatrix[i][j];
+                            }
+                            if( greenMatrix[i][j] < min ){
+                                min = greenMatrix[i][j];
+                            }
+                            if( blueMatrix[i][j] < min ){
+                                min = blueMatrix[i][j];
                             }
                         }
                         else {
                             if (firstIsWidest && firstIsHigher){
-                                redMatrix[i][j] = ColorUtilities.getRed(bimg1.getRGB(i, j));
-                                greenMatrix[i][j] = ColorUtilities.getGreen(bimg1.getRGB(i, j));
-                                blueMatrix[i][j] = ColorUtilities.getBlue(bimg1.getRGB(i, j));
+                                redMatrix[i][j] = image1RedMatrix[i][j];
+                                greenMatrix[i][j] = image1GreenMatrix[i][j];
+                                blueMatrix[i][j] = image1BlueMatrix[i][j];
                             }
                             else if (!firstIsWidest && !firstIsHigher){
-                                redMatrix[i][j] = ColorUtilities.getRed(bimg2.getRGB(i, j));
-                                greenMatrix[i][j] = ColorUtilities.getGreen(bimg2.getRGB(i, j));
-                                blueMatrix[i][j] = ColorUtilities.getBlue(bimg2.getRGB(i, j));
+                                redMatrix[i][j] = image2RedMatrix[i][j];
+                                greenMatrix[i][j] = image2GreenMatrix[i][j];
+                                blueMatrix[i][j] = image2BlueMatrix[i][j];
                             }
                             else{
                                 redMatrix[i][j] = 0;
                                 greenMatrix[i][j] = 0;
                                 blueMatrix[i][j] = 0;
                             }
-
+                            if( redMatrix[i][j] > max ){
+                                max = redMatrix[i][j];
+                            }
+                            if( greenMatrix[i][j] > max ){
+                                max = greenMatrix[i][j];
+                            }
+                            if( blueMatrix[i][j] > max ){
+                                max = blueMatrix[i][j];
+                            }
+                            if( redMatrix[i][j] < min ){
+                                min = redMatrix[i][j];
+                            }
+                            if( greenMatrix[i][j] < min ){
+                                min = greenMatrix[i][j];
+                            }
+                            if( blueMatrix[i][j] < min ){
+                                min = blueMatrix[i][j];
+                            }
                         }
                     }
 
                 }
-                int newR,newG,newB;
-                for (int i = 0; i < temp.getWidth(); i++){
-                    for (int j = 0; j < temp.getHeight(); j++){
-                        if (max > 255){
-                            newR = ((redMatrix[i][j] * 255) / max);
-                            newG = ((greenMatrix[i][j] * 255) / max);
-                            newB = ((blueMatrix[i][j] * 255) / max);
-                            temp.setRGB(i,j,ColorUtilities.createRGB(newR,newG,newB));
-                        }
-                        else{
-                            temp.setRGB(i,j,ColorUtilities.createRGB(redMatrix[i][j], greenMatrix[i][j], blueMatrix[i][j]));
-                        }
 
+                if(max > 255 || min < 0)
+                {
+                    // Tengo que hacer una Transformacion Lineal para ajustar la escala
+                    System.out.println("TRANSFORMADA: ");
+                    System.out.println("Max: " + max + " Min: " + min);
+                    int newR,newG,newB;
+                    double  m = 255.0/(double)(max - min);
+                    double c = (-255.0 * (double)min) /(double) (max - min);
+                    System.out.println("m: " + m + " c: " + c);
+                    for (int i = 0; i < result.getWidth(); i++){
+                        for (int j = 0; j < result.getHeight(); j++){
+                            newR = (int) (m * redMatrix[i][j] + c);
+                            newG = (int) (m * greenMatrix[i][j] + c);
+                            newB = (int) (m * blueMatrix[i][j] + c);
+                            //System.out.println("newR: " + newR + " newG: " + newG + " newB: " + newB);
+                            result.setRGB(i,j,ColorUtilities.createRGB(newR,newG,newB));
+                        }
                     }
                 }
+                else
+                {
+                    // No hace falta ajustar nada
+                    for (int i = 0; i < result.getWidth(); i++) {
+                        for (int j = 0; j < result.getHeight(); j++) {
+                            result.setRGB(i,j,ColorUtilities.createRGB(redMatrix[i][j], greenMatrix[i][j], blueMatrix[i][j]));
+                        }
+                    }
+                }
+
             } else {
                 Alerts.showAlert("No se pueden sumar formatos diferentes");
             }
@@ -367,7 +457,7 @@ public class ImageUtilities {
             Alerts.showAlert(e.getMessage());
         }
 
-        return temp;
+        return result;
     }
 
     public BufferedImage imageDifference(BufferedImage bimg1, BufferedImage bimg2) {

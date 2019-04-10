@@ -8,12 +8,14 @@ public class Image {
 
     // Full Image attributes
     private BufferedImage bufferedImage;
-    private int[][] dataMatrix;
+    private int[][] greyDataMatrix;
     private int width;
     private int height;
     private int imageType;
     private boolean splittedInRGBbands;
     private boolean splittedInHSVbands;
+    private boolean isGrey;
+
 
     // RGB Band Attributes
     private BufferedImage redBufferedImageChannel;
@@ -37,30 +39,45 @@ public class Image {
         this.height = bufferedImage.getHeight();
         this.width = bufferedImage.getWidth();
         this.imageType = bufferedImage.getType();
-        this.dataMatrix = new int[this.width][this.height];
+        this.greyDataMatrix = new int[this.width][this.height];
         this.bufferedImageToDataMatrix();
         this.splittedInRGBbands = false;
         this.splittedInHSVbands = false;
 
     }
 
-    public Image(int[][] dataMatrix, int imageType) {
-        this.dataMatrix = dataMatrix;
-        this.imageType = imageType;
-        this.width = dataMatrix.length;
-        this.height = dataMatrix[0].length;
-        this.bufferedImage = new BufferedImage(this.width,this.height,imageType);
+    public Image(int[][] greyDataMatrix) {
+        this.greyDataMatrix = greyDataMatrix;
+        this.imageType = BufferedImage.TYPE_BYTE_GRAY;
+        this.width = this.greyDataMatrix.length;
+        this.height = this.greyDataMatrix[0].length;
+        this.bufferedImage = new BufferedImage(this.width,this.height,this.imageType);
         this.dataMatrixToBufferedImage();
         this.splittedInRGBbands = false;
         this.splittedInHSVbands = false;
+        this.isGrey = true;
+    }
+
+    public Image(int[][] redDataMatrix, int[][] greenDataMatrix, int[][] blueDataMatrix) {
+        this.redDataMatrixChannel = redDataMatrix;
+        this.greenDataMatrixChannel = greenDataMatrix;
+        this.blueDataMatrixChannel = blueDataMatrix;
+        this.imageType = BufferedImage.TYPE_INT_RGB;
+        this.width = redDataMatrix.length;
+        this.height = redDataMatrix[0].length;
+        this.bufferedImage = new BufferedImage(this.width,this.height,this.imageType);
+        this.dataMatrixToBufferedImage();
+        this.splittedInRGBbands = false;
+        this.splittedInHSVbands = false;
+        this.isGrey = false;
     }
 
     public BufferedImage getBufferedImage() {
         return bufferedImage;
     }
 
-    public int[][] getDataMatrix() {
-        return dataMatrix;
+    public int[][] getGreyDataMatrix() {
+        return greyDataMatrix;
     }
 
     public int getWidth() {
@@ -78,17 +95,29 @@ public class Image {
     private void bufferedImageToDataMatrix(){
         for (int i = 0; i < this.width; i++) {
             for (int j = 0; j < this.height; j++) {
-                this.dataMatrix[i][j] = this.bufferedImage.getRGB(i,j);
+                this.greyDataMatrix[i][j] = this.bufferedImage.getRGB(i,j);
             }
         }
     }
 
     private void dataMatrixToBufferedImage(){
-        for (int i = 0; i < this.width; i++) {
-            for (int j = 0; j < this.height; j++) {
-                this.bufferedImage.setRGB(i,j,this.dataMatrix[i][j]);
+        if (this.isGrey){
+            for (int i = 0; i < this.width; i++) {
+                for (int j = 0; j < this.height; j++) {
+                    this.bufferedImage.setRGB(i,j,ColorUtilities.createRGB(this.greyDataMatrix[i][j],this.greyDataMatrix[i][j],this.greyDataMatrix[i][j]));
+                }
             }
         }
+        else {
+            int rgb;
+            for (int i = 0; i < this.width; i++) {
+                for (int j = 0; j < this.height; j++) {
+                    rgb = ColorUtilities.createRGB(this.redDataMatrixChannel[i][j], this.greenBufferedImageChannel[i][j], this.blueDataMatrixChannel[i][j]);
+                    this.bufferedImage.setRGB(i,j,rgb);
+                }
+            }
+        }
+
     }
 
     private void splitInRGBcolorBands(){

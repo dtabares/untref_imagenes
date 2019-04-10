@@ -116,8 +116,6 @@
               <children>
                 <VBox layoutX="0.0" layoutY="0.0" prefHeight="284.0" prefWidth="200.0">
                   <children>
-                    <Button mnemonicParsing="false" prefWidth="200.0" text="Grey level average" />
-                    <Button mnemonicParsing="false" prefWidth="200.0" text="Color band average" />
                     <Button mnemonicParsing="false" prefWidth="200.0" text="Band Average" onAction="#averagePerBand" />
                     <Button mnemonicParsing="false" prefWidth="200.0" text="Histogram" onAction="#showHistogram" />
                     <Button mnemonicParsing="false" prefWidth="200.0" text="Equalize Histogram" onAction="#equalizeHistogram" />

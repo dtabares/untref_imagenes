@@ -590,6 +590,32 @@ public class Controller extends BorderPane {
         }
     }
 
+    @FXML public void gaussianNumberGenerator(){
+        double standardDev = Double.valueOf(getInputDialog("Gaussian Number Generator", "Enter a new Value", "Standard Deviation:"));
+        double mean = Double.valueOf(getInputDialog("Gaussian Number Generator", "Enter a new Value", "Mean:"));
+        String message = "Gaussian Number: ";
+        int randomNumber = NumberGenerator.generateRandomGaussianNumber(mean, standardDev);
+        message = message + randomNumber;
+        this.setBottomText(message);
+    }
+
+    @FXML public void rayleighNumberGenerator(){
+        double phi = Double.valueOf(getInputDialog("Rayleigh Number Generator", "Enter a new Value", "Phi:"));
+        String message = "Rayleigh Number: ";
+        int randomNumber = NumberGenerator.generateRandomRayleighNumber(phi);
+        message = message + randomNumber;
+        this.setBottomText(message);
+    }
+
+    @FXML public void exponentialNumberGenerator(){
+        double lambda = Double.valueOf(getInputDialog("Exponential Number Generator", "Enter a new Value", "Lambda:"));
+        String message = "Exponential Number: ";
+        int randomNumber = NumberGenerator.generateRandomExponentialNumber(lambda);
+        message = message + randomNumber;
+        this.setBottomText(message);
+    }
+
+
     //Panels
 
     public void displayImageInPane(BufferedImage bimg, AnchorPane pane){

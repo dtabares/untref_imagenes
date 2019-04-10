@@ -42,8 +42,6 @@ public class Controller extends BorderPane {
         this.rightPaneImageList = new LinkedList<>();
         this.historyImageList = new LinkedList<>();
         this.imageUtilities = new ImageUtilities();
-        BufferedImage test = imageUtilities.openRawImage(new File("C:\\Users\\Fernando.Ares\\Desktop\\Imagenes\\Lena.raw"),256,256);
-        imageUtilities.imageEqualization(test);
     }
 
     //Top Menu
@@ -503,12 +501,15 @@ public class Controller extends BorderPane {
         }
         else
         {
-            float[] hsv = ColorUtilities.RGBtoHSV(255,10,40);
-            System.out.println("Hue: " + hsv[0] + " Saturation: " + hsv[1] + " Value: " + hsv[2]);
-            int[] backrgb = ColorUtilities.HSVtoRGB(hsv[0],hsv[1],hsv[2]);
-            System.out.println("Red: " + backrgb[0] + " Green: " + backrgb[1] + " Blue: " + backrgb[2]);
-            BufferedImage[] rgbSeparateBandsImages = this.imageUtilities.separateInRGBbands(leftImage);
-            BufferedImage[] hsvSeparateBandsImages = this.imageUtilities.separateInHSVBands(leftImage);
+
+            Image image = new Image(leftImage);
+            BufferedImage redBufferedImageChannel = image.getRedBufferedImageChannel();
+            BufferedImage greenBufferedImageChannel = image.getGreenBufferedImageChannel();
+            BufferedImage blueBufferedImageChannel = image.getBlueBufferedImageChannel();
+            BufferedImage hueBufferedImageChannel = image.getHueBufferedImageChannel();
+            BufferedImage saturationBufferedImageChannel = image.getSaturationBufferedImageChannel();
+            BufferedImage valueBufferedImageChannel = image.getValueBufferedImageChannel();
+
             try {
                 FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("separate_rgb_band.fxml"));
                 Parent separateBandRoot = (Parent) fxmlLoader.load();
@@ -517,7 +518,7 @@ public class Controller extends BorderPane {
                 separatedRGBBandStage.setTitle("RGB Bands");
                 separatedRGBBandStage.setScene(new Scene(separateBandRoot));
                 separateBandController.setLabel("RGB Bands");
-                separateBandController.displayImages(rgbSeparateBandsImages[0],rgbSeparateBandsImages[1],rgbSeparateBandsImages[2]);
+                separateBandController.displayImages(redBufferedImageChannel,greenBufferedImageChannel,blueBufferedImageChannel);
                 separatedRGBBandStage.show();
 
                 FXMLLoader fxmlLoader2 = new FXMLLoader(getClass().getResource("separate_hsv_band.fxml"));
@@ -527,9 +528,8 @@ public class Controller extends BorderPane {
                 separatedHSVBandStage.setTitle("HSV Bands");
                 separatedHSVBandStage.setScene(new Scene(separateHSVBandRoot));
                 separatedHSVBandController.setLabel("HSV Bands");
-                separatedHSVBandController.displayImages(hsvSeparateBandsImages[0],hsvSeparateBandsImages[1],hsvSeparateBandsImages[2]);
+                separatedHSVBandController.displayImages(hueBufferedImageChannel,saturationBufferedImageChannel,valueBufferedImageChannel);
                 separatedHSVBandStage.show();
-
 
             }
             catch (Exception e)

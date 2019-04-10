@@ -112,7 +112,7 @@ public class Image {
             int rgb;
             for (int i = 0; i < this.width; i++) {
                 for (int j = 0; j < this.height; j++) {
-                    rgb = ColorUtilities.createRGB(this.redDataMatrixChannel[i][j], this.greenBufferedImageChannel[i][j], this.blueDataMatrixChannel[i][j]);
+                    rgb = ColorUtilities.createRGB(this.redDataMatrixChannel[i][j], this.greenDataMatrixChannel[i][j], this.blueDataMatrixChannel[i][j]);
                     this.bufferedImage.setRGB(i,j,rgb);
                 }
             }

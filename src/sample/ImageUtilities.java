@@ -2,21 +2,19 @@ package sample;
 
 import com.sun.istack.internal.Nullable;
 import javafx.scene.Scene;
+import javafx.scene.chart.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 
 import javax.imageio.ImageIO;
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.math.RoundingMode;
-import java.nio.Buffer;
 import java.nio.file.Files;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -931,123 +929,8 @@ public class ImageUtilities {
         return result;
     }
 
-    public void getHistogram(BufferedImage bimg) {
-        int rgb, red, green, blue;
-        boolean grey = this.isGreyImage(bimg);
-        BufferedImage result = null;
-        int redHistogram[] = new int[256];
-        int greenHistogram[] = new int[256];
-        int blueHistogram[] = new int[256];
-        for (int i = 0; i < bimg.getWidth(); i++) {
-            for (int j = 0; j < bimg.getHeight(); j++) {
-                rgb = bimg.getRGB(i, j);
-                red = ColorUtilities.getRed(rgb);
-                green = ColorUtilities.getGreen(rgb);
-                blue = ColorUtilities.getBlue(rgb);
-                if (grey) {
-                    redHistogram[red]++;
-                } else {
-                    redHistogram[red]++;
-                    greenHistogram[green]++;
-                    blueHistogram[blue]++;
-                }
-            }
-        }
-        if (grey) {
-            displayHistogram(redHistogram, ColorUtilities.createRGB(0, 0, 0));
-        } else {
-            displayHistogram(redHistogram, ColorUtilities.createRGB(255, 0, 0));
-            displayHistogram(greenHistogram, ColorUtilities.createRGB(0, 255, 0));
-            displayHistogram(blueHistogram, ColorUtilities.createRGB(0, 0, 255));
-        }
-    }
-
-    public void displayHistogram(int[] histogram, int color) {
-        AnchorPane secondaryLayout = new AnchorPane();
-        Scene secondScene = new Scene(secondaryLayout, 512, 300);
-        // New window (Stage)
-        Stage newWindow = new Stage();
-        newWindow.setTitle("Histograma");
-        newWindow.setScene(secondScene);
-        BufferedImage result = new BufferedImage(512, 300, BufferedImage.TYPE_INT_ARGB);
-        //System.out.println("negro: " + ColorUtilities.createRGB(0,0,0) + " blanco: " + ColorUtilities.createRGB(255,255,255) );
-        int max = getChannelMax(histogram);
-        int scale = max / 300;
-        int counter = 300;
-        for (int i = 0; i < 512; i++) {
-            for (int j = 0; j < 300; j++) {
-                if (counter > (int) (histogram[(int) i / 2]) / scale) {
-                    result.setRGB(i, j, -1);
-                } else {
-                    result.setRGB(i, j, color);
-                }
-                counter--;
-            }
-            System.out.println(histogram[(int) (i / 2)]);
-            counter = 300;
-        }
-        WritableImage wimg = this.readImage(result);
-        ImageView image = new ImageView(wimg);
-        secondaryLayout.getChildren().setAll(image);
-        newWindow.show();
-    }
-
-    public BufferedImage imageEqualization(BufferedImage bimg){
-
-        int rgb, red, green, blue;
-        boolean grey = this.isGreyImage(bimg);
-        int pixelCount = bimg.getWidth()*bimg.getHeight();
-        BufferedImage result = new BufferedImage(bimg.getWidth(),bimg.getHeight(),bimg.getType());
-        int redHistogram[] = new int[256];
-        int greenHistogram[] = new int[256];
-        int blueHistogram[] = new int[256];
-        for (int i = 0; i < bimg.getWidth(); i++) {
-            for (int j = 0; j < bimg.getHeight(); j++) {
-                rgb = bimg.getRGB(i, j);
-                red = ColorUtilities.getRed(rgb);
-                green = ColorUtilities.getGreen(rgb);
-                blue = ColorUtilities.getBlue(rgb);
-                if (grey) {
-                    redHistogram[red]++;
-                } else {
-                    redHistogram[red]++;
-                    greenHistogram[green]++;
-                    blueHistogram[blue]++;
-                }
-            }
-        }
-        printChannelVector(redHistogram);
-        int accumulatedDistribution[] = getAccumulatedDistribution(redHistogram);
-        printChannelVector(accumulatedDistribution);
-        double sk[] = new double[256];
-        sk[0] = (accumulatedDistribution[0]/pixelCount) *1000;
-
-        if(grey){
-            int smin=255;
-            for (int i = 1; i < 256; i++){
-                sk[i] = sk[i-1] + ((accumulatedDistribution[i]/pixelCount)*1000);
-                if(sk[i]<smin){
-                    smin = (int) Math.round(sk[i])/1000;
-                }
-                System.out.println("posicion: " + i + " sk: " + sk[i] + " acumulado: " + accumulatedDistribution[i] + " result: " + (sk[i-1] + (accumulatedDistribution[i]/pixelCount)) + " round: " +  Math.round((accumulatedDistribution[i]/pixelCount)));
-            }
-            for (int i = 1; i < 256; i++){
-                sk[i] = (int) Math.round((((sk[i] - smin)/(1-smin))*255)+ 0.5)/1000;
-            }
-            //printChannelVector(sk);
-            for (int i = 0; i < bimg.getWidth(); i++){
-                for (int j = 0; j < bimg.getHeight(); j++){
-                    rgb = bimg.getRGB(i,j);
-                    red = (int)sk[ColorUtilities.getRed(rgb)];
-                    result.setRGB(i,j,ColorUtilities.createRGB(red,red,red));
-                }
-            }
-        }
-        return result;
-    }
-
-    public int[] getAccumulatedDistribution(int[] array){
-        int [] result = new int [256];
+    public double[] getAccumulatedDistribution(double[] array){
+        double [] result = new double [256];
         result[0] = array[0];
         for(int i = 1;  i < 256; i++){
             result[i] = result[i-1] + array[i];

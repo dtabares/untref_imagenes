@@ -10,6 +10,7 @@ import javafx.scene.layout.BorderPane;
 import java.io.File;
 import java.io.IOException;
 import java.awt.image.BufferedImage;
+import java.nio.Buffer;
 import java.util.LinkedList;
 import java.util.List;
 import javax.imageio.ImageIO;
@@ -42,6 +43,9 @@ public class Controller extends BorderPane {
         this.rightPaneImageList = new LinkedList<>();
         this.historyImageList = new LinkedList<>();
         this.imageUtilities = new ImageUtilities();
+        BufferedImage bimg = imageUtilities.openRawImage(new File("C:\\Users\\Fernando.Ares\\Desktop\\Imagenes\\LENA.RAW"),256,256);
+        Histogram h = new Histogram();
+        h.equalizeHistogram(bimg);
     }
 
     //Top Menu
@@ -470,7 +474,8 @@ public class Controller extends BorderPane {
     //Information
     @FXML public void showHistogram(){
         if(leftImage!=null){
-            imageUtilities.getHistogram(leftImage);
+            Histogram h = new Histogram();
+            h.getImageHistogram(leftImage);
         }
         else{
             Alerts.showAlert("No hay ninguna imagen cargada");
@@ -481,7 +486,8 @@ public class Controller extends BorderPane {
     @FXML public BufferedImage equalizeHistogram(){
         BufferedImage result = null;
         if(leftImage!=null){
-            result = imageUtilities.imageEqualization(leftImage);
+            Histogram histogram = new Histogram();
+            result = histogram.equalizeHistogram(leftImage);
             this.displayImageInPane(result,rightPane);
         }
         else{

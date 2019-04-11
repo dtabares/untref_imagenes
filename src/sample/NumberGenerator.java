@@ -6,15 +6,14 @@ public class NumberGenerator {
         double x;
         int randomNumber;
         x = Math.random();
-
-        if (x == 0){
-            randomNumber = 0;
+        System.out.println(x);
+        while (x == 0){
+            x = Math.random();
         }
-        else {
-            randomNumber = (int) Math.round((-1 * Math.log(x)/ lambda));
-        }
+        System.out.println(x);
 
-        System.out.println("Random Exp Number: " + randomNumber);
+        randomNumber = (int) Math.round((-1 * Math.log(x)/ lambda));
+
         return randomNumber;
     }
 
@@ -25,8 +24,9 @@ public class NumberGenerator {
         double x2 = Math.random();
 
         randomNumber = (int) (Math.sqrt(-2 * Math.log(x1)) * Math.cos(2 * Math.PI * x2));
-        System.out.println("Random Gaussian Number: " + randomNumber);
-        return (int) (randomNumber * sd + mean);
+        randomNumber = (int) (randomNumber * sd + mean);
+
+        return randomNumber;
     }
 
     public static int generateRandomRayleighNumber(double phi){
@@ -35,8 +35,7 @@ public class NumberGenerator {
         double x = Math.random();
 
         randomNumber = (int) (phi * Math.sqrt( -2 * Math.log(1 - x)));
-        System.out.println("Random Rayleigh Number: " + randomNumber);
-        return randomNumber;
 
+        return randomNumber;
     }
 }

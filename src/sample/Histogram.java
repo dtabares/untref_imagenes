@@ -62,6 +62,7 @@ public class Histogram {
             }
             areaChart.setCreateSymbols(false); //hide dots
             areaChart.getData().add(series);
+            scene.getStylesheets().add("sample/GreyChart.css");
         }
         else{
             //defining a series
@@ -98,8 +99,8 @@ public class Histogram {
             }
             areaChart.setCreateSymbols(false); //hide dots
             areaChart.getData().add(blueSeries);
+            scene.getStylesheets().add("sample/ColorChart.css");
         }
-        scene.getStylesheets().add("sample/Chart.css");
         newWindow.setScene(scene);
         newWindow.show();
     }

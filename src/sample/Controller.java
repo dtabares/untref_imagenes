@@ -43,9 +43,6 @@ public class Controller extends BorderPane {
         this.rightPaneImageList = new LinkedList<>();
         this.historyImageList = new LinkedList<>();
         this.imageUtilities = new ImageUtilities();
-        BufferedImage bimg = imageUtilities.openRawImage(new File("C:\\Users\\Fernando.Ares\\Desktop\\Imagenes\\LENA.RAW"),256,256);
-        Histogram h = new Histogram();
-        h.equalizeHistogram(bimg);
     }
 
     //Top Menu

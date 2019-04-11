@@ -301,4 +301,14 @@ public class Image {
     public boolean isGrey() {
         return isGrey;
     }
+
+    public void setWhite(){
+        int white = ColorUtilities.createRGB(255,255,255);
+        for (int i = 0; i < this.width; i++) {
+            for (int j = 0; j < this.height; j++) {
+                this.bufferedImage.setRGB(i,j,white);
+                this.greyDataMatrix[i][j] = 255;
+            }
+        }
+    }
 }

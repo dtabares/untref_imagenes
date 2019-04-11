@@ -46,85 +46,54 @@
   <left>
     <Accordion BorderPane.alignment="CENTER">
       <panes>
-        <TitledPane animated="false" text="Basics">
-          <content>
-            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-              <children>
-                <VBox layoutX="0.0" layoutY="0.0" prefHeight="284.0" prefWidth="200.0">
-                  <children>
-                    <Button mnemonicParsing="false" onAction="#getPixelInformation" prefWidth="205.0" text="Get Pixel Information" />
-                    <Button mnemonicParsing="false" onAction="#modifyPixelInformation" prefWidth="205.0" text="Modify Pixel" />
-                    <Button mnemonicParsing="false" onAction="#copyImageSelection" prefWidth="205.0" text="Select and Duplicate" />
-                    <Button mnemonicParsing="false" onAction="#imageAddition" prefWidth="205.0" text="Image Addition" />
-                    <Button mnemonicParsing="false" onAction="#imageDifference" prefWidth="205.0" text="Image Difference" />
-                    <Button mnemonicParsing="false" onAction="#imageScalarProduct" prefWidth="205.0" text="Image Scalar Product" />
-                    <Button mnemonicParsing="false" onAction="#dynamicRangeCompression" prefWidth="205.0" text="Dynamic Range Compression" />
-                    <Button mnemonicParsing="false" onAction="#imagePow" prefWidth="205.0" text="Pow Function" />
-                    <Button mnemonicParsing="false" onAction="#imageNegative" prefWidth="205.0" text="Negative" />
-                    <Button mnemonicParsing="false" onAction="#imageContrast" prefWidth="205.0" text="Adjust Contrast" />
-                    <Button mnemonicParsing="false" onAction="#imageBinary" prefWidth="205.0" text="Binary" />
-                  </children>
-                </VBox>
-              </children>
-            </AnchorPane>
-          </content>
-        </TitledPane>
-        <TitledPane animated="false" text="Binary Image">
-          <content>
-            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-              <children>
-                <VBox layoutX="0.0" layoutY="0.0" prefHeight="284.0" prefWidth="200.0">
-                  <children>
+            <TitledPane animated="false" text="TP 0">
+               <content>
+                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <VBox layoutX="0.0" layoutY="0.0" prefHeight="284.0" prefWidth="200.0">
+                           <children>
+                              <Button mnemonicParsing="false" onAction="#getPixelInformation" prefWidth="205.0" text="Get Pixel Information" />
+                              <Button mnemonicParsing="false" onAction="#modifyPixelInformation" prefWidth="205.0" text="Modify Pixel" />
+                              <Button mnemonicParsing="false" onAction="#copyImageSelection" prefWidth="205.0" text="Select and Duplicate" />
                     <Button mnemonicParsing="false" onAction="#createImageWithCircle" prefWidth="205.0" text="White Circle" />
                     <Button mnemonicParsing="false" onAction="#createImageWithSquare" prefWidth="205.0" text="White Square" />
-                  </children>
-                </VBox>
-              </children>
-            </AnchorPane>
-          </content>
-        </TitledPane>
-        <TitledPane animated="false" text="Scales">
-          <content>
-            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-              <children>
-                <VBox layoutX="0.0" layoutY="0.0" prefHeight="284.0" prefWidth="200.0">
-                  <children>
                     <Button mnemonicParsing="false" onAction="#createGrayScaleImage" prefWidth="200.0" text="Grey Scale" />
                     <Button mnemonicParsing="false" onAction="#createColorScaleImage" prefWidth="200.0" text="Color Scale" />
-                  </children>
-                </VBox>
-              </children>
-            </AnchorPane>
-          </content>
-        </TitledPane>
-        <TitledPane animated="false" text="Convert">
-          <content>
-            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-              <children>
-                <VBox layoutX="0.0" layoutY="0.0" prefHeight="284.0" prefWidth="200.0">
-                  <children>
                     <Button mnemonicParsing="false" onAction="#RGBtoHSV" prefWidth="200.0" text="RGB to HSV" />
-                  </children>
-                </VBox>
-              </children>
-            </AnchorPane>
-          </content>
-        </TitledPane>
-        <TitledPane animated="false" text="Information">
-          <content>
-            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-              <children>
-                <VBox layoutX="0.0" layoutY="0.0" prefHeight="284.0" prefWidth="200.0">
-                  <children>
-                    <Button mnemonicParsing="false" prefWidth="200.0" text="Band Average" onAction="#averagePerBand" />
-                    <Button mnemonicParsing="false" prefWidth="200.0" text="Histogram" onAction="#showHistogram" />
-                    <Button mnemonicParsing="false" prefWidth="200.0" text="Equalize Histogram" onAction="#equalizeHistogram" />
-                  </children>
-                </VBox>
-              </children>
-            </AnchorPane>
-          </content>
-        </TitledPane>
+                           </children>
+                        </VBox>
+                     </children>
+                  </AnchorPane>
+               </content>
+            </TitledPane>
+            <TitledPane animated="false" text="TP 1">
+               <content>
+                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <VBox layoutX="0.0" layoutY="0.0" prefHeight="284.0" prefWidth="200.0">
+                           <children>
+                              <Button mnemonicParsing="false" onAction="#imageAddition" prefWidth="205.0" text="Image Addition" />
+                              <Button mnemonicParsing="false" onAction="#imageDifference" prefWidth="205.0" text="Image Difference" />
+                              <Button mnemonicParsing="false" onAction="#imageScalarProduct" prefWidth="205.0" text="Image Scalar Product" />
+                              <Button mnemonicParsing="false" onAction="#imagePow" prefWidth="205.0" text="Pow Function" />
+                              <Button mnemonicParsing="false" onAction="#imageNegative" prefWidth="205.0" text="Negative" />
+                              <Button mnemonicParsing="false" onAction="#imageContrast" prefWidth="205.0" text="Adjust Contrast" />
+                              <Button mnemonicParsing="false" onAction="#imageBinary" prefWidth="205.0" text="Binary" />
+                              <Button mnemonicParsing="false" onAction="#averagePerBand" prefWidth="200.0" text="Band Average" />
+                              <Button mnemonicParsing="false" onAction="#showHistogram" prefWidth="200.0" text="Histogram" />
+                              <Button mnemonicParsing="false" onAction="#equalizeHistogram" prefWidth="200.0" text="Equalize Histogram" />
+                              <Button mnemonicParsing="false" onAction="#gaussianNumberGenerator" prefWidth="205.0" text="Gaussian Rand Number" />
+                              <Button mnemonicParsing="false" onAction="#rayleighNumberGenerator" prefWidth="205.0" text="Rayleigh Rand Number" />
+                              <Button mnemonicParsing="false" onAction="#exponentialNumberGenerator" prefWidth="205.0" text="Exponential Rand Number" />
+                              <Button mnemonicParsing="false" onAction="#generateGaussianNoisedImage" prefWidth="205.0" text="Gaussian Noised Image" />
+                              <Button mnemonicParsing="false" onAction="#generateRayleighNoisedImage" prefWidth="205.0" text="Rayleigh Noised Image" />
+                              <Button mnemonicParsing="false" onAction="#generateExponentialNoisedImage" prefWidth="205.0" text="Exponential Noised Image" />
+                           </children>
+                        </VBox>
+                     </children>
+                  </AnchorPane>
+               </content>
+            </TitledPane>
       </panes>
     </Accordion>
   </left>

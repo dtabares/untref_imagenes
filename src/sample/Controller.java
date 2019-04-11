@@ -596,6 +596,51 @@ public class Controller extends BorderPane {
         }
     }
 
+    @FXML public void gaussianNumberGenerator(){
+        double standardDev = Double.valueOf(getInputDialog("Gaussian Number Generator", "Enter a new Value", "Standard Deviation:"));
+        double mean = Double.valueOf(getInputDialog("Gaussian Number Generator", "Enter a new Value", "Mean:"));
+        String message = "Gaussian Number: ";
+        int randomNumber = NumberGenerator.generateRandomGaussianNumber(mean, standardDev);
+        message = message + randomNumber;
+        this.setBottomText(message);
+    }
+
+    @FXML public void rayleighNumberGenerator(){
+        double phi = Double.valueOf(getInputDialog("Rayleigh Number Generator", "Enter a new Value", "Phi:"));
+        String message = "Rayleigh Number: ";
+        int randomNumber = NumberGenerator.generateRandomRayleighNumber(phi);
+        message = message + randomNumber;
+        this.setBottomText(message);
+    }
+
+    @FXML public void exponentialNumberGenerator(){
+        double lambda = Double.valueOf(getInputDialog("Exponential Number Generator", "Enter a new Value", "Lambda:"));
+        String message = "Exponential Number: ";
+        int randomNumber = NumberGenerator.generateRandomExponentialNumber(lambda);
+        message = message + randomNumber;
+        this.setBottomText(message);
+    }
+
+    @FXML public void generateGaussianNoisedImage(){
+        double standardDev = Double.valueOf(getInputDialog("Gaussian Noised Image Generator", "Enter a new Value", "Standard Deviation:"));
+        double mean = Double.valueOf(getInputDialog("Gaussian Noised Image Generator", "Enter a new Value", "Mean:"));
+        BufferedImage noisedImage = this.imageUtilities.generateGaussianNoisedImage(mean,standardDev);
+        this.displayImageInPane(noisedImage,rightPane);
+    }
+
+    @FXML public void generateRayleighNoisedImage(){
+        double phi = Double.valueOf(getInputDialog("Rayleigh Noised Image Generator", "Enter a new Value", "Phi:"));
+        BufferedImage noisedImage = this.imageUtilities.generateRayleighNoisedImage(phi);
+        this.displayImageInPane(noisedImage,rightPane);
+    }
+
+    @FXML public void generateExponentialNoisedImage(){
+        double lambda = Double.valueOf(getInputDialog("Exponential Noised Image Generator", "Enter a new Value", "Lambda:"));
+        BufferedImage noisedImage = this.imageUtilities.generateExponentialNoisedImage(lambda);
+        this.displayImageInPane(noisedImage,rightPane);
+    }
+
+
     //Panels
 
     public void displayImageInPane(BufferedImage bimg, AnchorPane pane){

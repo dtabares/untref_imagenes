@@ -15,6 +15,7 @@ public class Image {
     private boolean splittedInRGBbands;
     private boolean splittedInHSVbands;
     private boolean isGrey;
+    private boolean isEmpty;
 
 
     // RGB Band Attributes
@@ -40,9 +41,24 @@ public class Image {
         this.width = bufferedImage.getWidth();
         this.imageType = bufferedImage.getType();
         this.greyDataMatrix = new int[this.width][this.height];
+        if (imageType == BufferedImage.TYPE_INT_RGB){
+            this.isGrey = false;
+            this.redDataMatrixChannel = new int[this.width][this.height];
+            this.greenDataMatrixChannel = new int[this.width][this.height];
+            this.blueDataMatrixChannel = new int[this.width][this.height];
+        }
+        else if(imageType == BufferedImage.TYPE_BYTE_GRAY){
+            this.isGrey = true;
+            this.greyDataMatrix = new int[this.width][this.height];
+        }
+        else
+        {
+            System.out.println("Error: Type not supported");
+        }
         this.bufferedImageToDataMatrix();
         this.splittedInRGBbands = false;
         this.splittedInHSVbands = false;
+        this.isEmpty = false;
 
     }
 
@@ -56,6 +72,7 @@ public class Image {
         this.splittedInRGBbands = false;
         this.splittedInHSVbands = false;
         this.isGrey = true;
+        this.isEmpty = false;
     }
 
     public Image(int[][] redDataMatrix, int[][] greenDataMatrix, int[][] blueDataMatrix) {
@@ -70,6 +87,33 @@ public class Image {
         this.splittedInRGBbands = false;
         this.splittedInHSVbands = false;
         this.isGrey = false;
+        this.isEmpty = false;
+    }
+
+    public Image(int width, int height, int imageType){
+        this.bufferedImage = new BufferedImage(width,height,imageType);
+        this.height = height;
+        this.width = width;
+        this.imageType = imageType;
+        this.isEmpty = true;
+        this.splittedInRGBbands = false;
+        this.splittedInHSVbands = false;
+
+        if (imageType == BufferedImage.TYPE_INT_RGB){
+            this.isGrey = false;
+            this.redDataMatrixChannel = new int[this.width][this.height];
+            this.greenDataMatrixChannel = new int[this.width][this.height];
+            this.blueDataMatrixChannel = new int[this.width][this.height];
+        }
+        else if(imageType == BufferedImage.TYPE_BYTE_GRAY){
+            this.isGrey = true;
+            this.greyDataMatrix = new int[this.width][this.height];
+        }
+        else
+        {
+            System.out.println("Error: Type not supported");
+        }
+
     }
 
     public BufferedImage getBufferedImage() {
@@ -252,5 +296,19 @@ public class Image {
             this.splitInRGBcolorBands();
         }
         return blueDataMatrixChannel;
+    }
+
+    public boolean isGrey() {
+        return isGrey;
+    }
+
+    public void setWhite(){
+        int white = ColorUtilities.createRGB(255,255,255);
+        for (int i = 0; i < this.width; i++) {
+            for (int j = 0; j < this.height; j++) {
+                this.bufferedImage.setRGB(i,j,white);
+                this.greyDataMatrix[i][j] = 255;
+            }
+        }
     }
 }

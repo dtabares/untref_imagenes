@@ -85,6 +85,9 @@
                               <Button mnemonicParsing="false" onAction="#gaussianNumberGenerator" prefWidth="205.0" text="Gaussian Rand Number" />
                               <Button mnemonicParsing="false" onAction="#rayleighNumberGenerator" prefWidth="205.0" text="Rayleigh Rand Number" />
                               <Button mnemonicParsing="false" onAction="#exponentialNumberGenerator" prefWidth="205.0" text="Exponential Rand Number" />
+                              <Button mnemonicParsing="false" onAction="#generateGaussianNoisedImage" prefWidth="205.0" text="Gaussian Noised Image" />
+                              <Button mnemonicParsing="false" onAction="#generateRayleighNoisedImage" prefWidth="205.0" text="Rayleigh Noised Image" />
+                              <Button mnemonicParsing="false" onAction="#generateExponentialNoisedImage" prefWidth="205.0" text="Exponential Noised Image" />
                            </children>
                         </VBox>
                      </children>

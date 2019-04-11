@@ -1375,5 +1375,74 @@ public class ImageUtilities {
         return deviation;
     }
 
+    public BufferedImage generateGaussianNoisedImage(double mean, double standardDev){
+        int width = 100;
+        int height = 100;
+        Image image = new Image(width,height, TYPE_BYTE_GRAY);
+        image.setWhite();
+        BufferedImage bimg = image.getBufferedImage();
+        int randomNumber, rgb;
+
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
+                randomNumber = NumberGenerator.generateRandomGaussianNumber(mean,standardDev);
+                while (randomNumber < 0 || randomNumber > 255){
+                    randomNumber = NumberGenerator.generateRandomGaussianNumber(mean,standardDev);
+                }
+                System.out.println("Random Gaussian Number: " + randomNumber);
+                rgb = ColorUtilities.createRGB(randomNumber,randomNumber,randomNumber);
+                bimg.setRGB(i,j,rgb);
+            }
+        }
+
+        return bimg;
+    }
+
+    public BufferedImage generateRayleighNoisedImage(double phi){
+        int width = 100;
+        int height = 100;
+        Image image = new Image(width,height, TYPE_BYTE_GRAY);
+        image.setWhite();
+        BufferedImage bimg = image.getBufferedImage();
+        int randomNumber, rgb;
+
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
+                randomNumber = NumberGenerator.generateRandomRayleighNumber(phi);
+                while (randomNumber < 0 || randomNumber > 255){
+                    randomNumber = NumberGenerator.generateRandomRayleighNumber(phi);
+                }
+                System.out.println("Random Rayleigh Number: " + randomNumber);
+                rgb = ColorUtilities.createRGB(randomNumber,randomNumber,randomNumber);
+                bimg.setRGB(i,j,rgb);
+            }
+        }
+
+        return bimg;
+    }
+
+    public BufferedImage generateExponentialNoisedImage(double lambda){
+        int width = 100;
+        int height = 100;
+        Image image = new Image(width,height, TYPE_BYTE_GRAY);
+        image.setWhite();
+        BufferedImage bimg = image.getBufferedImage();
+        int randomNumber, rgb;
+
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
+                randomNumber = NumberGenerator.generateRandomExponentialNumber(lambda);
+                while (randomNumber < 0 || randomNumber > 255){
+                    randomNumber = NumberGenerator.generateRandomExponentialNumber(lambda);
+                }
+                System.out.println("Random Exp Number: " + randomNumber);
+                rgb = ColorUtilities.createRGB(randomNumber,randomNumber,randomNumber);
+                bimg.setRGB(i,j,rgb);
+            }
+        }
+
+        return bimg;
+    }
+
 }
 

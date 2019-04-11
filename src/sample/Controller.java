@@ -615,6 +615,25 @@ public class Controller extends BorderPane {
         this.setBottomText(message);
     }
 
+    @FXML public void generateGaussianNoisedImage(){
+        double standardDev = Double.valueOf(getInputDialog("Gaussian Noised Image Generator", "Enter a new Value", "Standard Deviation:"));
+        double mean = Double.valueOf(getInputDialog("Gaussian Noised Image Generator", "Enter a new Value", "Mean:"));
+        BufferedImage noisedImage = this.imageUtilities.generateGaussianNoisedImage(mean,standardDev);
+        this.displayImageInPane(noisedImage,rightPane);
+    }
+
+    @FXML public void generateRayleighNoisedImage(){
+        double phi = Double.valueOf(getInputDialog("Rayleigh Noised Image Generator", "Enter a new Value", "Phi:"));
+        BufferedImage noisedImage = this.imageUtilities.generateRayleighNoisedImage(phi);
+        this.displayImageInPane(noisedImage,rightPane);
+    }
+
+    @FXML public void generateExponentialNoisedImage(){
+        double lambda = Double.valueOf(getInputDialog("Exponential Noised Image Generator", "Enter a new Value", "Lambda:"));
+        BufferedImage noisedImage = this.imageUtilities.generateExponentialNoisedImage(lambda);
+        this.displayImageInPane(noisedImage,rightPane);
+    }
+
 
     //Panels
 

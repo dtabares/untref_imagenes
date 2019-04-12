@@ -10,8 +10,8 @@ public class Filter {
         mask.setMeanMask();
         System.out.println("Size: " + bimg.getWidth() + " x " + bimg.getHeight());
         double value = mask.getMatrix()[mask.getCenterX()][mask.getCenterY()];
-        for (int i = 0; i < bimg.getWidth() - maskSize; i++){
-            for (int j = 0; j < bimg.getHeight() - maskSize; j++){
+        for (int i = 0; i < bimg.getWidth() - maskSize + 1; i++){
+            for (int j = 0; j < bimg.getHeight() - maskSize + 1; j++){
                     rgb = bimg.getRGB(mask.getCenterX(), mask.getCenterY());
                     r = ColorUtilities.getRed(rgb);
                     g = ColorUtilities.getGreen(rgb);
@@ -31,8 +31,9 @@ public class Filter {
                     if(b>255){
                         b = 255;
                     }
-                    System.out.println(" To R: " + r + " B: " + b + " G: " + g);
-                    result.setRGB(i,j, ColorUtilities.createRGB(r,g,b));
+                    System.out.print(" To Position: " + i + "," + j);
+                    System.out.println("  R: " + r + " B: " + b + " G: " + g);
+                    result.setRGB(mask.getCenterX(),mask.getCenterY(), ColorUtilities.createRGB(r,g,b));
                     mask.moveY();
             }
             mask.restetY();

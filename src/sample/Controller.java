@@ -694,6 +694,13 @@ public class Controller extends BorderPane {
         this.displayImageInPane(result,rightPane);
     }
 
+    @FXML public void enhanceEdges(){
+        int maskSize = Integer.valueOf(getInputDialog("Enhance Edges", "Enter a new Value", "Mask size:"));
+        Filter f = new Filter();
+        BufferedImage result = f.enhanceEdges(leftImage,maskSize);
+        this.displayImageInPane(result,rightPane);
+    }
+
 
     //Panels
 

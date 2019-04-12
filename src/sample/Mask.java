@@ -21,6 +21,23 @@ public class Mask {
         }
     }
 
+    public void setHighPassFilterMask(){
+        double centerValue = ((this.size * this.size) - 1.0)/(size*size);
+        double otherValue = (- 1.0)/(size*size);
+        for (int i = 0; i < matrix.length ; i++) {
+            for (int j = 0; j < matrix[0].length; j++) {
+                if (i == this.center && j == this.center){
+                    this.matrix[i][j] = centerValue;
+                }
+                else{
+                    this.matrix[i][j] = otherValue;
+                }
+                System.out.println("i: " +i + " j: " + j + " value:" + this.matrix[i][j]);
+
+            }
+        }
+    }
+
     public int getSize(){
         return this.size;
     }

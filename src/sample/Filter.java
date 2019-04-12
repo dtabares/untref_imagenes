@@ -27,8 +27,10 @@ public class Filter {
         return result;
     }
 
-    public  BufferedImage enhance(BufferedImage bimg){
-        BufferedImage result = new BufferedImage(bimg.getWidth(),bimg.getHeight(),bimg.getType());
+    public  BufferedImage enhanceEdges(BufferedImage bimg, int maskSize){
+        Mask mask = new Mask(maskSize);
+        mask.setHighPassFilterMask();
+        BufferedImage result = applyConvolution(bimg,mask);
         return result;
     }
 

@@ -43,10 +43,17 @@ public class Controller extends BorderPane {
         this.rightPaneImageList = new LinkedList<>();
         this.historyImageList = new LinkedList<>();
         this.imageUtilities = new ImageUtilities();
+        //(this.testsFer();
+    }
+
+    public void testsFer()throws IOException{
+        BufferedImage bimg = ImageIO.read(new File("C:\\Users\\Fernando.Ares\\Desktop\\Imagenes\\leopard.jpg"));
+        this.displayImageInPane(bimg,leftPane);
+        Filter f = new Filter();
+        this.displayImageInPane(f.applyMeanFilter(bimg,3),rightPane);
     }
 
     //Top Menu
-
     @FXML public BufferedImage openImageFile(){
         Stage browser = new Stage();
         FileChooser fc = new FileChooser();
@@ -535,7 +542,7 @@ public class Controller extends BorderPane {
             }
             catch (Exception e)
             {
-                System.out.println("Can't open new Window");
+                System.out.println("No se puede abrir una nueva ventana");
                 e.printStackTrace();
             }
         }

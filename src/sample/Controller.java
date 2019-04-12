@@ -630,17 +630,45 @@ public class Controller extends BorderPane {
         double mean = Double.valueOf(getInputDialog("Gaussian Noised Image Generator", "Enter a new Value", "Mean:"));
         BufferedImage noisedImage = this.imageUtilities.generateGaussianNoisedImage(mean,standardDev);
         this.displayImageInPane(noisedImage,rightPane);
+        Histogram h = new Histogram();
+        h.getImageHistogram(noisedImage);
     }
 
     @FXML public void generateRayleighNoisedImage(){
         double phi = Double.valueOf(getInputDialog("Rayleigh Noised Image Generator", "Enter a new Value", "Phi:"));
         BufferedImage noisedImage = this.imageUtilities.generateRayleighNoisedImage(phi);
         this.displayImageInPane(noisedImage,rightPane);
+        Histogram h = new Histogram();
+        h.getImageHistogram(noisedImage);
     }
 
     @FXML public void generateExponentialNoisedImage(){
         double lambda = Double.valueOf(getInputDialog("Exponential Noised Image Generator", "Enter a new Value", "Lambda:"));
         BufferedImage noisedImage = this.imageUtilities.generateExponentialNoisedImage(lambda);
+        this.displayImageInPane(noisedImage,rightPane);
+        Histogram h = new Histogram();
+        h.getImageHistogram(noisedImage);
+    }
+
+    @FXML public void addMultiplicativeExponentialNoise(){
+        double lambda = Double.valueOf(getInputDialog("Add Exponential Noise", "Enter a new Value", "Lambda:"));
+        int affectedPixelPercentaje = Integer.valueOf(getInputDialog("Add Exponential Noise", "Enter a new Value", "Affected Pixel %:"));
+        BufferedImage noisedImage = this.imageUtilities.addMultiplicativeExponentialNoise(lambda, affectedPixelPercentaje, leftImage);
+        this.displayImageInPane(noisedImage,rightPane);
+    }
+
+    @FXML public void addMultiplicativeRayleighNoise(){
+        double lambda = Double.valueOf(getInputDialog("Add Rayleigh Noise", "Enter a new Value", "Phi:"));
+        int affectedPixelPercentaje = Integer.valueOf(getInputDialog("Add Rayleigh Noise", "Enter a new Value", "Affected Pixel %:"));
+        BufferedImage noisedImage = this.imageUtilities.addMultiplicativeRayleighNoise(lambda, affectedPixelPercentaje, leftImage);
+        this.displayImageInPane(noisedImage,rightPane);
+    }
+
+    @FXML public void addAdditiveGaussianNoise(){
+        double standardDev = Double.valueOf(getInputDialog("Add Gaussian Noise", "Enter a new Value", "Standard Deviation:"));
+        double mean = Double.valueOf(getInputDialog("Add Gaussian Noise", "Enter a new Value", "Mean:"));
+        int affectedPixelPercentaje = Integer.valueOf(getInputDialog("Add Gaussian Noise", "Enter a new Value", "Affected Pixel %:"));
+        BufferedImage noisedImage = this.imageUtilities.addAdditiveGaussianNoise(mean,standardDev, affectedPixelPercentaje, leftImage);
         this.displayImageInPane(noisedImage,rightPane);
     }
 

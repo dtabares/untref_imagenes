@@ -1329,8 +1329,8 @@ public class ImageUtilities {
         return bimg;
     }
 
-    public BufferedImage addMultiplicativeExponentialNoise(double lambda, int affectedPixelPercentaje, BufferedImage bimg){
-        int[][] noiseMatrix = NoiseGenerator.generateMultiplicativeExponentialNoiseMatrix(bimg.getWidth(),bimg.getHeight(),lambda,affectedPixelPercentaje);
+    public BufferedImage addMultiplicativeExponentialNoise(double lambda, int affectedPixelPercentage, BufferedImage bimg){
+        int[][] noiseMatrix = NoiseGenerator.generateMultiplicativeExponentialNoiseMatrix(bimg.getWidth(),bimg.getHeight(),lambda,affectedPixelPercentage);
         Image image = new Image(bimg);
         BufferedImage result = new BufferedImage(bimg.getWidth(),bimg.getHeight(),bimg.getType());
         // separo en canales
@@ -1353,8 +1353,8 @@ public class ImageUtilities {
         return result;
     }
 
-    public BufferedImage addMultiplicativeRayleighNoise(double phi, int affectedPixelPercentaje, BufferedImage bimg){
-        int[][] noiseMatrix = NoiseGenerator.generateMultiplicativeRayleighNoiseMatrix(bimg.getWidth(),bimg.getHeight(),phi,affectedPixelPercentaje);
+    public BufferedImage addMultiplicativeRayleighNoise(double phi, int affectedPixelPercentage, BufferedImage bimg){
+        int[][] noiseMatrix = NoiseGenerator.generateMultiplicativeRayleighNoiseMatrix(bimg.getWidth(),bimg.getHeight(),phi,affectedPixelPercentage);
         Image image = new Image(bimg);
         BufferedImage result = new BufferedImage(bimg.getWidth(),bimg.getHeight(),bimg.getType());
         // separo en canales
@@ -1377,8 +1377,8 @@ public class ImageUtilities {
         return result;
     }
 
-    public BufferedImage addAdditiveGaussianNoise(double mean, double standardDev, int affectedPixelPercentaje, BufferedImage bimg){
-        int[][] noiseMatrix = NoiseGenerator.generateAdditiveGaussianNoiseMatrix(bimg.getWidth(),bimg.getHeight(),mean,standardDev,affectedPixelPercentaje);
+    public BufferedImage addAdditiveGaussianNoise(double mean, double standardDev, int affectedPixelPercentage, BufferedImage bimg){
+        int[][] noiseMatrix = NoiseGenerator.generateAdditiveGaussianNoiseMatrix(bimg.getWidth(),bimg.getHeight(),mean,standardDev,affectedPixelPercentage);
         Image image = new Image(bimg);
         BufferedImage result = new BufferedImage(bimg.getWidth(),bimg.getHeight(),bimg.getType());
         // separo en canales
@@ -1395,6 +1395,33 @@ public class ImageUtilities {
             for (int j = 0; j < bimg.getHeight(); j++) {
                 rgb = ColorUtilities.createRGB(redChannel[i][j],greenChannel[i][j],blueChannel[i][j]);
                 result.setRGB(i,j,rgb);
+            }
+        }
+
+        return result;
+    }
+
+    public BufferedImage addSaltAndPepperNoise(double p0, double p1, int affectedPixelPercentage, BufferedImage bimg){
+        int white = ColorUtilities.createRGB(255,255,255);
+        int black = ColorUtilities.createRGB(0,0,0);
+        BufferedImage result = bimg;
+        int imageSize = result.getWidth() * result.getHeight();
+        int affectedPixels = (imageSize * affectedPixelPercentage / 100);
+        int affectationCoefficient = imageSize/affectedPixels;
+        int pixelCount = 0;
+
+
+        for (int i = 0; i < bimg.getWidth(); i++) {
+            for (int j = 0; j < bimg.getHeight(); j++) {
+                if (pixelCount % affectationCoefficient == 0){
+                    double randomNumber = Math.random();
+                    if (randomNumber < p0){
+                        result.setRGB(i,j,black);
+                    }
+                    if (randomNumber > p1){
+                        result.setRGB(i,j,white);
+                    }
+                }
             }
         }
 

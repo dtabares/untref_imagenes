@@ -652,23 +652,38 @@ public class Controller extends BorderPane {
 
     @FXML public void addMultiplicativeExponentialNoise(){
         double lambda = Double.valueOf(getInputDialog("Add Exponential Noise", "Enter a new Value", "Lambda:"));
-        int affectedPixelPercentaje = Integer.valueOf(getInputDialog("Add Exponential Noise", "Enter a new Value", "Affected Pixel %:"));
-        BufferedImage noisedImage = this.imageUtilities.addMultiplicativeExponentialNoise(lambda, affectedPixelPercentaje, leftImage);
+        int affectedPixelPercentage = Integer.valueOf(getInputDialog("Add Exponential Noise", "Enter a new Value", "Affected Pixel %:"));
+        BufferedImage noisedImage = this.imageUtilities.addMultiplicativeExponentialNoise(lambda, affectedPixelPercentage, leftImage);
         this.displayImageInPane(noisedImage,rightPane);
     }
 
     @FXML public void addMultiplicativeRayleighNoise(){
         double lambda = Double.valueOf(getInputDialog("Add Rayleigh Noise", "Enter a new Value", "Phi:"));
-        int affectedPixelPercentaje = Integer.valueOf(getInputDialog("Add Rayleigh Noise", "Enter a new Value", "Affected Pixel %:"));
-        BufferedImage noisedImage = this.imageUtilities.addMultiplicativeRayleighNoise(lambda, affectedPixelPercentaje, leftImage);
+        int affectedPixelPercentage = Integer.valueOf(getInputDialog("Add Rayleigh Noise", "Enter a new Value", "Affected Pixel %:"));
+        BufferedImage noisedImage = this.imageUtilities.addMultiplicativeRayleighNoise(lambda, affectedPixelPercentage, leftImage);
         this.displayImageInPane(noisedImage,rightPane);
     }
 
     @FXML public void addAdditiveGaussianNoise(){
         double standardDev = Double.valueOf(getInputDialog("Add Gaussian Noise", "Enter a new Value", "Standard Deviation:"));
         double mean = Double.valueOf(getInputDialog("Add Gaussian Noise", "Enter a new Value", "Mean:"));
-        int affectedPixelPercentaje = Integer.valueOf(getInputDialog("Add Gaussian Noise", "Enter a new Value", "Affected Pixel %:"));
-        BufferedImage noisedImage = this.imageUtilities.addAdditiveGaussianNoise(mean,standardDev, affectedPixelPercentaje, leftImage);
+        int affectedPixelPercentage = Integer.valueOf(getInputDialog("Add Gaussian Noise", "Enter a new Value", "Affected Pixel %:"));
+        BufferedImage noisedImage = this.imageUtilities.addAdditiveGaussianNoise(mean,standardDev, affectedPixelPercentage, leftImage);
+        this.displayImageInPane(noisedImage,rightPane);
+    }
+
+    @FXML public void addSaltAndPepperNoise(){
+        double p0 = Double.valueOf(getInputDialog("Add Salt & Pepper Noise", "Enter a value between 0 and 1", "p0:"));
+        while (p0 < 0 || p0 > 1){
+            p0 = Double.valueOf(getInputDialog("Add Salt & Pepper Noise", "Enter a value between 0 and 1", "p0:"));
+        }
+        double p1 = Double.valueOf(getInputDialog("Add Salt & Pepper Noise", "Enter a value between 0 and 1", "p1:"));
+        while (p1 < 0 || p1 > 1){
+            p1 = Double.valueOf(getInputDialog("Add Salt & Pepper Noise", "Enter a value between 0 and 1", "p1:"));
+        }
+        int affectedPixelPercentage = Integer.valueOf(getInputDialog("Add Salt & Pepper Noise", "Enter a new Value", "Affected Pixel %:"));
+
+        BufferedImage noisedImage = this.imageUtilities.addSaltAndPepperNoise(p0,p1,affectedPixelPercentage,leftImage);
         this.displayImageInPane(noisedImage,rightPane);
     }
 

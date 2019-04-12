@@ -60,6 +60,7 @@
                     <Button mnemonicParsing="false" onAction="#createGrayScaleImage" prefWidth="200.0" text="Grey Scale" />
                     <Button mnemonicParsing="false" onAction="#createColorScaleImage" prefWidth="200.0" text="Color Scale" />
                     <Button mnemonicParsing="false" onAction="#RGBtoHSV" prefWidth="200.0" text="RGB to HSV" />
+                    <Button mnemonicParsing="false" onAction="#averagePerBand" prefWidth="200.0" text="Band Average" />
                            </children>
                         </VBox>
                      </children>
@@ -79,7 +80,6 @@
                               <Button mnemonicParsing="false" onAction="#imageNegative" prefWidth="205.0" text="Negative" />
                               <Button mnemonicParsing="false" onAction="#imageContrast" prefWidth="205.0" text="Adjust Contrast" />
                               <Button mnemonicParsing="false" onAction="#imageBinary" prefWidth="205.0" text="Binary" />
-                              <Button mnemonicParsing="false" onAction="#averagePerBand" prefWidth="200.0" text="Band Average" />
                               <Button mnemonicParsing="false" onAction="#showHistogram" prefWidth="200.0" text="Histogram" />
                               <Button mnemonicParsing="false" onAction="#equalizeHistogram" prefWidth="200.0" text="Equalize Histogram" />
                               <Button mnemonicParsing="false" onAction="#gaussianNumberGenerator" prefWidth="205.0" text="Gaussian Rand Number" />
@@ -91,6 +91,7 @@
                               <Button mnemonicParsing="false" onAction="#addMultiplicativeExponentialNoise" prefWidth="205.0" text="Add Mult Exponential Noise" />
                               <Button mnemonicParsing="false" onAction="#addMultiplicativeRayleighNoise" prefWidth="205.0" text="Add Mult Rayleigh Noise" />
                               <Button mnemonicParsing="false" onAction="#addAdditiveGaussianNoise" prefWidth="205.0" text="Add Addit Gaussian Noise" />
+                              <Button mnemonicParsing="false" onAction="#addSaltAndPepperNoise" prefWidth="205.0" text="Add Salt and Pepper Noise" />
                               <Button mnemonicParsing="false" onAction="#applyMeanFilter" prefWidth="205.0" text="Mean Filter" />
                            </children>
                         </VBox>

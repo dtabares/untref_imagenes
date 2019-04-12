@@ -4,37 +4,27 @@ import java.awt.image.BufferedImage;
 public class Filter {
 
     public BufferedImage applyMeanFilter(BufferedImage bimg, int maskSize){
-        int rgb,r,g,b;
+        int rgb;
+        double r=0,g=0,b=0;
         BufferedImage result = bimg;
         Mask mask = new Mask(maskSize);
         mask.setMeanMask();
-        System.out.println("Size: " + bimg.getWidth() + " x " + bimg.getHeight());
-        double value = mask.getMatrix()[mask.getCenterX()][mask.getCenterY()];
         for (int i = 0; i < bimg.getWidth() - maskSize + 1; i++){
             for (int j = 0; j < bimg.getHeight() - maskSize + 1; j++){
-                    rgb = bimg.getRGB(mask.getCenterX(), mask.getCenterY());
-                    r = ColorUtilities.getRed(rgb);
-                    g = ColorUtilities.getGreen(rgb);
-                    b = ColorUtilities.getBlue(rgb);
-                    System.out.print("Position: " + i + "," + j);
-                    System.out.print(" Changing R: " + r + " B: " + b + " G: " + g);
-                    r = (int) (r + (r * value));
-                    g = (int) (g + (g * value));
-                    b = (int) (b + (b * value));
-                    //Algunos valores se van de rango, pongo esta validacion para truncarlos, no se si esta bien
-                    if(r>255){
-                        r = 255;
+                for (int k = 0; k < maskSize; k++){
+                        for ( int m = 0; m < maskSize; m++){
+                            rgb = bimg.getRGB(i+k, j+m);
+                            int rTemp = ColorUtilities.getRed(rgb);
+                            int gTemp = ColorUtilities.getGreen(rgb);
+                            int bTemp = ColorUtilities.getBlue(rgb);
+                            r = (r + (rTemp * mask.getMatrix()[k][m]));
+                            g = (g + (gTemp * mask.getMatrix()[k][m]));
+                            b = (b + (bTemp * mask.getMatrix()[k][m]));
+                        }
                     }
-                    if(g>255){
-                        g = 255;
-                    }
-                    if(b>255){
-                        b = 255;
-                    }
-                    System.out.print(" To Position: " + i + "," + j);
-                    System.out.println("  R: " + r + " B: " + b + " G: " + g);
-                    result.setRGB(mask.getCenterX(),mask.getCenterY(), ColorUtilities.createRGB(r,g,b));
+                    result.setRGB(mask.getCenterX(),mask.getCenterY(), ColorUtilities.createRGB((int)r,(int)g,(int)b));
                     mask.moveY();
+                    r=0;g=0;b=0;
             }
             mask.restetY();
             mask.moveX();

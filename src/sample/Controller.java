@@ -650,6 +650,13 @@ public class Controller extends BorderPane {
         this.displayImageInPane(noisedImage,rightPane);
     }
 
+    @FXML public void addMultiplicativeRayleighNoise(){
+        double lambda = Double.valueOf(getInputDialog("Add Rayleigh Noise", "Enter a new Value", "Phi:"));
+        int affectedPixelPercentaje = Integer.valueOf(getInputDialog("Add Rayleigh Noise", "Enter a new Value", "Affected Pixel %:"));
+        BufferedImage noisedImage = this.imageUtilities.addMultiplicativeRayleighNoise(lambda, affectedPixelPercentaje, leftImage);
+        this.displayImageInPane(noisedImage,rightPane);
+    }
+
 
     //Panels
 

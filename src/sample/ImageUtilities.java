@@ -1353,6 +1353,31 @@ public class ImageUtilities {
         return result;
     }
 
+
+    public BufferedImage addMultiplicativeRayleighNoise(double phi, int affectedPixelPercentaje, BufferedImage bimg){
+        int[][] noiseMatrix = NoiseGenerator.generateMultiplicativeExponentialNoiseMatrix(bimg.getWidth(),bimg.getHeight(),phi,affectedPixelPercentaje);
+        Image image = new Image(bimg);
+        BufferedImage result = new BufferedImage(bimg.getWidth(),bimg.getHeight(),bimg.getType());
+        // separo en canales
+        int [][] redChannel = image.getRedDataMatrixChannel();
+        int [][] greenChannel = image.getGreenDataMatrixChannel();
+        int [][] blueChannel = image.getBlueDataMatrixChannel();
+        // Multiplico en cada canal
+        redChannel = this.pointToPointMultiplication(noiseMatrix,redChannel);
+        greenChannel = this.pointToPointMultiplication(noiseMatrix,greenChannel);
+        blueChannel = this.pointToPointMultiplication(noiseMatrix,blueChannel);
+
+        int rgb;
+        for (int i = 0; i < bimg.getWidth(); i++) {
+            for (int j = 0; j < bimg.getHeight(); j++) {
+                rgb = ColorUtilities.createRGB(redChannel[i][j],greenChannel[i][j],blueChannel[i][j]);
+                result.setRGB(i,j,rgb);
+            }
+        }
+
+        return result;
+    }
+
     private int[][] pointToPointMultiplication(int[][] m1, int[][] m2){
         int[][] result = new int [m1.length][m1[0].length];
         int min = 255;

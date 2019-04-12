@@ -22,9 +22,7 @@ public class SeparateHSVBandController {
 
 
     public void initialize()throws IOException {
-        System.out.println("Starting Second Window...");
         imageUtilities = new ImageUtilities();
-
     }
 
     public void displayImages(BufferedImage leftImage, BufferedImage centerImage, BufferedImage rightImage)

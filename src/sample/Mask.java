@@ -4,14 +4,13 @@ public class Mask {
 
     private int size;
     private double matrix[][];
-    private int positionX;
-    private int positionY;
+    private int center;
+
 
     public Mask(int size){
         this.size = size;
         this.matrix = new double[size][size];
-        this.positionX = 0;
-        this.positionY = 0;
+        this.center = size/2;
     }
 
     public void setMeanMask(){
@@ -30,34 +29,12 @@ public class Mask {
         return this.matrix;
     }
 
-    public int getPositionX() {
-        return positionX;
+    public double getValue(int x, int y){
+        return this.matrix[x][y];
     }
 
-    public int getPositionY() {
-        return positionY;
+    public int getCenter(){
+        return this.center;
     }
 
-    public void moveX() {
-        this.positionX++;
-    }
-
-    public void moveY() {
-        this.positionY++;
-    }
-
-    public void resetX(){
-        this.positionX = 0;
-    }
-
-    public void restetY(){
-        this.positionY = 0;
-    }
-
-    public int getCenterX(){
-        return (int) positionX+(size/2);
-    }
-    public int getCenterY(){
-        return (int) positionY+(size/2);
-    }
 }

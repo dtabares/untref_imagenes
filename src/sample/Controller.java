@@ -672,6 +672,13 @@ public class Controller extends BorderPane {
         this.displayImageInPane(noisedImage,rightPane);
     }
 
+    @FXML public void applyMeanFilter(){
+        int maskSize = Integer.valueOf(getInputDialog("Apply Median Filter", "Enter a new Value", "Mask size:"));
+        Filter f = new Filter();
+        BufferedImage result = f.applyMeanFilter(leftImage,maskSize);
+        this.displayImageInPane(result,rightPane);
+    }
+
 
     //Panels
 
@@ -701,4 +708,5 @@ public class Controller extends BorderPane {
         return lastModifiedImage;
 
     }
+
 }

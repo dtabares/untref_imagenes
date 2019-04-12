@@ -643,6 +643,13 @@ public class Controller extends BorderPane {
         h.getImageHistogram(noisedImage);
     }
 
+    @FXML public void addMultiplicativeExponentialNoise(){
+        double lambda = Double.valueOf(getInputDialog("Add Exponential Noise", "Enter a new Value", "Lambda:"));
+        int affectedPixelPercentaje = Integer.valueOf(getInputDialog("Add Exponential Noise", "Enter a new Value", "Affected Pixel %:"));
+        BufferedImage noisedImage = this.imageUtilities.addMultiplicativeExponentialNoise(lambda, affectedPixelPercentaje, leftImage);
+        this.displayImageInPane(noisedImage,rightPane);
+    }
+
 
     //Panels
 

@@ -88,6 +88,8 @@
                               <Button mnemonicParsing="false" onAction="#generateGaussianNoisedImage" prefWidth="205.0" text="Gaussian Noised Image" />
                               <Button mnemonicParsing="false" onAction="#generateRayleighNoisedImage" prefWidth="205.0" text="Rayleigh Noised Image" />
                               <Button mnemonicParsing="false" onAction="#generateExponentialNoisedImage" prefWidth="205.0" text="Exponential Noised Image" />
+                              <Button mnemonicParsing="false" onAction="#addMultiplicativeExponentialNoise" prefWidth="205.0" text="Add Multiplicative Exponential Noise" />
+
                            </children>
                         </VBox>
                      </children>

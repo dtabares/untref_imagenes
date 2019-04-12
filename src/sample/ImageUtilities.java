@@ -1355,7 +1355,7 @@ public class ImageUtilities {
 
 
     public BufferedImage addMultiplicativeRayleighNoise(double phi, int affectedPixelPercentaje, BufferedImage bimg){
-        int[][] noiseMatrix = NoiseGenerator.generateMultiplicativeExponentialNoiseMatrix(bimg.getWidth(),bimg.getHeight(),phi,affectedPixelPercentaje);
+        int[][] noiseMatrix = NoiseGenerator.generateMultiplicativeRayleighNoiseMatrix(bimg.getWidth(),bimg.getHeight(),phi,affectedPixelPercentaje);
         Image image = new Image(bimg);
         BufferedImage result = new BufferedImage(bimg.getWidth(),bimg.getHeight(),bimg.getType());
         // separo en canales

@@ -657,6 +657,14 @@ public class Controller extends BorderPane {
         this.displayImageInPane(noisedImage,rightPane);
     }
 
+    @FXML public void addAdditiveGaussianNoise(){
+        double standardDev = Double.valueOf(getInputDialog("Add Gaussian Noise", "Enter a new Value", "Standard Deviation:"));
+        double mean = Double.valueOf(getInputDialog("Add Gaussian Noise", "Enter a new Value", "Mean:"));
+        int affectedPixelPercentaje = Integer.valueOf(getInputDialog("Add Gaussian Noise", "Enter a new Value", "Affected Pixel %:"));
+        BufferedImage noisedImage = this.imageUtilities.addAdditiveGaussianNoise(mean,standardDev, affectedPixelPercentaje, leftImage);
+        this.displayImageInPane(noisedImage,rightPane);
+    }
+
 
     //Panels
 

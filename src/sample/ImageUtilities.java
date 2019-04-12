@@ -1353,7 +1353,6 @@ public class ImageUtilities {
         return result;
     }
 
-
     public BufferedImage addMultiplicativeRayleighNoise(double phi, int affectedPixelPercentaje, BufferedImage bimg){
         int[][] noiseMatrix = NoiseGenerator.generateMultiplicativeRayleighNoiseMatrix(bimg.getWidth(),bimg.getHeight(),phi,affectedPixelPercentaje);
         Image image = new Image(bimg);
@@ -1378,6 +1377,30 @@ public class ImageUtilities {
         return result;
     }
 
+    public BufferedImage addAdditiveGaussianNoise(double mean, double standardDev, int affectedPixelPercentaje, BufferedImage bimg){
+        int[][] noiseMatrix = NoiseGenerator.generateAdditiveGaussianNoiseMatrix(bimg.getWidth(),bimg.getHeight(),mean,standardDev,affectedPixelPercentaje);
+        Image image = new Image(bimg);
+        BufferedImage result = new BufferedImage(bimg.getWidth(),bimg.getHeight(),bimg.getType());
+        // separo en canales
+        int [][] redChannel = image.getRedDataMatrixChannel();
+        int [][] greenChannel = image.getGreenDataMatrixChannel();
+        int [][] blueChannel = image.getBlueDataMatrixChannel();
+        // Sumo en cada canal
+        redChannel = this.addTwoMatrixes(noiseMatrix,redChannel);
+        greenChannel = this.addTwoMatrixes(noiseMatrix,greenChannel);
+        blueChannel = this.addTwoMatrixes(noiseMatrix,blueChannel);
+
+        int rgb;
+        for (int i = 0; i < bimg.getWidth(); i++) {
+            for (int j = 0; j < bimg.getHeight(); j++) {
+                rgb = ColorUtilities.createRGB(redChannel[i][j],greenChannel[i][j],blueChannel[i][j]);
+                result.setRGB(i,j,rgb);
+            }
+        }
+
+        return result;
+    }
+    //Multiplica punto a punto 2 Matrices. Si se va de escala aplica una transformacion Lineal
     private int[][] pointToPointMultiplication(int[][] m1, int[][] m2){
         int[][] result = new int [m1.length][m1[0].length];
         int min = 255;
@@ -1395,6 +1418,37 @@ public class ImageUtilities {
             }
         }
 
+        if(max > 255 || min < 0)
+        {
+            // Tengo que hacer una Transformacion Lineal para ajustar la escala
+
+            for (int i = 0; i < m1.length; i++) {
+                for (int j = 0; j < m1[0].length; j++) {
+                    result[i][j] = (int) linearTransformation(result[i][j],max,min);
+                }
+            }
+        }
+
+        return result;
+    }
+    //Suma punto a punto 2 Matrices. Si se va de escala aplica una transformacion Lineal
+    private int[][] addTwoMatrixes(int[][] m1, int[][] m2){
+        int width = m1.length;
+        int height = m1[0].length;
+        int[][] result = new int[width][height];
+        int min = 255;
+        int max = 0;
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
+                result[i][j] = m1[i][j] + m2[i][j];
+                if (result[i][j] > max){
+                    max = result[i][j];
+                }
+                if(result[i][j] < min){
+                    min = result[i][j];
+                }
+            }
+        }
         if(max > 255 || min < 0)
         {
             // Tengo que hacer una Transformacion Lineal para ajustar la escala

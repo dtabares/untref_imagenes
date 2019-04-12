@@ -47,6 +47,28 @@ public class NoiseGenerator {
         return  noiseMatrix;
     }
 
+    public static int[][] generateAdditiveGaussianNoiseMatrix(int width, int height, double mean, double standardDev, int affectedPixelPercentage){
+        int imageSize = width * height;
+        int[][] noiseMatrix = new int[width][height];
+        int affectedPixels = (imageSize * affectedPixelPercentage / 100);
+        int affectationCoefficient = imageSize/affectedPixels;
+        int pixelCount = 0;
+
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
+                if (pixelCount % affectationCoefficient == 0){
+                    noiseMatrix[i][j] = NumberGenerator.generateRandomGaussianNumber(mean,standardDev);
+                }
+                else{
+                    noiseMatrix[i][j] = 0;
+                }
+                pixelCount++;
+            }
+        }
+
+        return  noiseMatrix;
+    }
+
 
 
 }

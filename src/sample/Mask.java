@@ -21,6 +21,29 @@ public class Mask {
         }
     }
 
+    public void setMedianMask(){
+        for (int i = 0; i < matrix.length; i++){
+            for (int j = 0; j < this.matrix[0].length; j++){
+                this.matrix[i][j] = 1;
+            }
+        }
+    }
+
+    public void setWeightedMedianMask(){
+        if (matrix != null){
+            matrix[0][0] = 1;
+            matrix[0][1] = 2;
+            matrix[0][2] = 1;
+            matrix[1][0] = 2;
+            matrix[1][1] = 4;
+            matrix[1][2] = 2;
+            matrix[2][0] = 1;
+            matrix[2][1] = 2;
+            matrix[2][2] = 1;
+        }
+
+    }
+
     public void setGaussMask(double sigma) {
         double suma = 0;
         double valor;
@@ -31,7 +54,7 @@ public class Mask {
                 //fraccion representa la primer parte de la formula
                 double fraccion = (1.0 / (2.0 * Math.PI * Math.pow(sigma, 2)));
                 //e representa la segunda parte de la formula
-                double e = Math.exp(-(Math.pow(i, 2) + Math.pow(j, 2)) / (Math.pow(sigma, 2)));
+                double e = Math.exp(-(Math.pow(i, 2) + Math.pow(j, 2)) / (Math.pow(sigma, 2)*2));
                 valor = fraccion * e;
                 this.matrix[i + radius][j + radius] = valor;
                 //la variable suma es para analizar la matriz
@@ -72,6 +95,16 @@ public class Mask {
 
     public int getCenter(){
         return this.center;
+    }
+
+    public int getMaskSum(){
+        int sum = 0;
+        for (int i = 0; i < matrix.length; i++){
+            for (int j = 0; j < this.matrix[0].length; j++){
+                sum+=matrix[i][j];
+            }
+        }
+        return sum;
     }
 
     public void printMask(){

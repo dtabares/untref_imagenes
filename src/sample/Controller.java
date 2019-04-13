@@ -45,15 +45,14 @@ public class Controller extends BorderPane {
         this.historyImageList = new LinkedList<>();
         this.imageUtilities = new ImageUtilities();
         this.filter = new Filter();
-        this.testsFer();
+        //this.testsFer();
     }
 
     public void testsFer()throws IOException{
         BufferedImage bimg = ImageIO.read(new File("C:\\Users\\Fernando.Ares\\Desktop\\Imagenes\\leopard.jpg"));
         leftImage = bimg;
         this.displayImageInPane(bimg,leftPane);
-  //      Filter f = new Filter();
-//        this.displayImageInPane(f.applyGaussFilter(bimg,2),rightPane);
+        this.displayImageInPane(filter.applyMedianFilter(bimg,3),rightPane);
     }
 
     //Top Menu
@@ -693,8 +692,45 @@ public class Controller extends BorderPane {
 
         BufferedImage result = null;
         if (leftImage != null) {
-            int maskSize = Integer.valueOf(getInputDialog("Apply Median Filter", "Enter a new Value", "Mask size:"));
+            int maskSize = Integer.valueOf(getInputDialog("Apply Mean Filter", "Enter a new Value", "Mask size:"));
+            while(isOdd(maskSize)) {
+                Alerts.showAlert("El numero no es impar");
+                maskSize = Integer.valueOf(getInputDialog("Apply Mean Filter", "Enter a new Value", "Mask size:"));
+            }
             result = this.filter.applyMeanFilter(leftImage,maskSize);
+            this.displayImageInPane(result, rightPane);
+        }
+        else
+        {
+            Alerts.showAlert("No hay una imagen abierta");
+        }
+        return result;
+    }
+
+    @FXML public BufferedImage applyMedianFilter(){
+
+        BufferedImage result = null;
+        if (leftImage != null) {
+            int maskSize = Integer.valueOf(getInputDialog("Apply Median Filter", "Enter a new Value", "Mask size:"));
+            while(isOdd(maskSize)) {
+                Alerts.showAlert("El numero no es impar");
+                maskSize = Integer.valueOf(getInputDialog("Apply Median Filter", "Enter a new Value", "Mask size:"));
+            }
+            result = this.filter.applyMedianFilter(leftImage,maskSize);
+            this.displayImageInPane(result, rightPane);
+        }
+        else
+        {
+            Alerts.showAlert("No hay una imagen abierta");
+        }
+        return result;
+    }
+
+    @FXML public BufferedImage applyWeightedMedianFilter(){
+
+        BufferedImage result = null;
+        if (leftImage != null) {
+            result = this.filter.applyWeightedMedianFilter(leftImage);
             this.displayImageInPane(result, rightPane);
         }
         else
@@ -721,6 +757,10 @@ public class Controller extends BorderPane {
 
     @FXML public void enhanceEdges(){
         int maskSize = Integer.valueOf(getInputDialog("Enhance Edges", "Enter a new Value", "Mask size:"));
+        while(isOdd(maskSize)) {
+            Alerts.showAlert("El numero no es impar");
+            maskSize = Integer.valueOf(getInputDialog("Enhance Edges", "Enter a new Value", "Mask size:"));
+        }
         //Filter f = new Filter();
         BufferedImage result = this.filter.enhanceEdges(leftImage,maskSize);
         this.displayImageInPane(result,rightPane);
@@ -753,6 +793,10 @@ public class Controller extends BorderPane {
         }
         return lastModifiedImage;
 
+    }
+
+    private boolean isOdd(int number){
+        return number % 2 == 0;
     }
 
 }

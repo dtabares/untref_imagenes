@@ -93,6 +93,7 @@
                               <Button mnemonicParsing="false" onAction="#addAdditiveGaussianNoise" prefWidth="205.0" text="Add Addit Gaussian Noise" />
                               <Button mnemonicParsing="false" onAction="#addSaltAndPepperNoise" prefWidth="205.0" text="Add Salt and Pepper Noise" />
                               <Button mnemonicParsing="false" onAction="#applyMeanFilter" prefWidth="205.0" text="Mean Filter" />
+                              <Button mnemonicParsing="false" onAction="#applyGaussFilter" prefWidth="205.0" text="Gauss Filter" />
                            </children>
                         </VBox>
                      </children>

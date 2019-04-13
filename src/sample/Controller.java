@@ -43,14 +43,15 @@ public class Controller extends BorderPane {
         this.rightPaneImageList = new LinkedList<>();
         this.historyImageList = new LinkedList<>();
         this.imageUtilities = new ImageUtilities();
-        //(this.testsFer();
+        this.testsFer();
     }
 
     public void testsFer()throws IOException{
         BufferedImage bimg = ImageIO.read(new File("C:\\Users\\Fernando.Ares\\Desktop\\Imagenes\\leopard.jpg"));
+        leftImage = bimg;
         this.displayImageInPane(bimg,leftPane);
-        Filter f = new Filter();
-        this.displayImageInPane(f.applyMeanFilter(bimg,3),rightPane);
+  //      Filter f = new Filter();
+//        this.displayImageInPane(f.applyGaussFilter(bimg,2),rightPane);
     }
 
     //Top Menu
@@ -687,12 +688,37 @@ public class Controller extends BorderPane {
         this.displayImageInPane(noisedImage,rightPane);
     }
 
-    @FXML public void applyMeanFilter(){
-        int maskSize = Integer.valueOf(getInputDialog("Apply Median Filter", "Enter a new Value", "Mask size:"));
-        Filter f = new Filter();
-        BufferedImage result = f.applyMeanFilter(leftImage,maskSize);
-        this.displayImageInPane(result,rightPane);
+    @FXML public BufferedImage applyMeanFilter(){
+
+        BufferedImage result = null;
+        if (leftImage != null) {
+            int maskSize = Integer.valueOf(getInputDialog("Apply Median Filter", "Enter a new Value", "Mask size:"));
+            Filter f = new Filter();
+            result = f.applyMeanFilter(leftImage,maskSize);
+            this.displayImageInPane(result, rightPane);
+        }
+        else
+        {
+            Alerts.showAlert("No hay una imagen abierta");
+        }
+        return result;
     }
+
+    @FXML public BufferedImage applyGaussFilter(){
+        BufferedImage result = null;
+        if (leftImage != null) {
+            double sigma = Double.valueOf(getInputDialog("Apply Gauss Filter", "Enter a new Value", "Sigma:"));
+            Filter f = new Filter();
+            result = f.applyGaussFilter(leftImage,sigma);
+            this.displayImageInPane(result,rightPane);
+        }
+        else
+        {
+            Alerts.showAlert("No hay una imagen abierta");
+        }
+        return result;
+    }
+
 
 
     //Panels

@@ -663,7 +663,7 @@ public class ImageUtilities {
         return result;
     }
 
-    private double linearTransformation(int p, int max, int min){
+    public double linearTransformation(int p, int max, int min){
         double  m = 255.0/(double)(max - min);
         double b = (-255.0 * (double)min) /(double) (max - min);
         //System.out.println("Max: " + max + " Min: " + min);

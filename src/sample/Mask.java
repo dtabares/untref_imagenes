@@ -4,14 +4,13 @@ public class Mask {
 
     private int size;
     private double matrix[][];
-    private int positionX;
-    private int positionY;
+    private int center;
+
 
     public Mask(int size){
         this.size = size;
         this.matrix = new double[size][size];
-        this.positionX = 0;
-        this.positionY = 0;
+        this.center = size/2;
     }
 
     public void setMeanMask(){
@@ -22,20 +21,37 @@ public class Mask {
         }
     }
 
-    public void setGaussMask(double sigma){
-        double suma=0;
+    public void setGaussMask(double sigma) {
+        double suma = 0;
         double valor;
-        int radius = size/2;
+        int radius = size / 2;
         for (int i = 0 - radius; i < matrix.length - radius; i++) {
             for (int j = 0 - radius; j < this.matrix[0].length - radius; j++) {
                 double fraccion = (1.0 / (2.0 * Math.PI * Math.pow(sigma, 2)));
                 double e = Math.exp(-(Math.pow(i, 2) + Math.pow(j, 2)) / (Math.pow(sigma, 2)));
                 valor = fraccion * e;
                 this.matrix[i + radius][j + radius] = valor;
-                suma+=valor;
+                suma += valor;
             }
         }
         //printMask();
+    }
+
+    public void setHighPassFilterMask(){
+        double centerValue = ((this.size * this.size) - 1.0)/(size*size);
+        double otherValue = (- 1.0)/(size*size);
+        for (int i = 0; i < matrix.length ; i++) {
+            for (int j = 0; j < matrix[0].length; j++) {
+                if (i == this.center && j == this.center){
+                    this.matrix[i][j] = centerValue;
+                }
+                else{
+                    this.matrix[i][j] = otherValue;
+                }
+                System.out.println("i: " +i + " j: " + j + " value:" + this.matrix[i][j]);
+
+            }
+        }
     }
 
     public int getSize(){
@@ -46,37 +62,14 @@ public class Mask {
         return this.matrix;
     }
 
-    public int getPositionX() {
-        return positionX;
+    public double getValue(int x, int y){
+        return this.matrix[x][y];
     }
 
-    public int getPositionY() {
-        return positionY;
+    public int getCenter(){
+        return this.center;
     }
-
-    public void moveX() {
-        this.positionX++;
-    }
-
-    public void moveY() {
-        this.positionY++;
-    }
-
-    public void resetX(){
-        this.positionX = 0;
-    }
-
-    public void restetY(){
-        this.positionY = 0;
-    }
-
-    public int getCenterX(){
-        return (int) positionX+(size/2);
-    }
-    public int getCenterY(){
-        return (int) positionY+(size/2);
-    }
-
+    
     public void printMask(){
         for (int i = 0; i < matrix.length; i++){
             for (int j = 0; j < matrix[0].length;j++){
@@ -84,4 +77,5 @@ public class Mask {
             }
         }
     }
+
 }

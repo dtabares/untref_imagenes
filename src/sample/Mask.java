@@ -25,12 +25,16 @@ public class Mask {
         double suma = 0;
         double valor;
         int radius = size / 2;
+        //se aplica la formula con el 0,0 centrado en la mascara
         for (int i = 0 - radius; i < matrix.length - radius; i++) {
             for (int j = 0 - radius; j < this.matrix[0].length - radius; j++) {
+                //fraccion representa la primer parte de la formula
                 double fraccion = (1.0 / (2.0 * Math.PI * Math.pow(sigma, 2)));
+                //e representa la segunda parte de la formula
                 double e = Math.exp(-(Math.pow(i, 2) + Math.pow(j, 2)) / (Math.pow(sigma, 2)));
                 valor = fraccion * e;
                 this.matrix[i + radius][j + radius] = valor;
+                //la variable suma es para analizar la matriz
                 suma += valor;
             }
         }
@@ -69,7 +73,7 @@ public class Mask {
     public int getCenter(){
         return this.center;
     }
-    
+
     public void printMask(){
         for (int i = 0; i < matrix.length; i++){
             for (int j = 0; j < matrix[0].length;j++){

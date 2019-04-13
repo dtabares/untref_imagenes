@@ -3,16 +3,19 @@ import java.awt.image.BufferedImage;
 
 public class Filter {
 
+    ImageUtilities imageUtilities = new ImageUtilities();
+
     public BufferedImage applyMeanFilter(BufferedImage bimg, int maskSize) {
         Mask mask = new Mask(maskSize);
         mask.setMeanMask();
         BufferedImage result = applyConvolution(bimg, mask);
+        mask = null;
         return result;
-
     }
 
     public  BufferedImage applyWeightedMedianFilter(BufferedImage bimg){
         BufferedImage result = new BufferedImage(bimg.getWidth(),bimg.getHeight(),bimg.getType());
+
         return result;
     }
 
@@ -21,6 +24,7 @@ public class Filter {
         Mask mask = new Mask(maskSize);
         mask.setGaussMask(sigma);
         BufferedImage result = applyConvolution(bimg, mask);
+        mask = null;
         return result;
     }
 
@@ -28,12 +32,13 @@ public class Filter {
         Mask mask = new Mask(maskSize);
         mask.setHighPassFilterMask();
         BufferedImage result = applyConvolution(bimg,mask);
+        mask = null;
         return result;
     }
 
     private BufferedImage applyConvolution(BufferedImage bimg, Mask mask){
         int rgb, red, green, blue;
-        BufferedImage result = bimg;
+        BufferedImage result = imageUtilities.copyImageIntoAnother(bimg);
         int widthLimit = bimg.getWidth() - mask.getSize();
         int heightLimit = bimg.getHeight() - mask.getSize();
         Image temp = new Image(bimg);

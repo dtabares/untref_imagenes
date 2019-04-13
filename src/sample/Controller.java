@@ -33,6 +33,7 @@ public class Controller extends BorderPane {
     private List<BufferedImage> rightPaneImageList;
     private List<BufferedImage> historyImageList;
     private ImageUtilities imageUtilities;
+    private Filter filter;
 
     @FXML private AnchorPane leftPane;
     @FXML private AnchorPane rightPane;
@@ -43,6 +44,7 @@ public class Controller extends BorderPane {
         this.rightPaneImageList = new LinkedList<>();
         this.historyImageList = new LinkedList<>();
         this.imageUtilities = new ImageUtilities();
+        this.filter = new Filter();
         this.testsFer();
     }
 
@@ -501,7 +503,6 @@ public class Controller extends BorderPane {
         return result;
     }
 
-
     @FXML public void RGBtoHSV()
     {
         if(leftPane.getChildren().isEmpty())
@@ -634,6 +635,19 @@ public class Controller extends BorderPane {
         Histogram h = new Histogram();
         h.getImageHistogram(noisedImage);
     }
+    @FXML public void addMultiplicativeExponentialNoise(){
+        double lambda = Double.valueOf(getInputDialog("Add Exponential Noise", "Enter a new Value", "Lambda:"));
+        int affectedPixelPercentage = Integer.valueOf(getInputDialog("Add Exponential Noise", "Enter a new Value", "Affected Pixel %:"));
+        BufferedImage noisedImage = this.imageUtilities.addMultiplicativeExponentialNoise(lambda, affectedPixelPercentage, leftImage);
+        this.displayImageInPane(noisedImage,rightPane);
+    }
+
+    @FXML public void addMultiplicativeRayleighNoise(){
+        double lambda = Double.valueOf(getInputDialog("Add Rayleigh Noise", "Enter a new Value", "Phi:"));
+        int affectedPixelPercentage = Integer.valueOf(getInputDialog("Add Rayleigh Noise", "Enter a new Value", "Affected Pixel %:"));
+        BufferedImage noisedImage = this.imageUtilities.addMultiplicativeRayleighNoise(lambda, affectedPixelPercentage, leftImage);
+        this.displayImageInPane(noisedImage,rightPane);
+    }
 
     @FXML public void generateRayleighNoisedImage(){
         double phi = Double.valueOf(getInputDialog("Rayleigh Noised Image Generator", "Enter a new Value", "Phi:"));
@@ -651,19 +665,6 @@ public class Controller extends BorderPane {
         h.getImageHistogram(noisedImage);
     }
 
-    @FXML public void addMultiplicativeExponentialNoise(){
-        double lambda = Double.valueOf(getInputDialog("Add Exponential Noise", "Enter a new Value", "Lambda:"));
-        int affectedPixelPercentage = Integer.valueOf(getInputDialog("Add Exponential Noise", "Enter a new Value", "Affected Pixel %:"));
-        BufferedImage noisedImage = this.imageUtilities.addMultiplicativeExponentialNoise(lambda, affectedPixelPercentage, leftImage);
-        this.displayImageInPane(noisedImage,rightPane);
-    }
-
-    @FXML public void addMultiplicativeRayleighNoise(){
-        double lambda = Double.valueOf(getInputDialog("Add Rayleigh Noise", "Enter a new Value", "Phi:"));
-        int affectedPixelPercentage = Integer.valueOf(getInputDialog("Add Rayleigh Noise", "Enter a new Value", "Affected Pixel %:"));
-        BufferedImage noisedImage = this.imageUtilities.addMultiplicativeRayleighNoise(lambda, affectedPixelPercentage, leftImage);
-        this.displayImageInPane(noisedImage,rightPane);
-    }
 
     @FXML public void addAdditiveGaussianNoise(){
         double standardDev = Double.valueOf(getInputDialog("Add Gaussian Noise", "Enter a new Value", "Standard Deviation:"));
@@ -693,8 +694,7 @@ public class Controller extends BorderPane {
         BufferedImage result = null;
         if (leftImage != null) {
             int maskSize = Integer.valueOf(getInputDialog("Apply Median Filter", "Enter a new Value", "Mask size:"));
-            Filter f = new Filter();
-            result = f.applyMeanFilter(leftImage,maskSize);
+            result = this.filter.applyMeanFilter(leftImage,maskSize);
             this.displayImageInPane(result, rightPane);
         }
         else
@@ -708,8 +708,8 @@ public class Controller extends BorderPane {
         BufferedImage result = null;
         if (leftImage != null) {
             double sigma = Double.valueOf(getInputDialog("Apply Gauss Filter", "Enter a new Value", "Sigma:"));
-            Filter f = new Filter();
-            result = f.applyGaussFilter(leftImage,sigma);
+            //Filter f = new Filter();
+            result = this.filter.applyGaussFilter(leftImage,sigma);
             this.displayImageInPane(result,rightPane);
         }
         else
@@ -719,14 +719,12 @@ public class Controller extends BorderPane {
         return result;
     }
 
-
     @FXML public void enhanceEdges(){
         int maskSize = Integer.valueOf(getInputDialog("Enhance Edges", "Enter a new Value", "Mask size:"));
-        Filter f = new Filter();
-        BufferedImage result = f.enhanceEdges(leftImage,maskSize);
+        //Filter f = new Filter();
+        BufferedImage result = this.filter.enhanceEdges(leftImage,maskSize);
         this.displayImageInPane(result,rightPane);
     }
-
 
     //Panels
 

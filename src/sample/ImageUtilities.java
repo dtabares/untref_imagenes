@@ -1414,7 +1414,7 @@ public class ImageUtilities {
     public BufferedImage addSaltAndPepperNoise(double p0, double p1, int affectedPixelPercentage, BufferedImage bimg){
         int white = ColorUtilities.createRGB(255,255,255);
         int black = ColorUtilities.createRGB(0,0,0);
-        BufferedImage result = bimg;
+        BufferedImage result = this.copyImageIntoAnother(bimg);
         int imageSize = result.getWidth() * result.getHeight();
         int affectedPixels = (imageSize * affectedPixelPercentage / 100);
         int affectationCoefficient = imageSize/affectedPixels;
@@ -1432,6 +1432,7 @@ public class ImageUtilities {
                         result.setRGB(i,j,white);
                     }
                 }
+                pixelCount++;
             }
         }
 

@@ -56,6 +56,9 @@ public class Filter {
         red = 0;
         green = 0;
         blue = 0;
+        int max = 0;
+        int min = 255;
+
 
         for (int i = 0; i <= widthLimit; i++) {
             for (int j = 0; j <= heightLimit; j++) {
@@ -70,9 +73,39 @@ public class Filter {
                 redChannel[i + mask.getCenter()][j + mask.getCenter()] = red;
                 greenChannel[i + mask.getCenter()][j + mask.getCenter()] = green;
                 blueChannel[i + mask.getCenter()][j + mask.getCenter()] = blue;
+                System.out.println("r: " +red + " g: " + green + " b:" + blue);
+                if(red > max){
+                    max = red;
+                }
+                if(green > max){
+                    max = green;
+                }
+                if(blue > max){
+                    max = blue;
+                }
+
+                if(red < min){
+                    min = red;
+                }
+                if(green < min){
+                    min = green;
+                }
+                if(blue < min){
+                    min = blue;
+                }
                 red = 0;
                 green = 0;
                 blue = 0;
+            }
+        }
+
+        if(max > 255 || min < 0){
+            for (int i = 0; i < result.getWidth(); i++) {
+                for (int j = 0; j < result.getHeight(); j++) {
+                    redChannel[i][j] = (int) this.imageUtilities.linearTransformation(redChannel[i][j],max,min);
+                    greenChannel[i][j] = (int) this.imageUtilities.linearTransformation(greenChannel[i][j],max,min);
+                    blueChannel[i][j] = (int) this.imageUtilities.linearTransformation(blueChannel[i][j],max,min);
+                }
             }
         }
 

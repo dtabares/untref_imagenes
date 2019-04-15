@@ -75,7 +75,7 @@ public class Mask {
                 else{
                     this.matrix[i][j] = otherValue;
                 }
-                System.out.println("i: " +i + " j: " + j + " value:" + this.matrix[i][j]);
+                //System.out.println("i: " +i + " j: " + j + " value:" + this.matrix[i][j]);
 
             }
         }

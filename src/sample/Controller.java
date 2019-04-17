@@ -678,10 +678,7 @@ public class Controller extends BorderPane {
         while (p0 < 0 || p0 > 1){
             p0 = Double.valueOf(getInputDialog("Add Salt & Pepper Noise", "Enter a value between 0 and 1", "p0:"));
         }
-        double p1 = Double.valueOf(getInputDialog("Add Salt & Pepper Noise", "Enter a value between 0 and 1", "p1:"));
-        while (p1 < 0 || p1 > 1){
-            p1 = Double.valueOf(getInputDialog("Add Salt & Pepper Noise", "Enter a value between 0 and 1", "p1:"));
-        }
+        double p1 = 1.0 - p0;
         int affectedPixelPercentage = Integer.valueOf(getInputDialog("Add Salt & Pepper Noise", "Enter a new Value", "Affected Pixel %:"));
 
         BufferedImage noisedImage = this.imageUtilities.addSaltAndPepperNoise(p0,p1,affectedPixelPercentage,leftImage);

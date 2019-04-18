@@ -1166,8 +1166,13 @@ public class ImageUtilities {
     public BufferedImage imageContrast(BufferedImage bimg){
         BufferedImage result = null;
         int [][] matrix = this.getChannelMatrix(bimg);
+        int [][] resultRedMatrix = new int[bimg.getWidth()][bimg.getHeight()];
+        int [][] resultGreenMatrix = new int[bimg.getWidth()][bimg.getHeight()];
+        int [][] resultBlueMatrix = new int[bimg.getWidth()][bimg.getHeight()];
         int r,g,b;
         result = new BufferedImage(bimg.getWidth(), bimg.getHeight(), bimg.getType());
+        int max = 0;
+        int min = 255;
         if (isGreyImage(bimg)) {
             int median = getMedian(matrix[1]);
             int deviation = (this.getStandardDeviation(matrix[1]));
@@ -1175,7 +1180,7 @@ public class ImageUtilities {
             int R2 = median + deviation;
             //Parametrizar de acuerdo a las pendientes de las recatas
             double pOscuros = 0.60;
-            double pClaros = 3;
+            double pClaros = 1.5;
             //r1 mayor a s1 y r2 menor a s2
             double s1 = (int) Math.round(R1*pOscuros);
             double s2 = (int) Math.round(R2*pClaros);
@@ -1184,17 +1189,27 @@ public class ImageUtilities {
             double c = s1 - (m * R1);
             for (int i = 0; i < bimg.getWidth(); i++) {
                 for (int j = 0; j < bimg.getHeight(); j++) {
+                    //Tomo solo el rojo, ya que si la imagen es gris, los 3 canales son iguales
                     r = ColorUtilities.getRed(bimg.getRGB(i,j));
-                    g = ColorUtilities.getGreen(bimg.getRGB(i,j));
-                    b = ColorUtilities.getBlue(bimg.getRGB(i,j));
-                    if (bimg.getRGB(i, j) < R1) {
-                        result.setRGB(i, j, ColorUtilities.createRGB((int)Math.round((pOscuros*r)),(int)Math.round(pOscuros*g),(int)Math.round(pOscuros*b)));
+                    int newR;
+                    if (ColorUtilities.getRed(bimg.getRGB(i, j)) < R1) {
+                        newR = (int) Math.round(pOscuros*r);
+
                     }
-                    else if(bimg.getRGB(i, j) > R2){
-                        result.setRGB(i, j, ColorUtilities.createRGB((int)Math.round(pClaros*r),(int)Math.round(pClaros*g), (int)Math.round(pClaros*b)));
+                    else if(ColorUtilities.getRed(bimg.getRGB(i, j)) > R2){
+                        newR = (int)Math.round(pClaros*r);
                     }
                     else {
-                        result.setRGB(i, j, ColorUtilities.createRGB((int)Math.round((m*r)+c),(int)Math.round((m*g)+c), (int)Math.round((m*b)+c)));
+                        newR = (int)Math.round((m*r)+c);
+                    }
+                    resultRedMatrix[i][j] = newR;
+                    resultGreenMatrix[i][j] = newR;
+                    resultBlueMatrix[i][j] = newR;
+                    if(newR > max){
+                        max = newR;
+                    }
+                    if(newR < min){
+                        min = newR;
                     }
                 }
             }
@@ -1245,6 +1260,17 @@ public class ImageUtilities {
                     else {
                         result.setRGB(i, j, ColorUtilities.createRGB((int)Math.round((rM*r)+rB),(int)Math.round((rM*g)+rB), (int)Math.round((rM*b)+rB)));
                     }
+                }
+            }
+        }
+
+        if(max > 255 || min < 0){
+            for (int i = 0; i < bimg.getWidth(); i++) {
+                for (int j = 0; j < bimg.getHeight(); j++) {
+                    r = (int) linearTransformation(resultRedMatrix[i][j],max,min);
+                    g = (int) linearTransformation(resultGreenMatrix[i][j],max,min);
+                    b = (int) linearTransformation(resultBlueMatrix[i][j],max,min);
+                    result.setRGB(i,j,ColorUtilities.createRGB(r,g,b));
                 }
             }
         }

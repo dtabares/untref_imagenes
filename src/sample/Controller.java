@@ -173,6 +173,29 @@ public class Controller extends BorderPane {
             Alerts.showAlert("No hay imagen para mover");
         }
     }
+    @FXML public void enlargeLeftImage(){
+        if (leftImage != null){
+            int scaleFactor = Integer.valueOf(getInputDialog("Enlarge Image", "Enter a new Value", "scale Factor:"));
+            BufferedImage newImage = this.imageUtilities.resize(leftImage,scaleFactor);
+            this.displayImageInPane(newImage,leftPane);
+        }
+        else
+        {
+            Alerts.showAlert("No hay una imagen abierta");
+        }
+    }
+
+    @FXML public void enlargeRightImage(){
+        if (this.getLastModifiedImage() != null){
+            int scaleFactor = Integer.valueOf(getInputDialog("Enlarge Image", "Enter a new Value", "scale Factor:"));
+            BufferedImage newImage = this.imageUtilities.resize(this.getLastModifiedImage(),scaleFactor);
+            this.displayImageInPane(newImage,rightPane);
+        }
+        else
+        {
+            Alerts.showAlert("No hay una imagen en el panel derecho");
+        }
+    }
 
     //Left Pane
 

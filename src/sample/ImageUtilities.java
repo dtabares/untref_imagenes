@@ -1,17 +1,9 @@
 package sample;
 
-import com.sun.istack.internal.Nullable;
-import javafx.scene.Scene;
-import javafx.scene.chart.*;
-import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.StackPane;
-import javafx.scene.shape.Rectangle;
-import javafx.stage.Stage;
-
 import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.nio.file.Files;
@@ -1525,6 +1517,19 @@ public class ImageUtilities {
         }
 
         return result;
+    }
+
+    public BufferedImage resize(BufferedImage img, int scaleFactor) {
+        int newW = img.getWidth() * scaleFactor;
+        int newH = img.getHeight() * scaleFactor;
+        java.awt.Image tmp = img.getScaledInstance(newW, newH, java.awt.Image.SCALE_SMOOTH);
+        BufferedImage dimg = new BufferedImage(newW, newH, img.getType());
+
+        Graphics2D g2d = dimg.createGraphics();
+        g2d.drawImage(tmp, 0, 0, null);
+        g2d.dispose();
+
+        return dimg;
     }
 
 }

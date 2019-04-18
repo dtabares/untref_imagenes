@@ -122,6 +122,12 @@
             <MenuItem mnemonicParsing="false" onAction="#redo" text="Redo" />
             <MenuItem mnemonicParsing="false" onAction="#reset" text="Reset" />
             <MenuItem mnemonicParsing="false" onAction="#setRightToLeft" text="Set Right to Left" />
+                  <Menu mnemonicParsing="false" text="Enlarge">
+                    <items>
+                      <MenuItem mnemonicParsing="false" onAction="#enlargeLeftImage" text="Left Image" />
+                        <MenuItem mnemonicParsing="false" onAction="#enlargeRightImage" text="Right Image" />
+                    </items>
+                  </Menu>
           </items>
         </Menu>
         <Menu mnemonicParsing="false" text="Help">

@@ -69,6 +69,4 @@ public class NoiseGenerator {
         return  noiseMatrix;
     }
 
-
-
 }

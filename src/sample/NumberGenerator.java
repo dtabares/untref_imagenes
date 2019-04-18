@@ -16,19 +16,16 @@ public class NumberGenerator {
 
         return randomNumber;
     }
-
-
     public static int generateRandomGaussianNumber(double mean, double sd){
-        int randomNumber;
+        double randomNumber;
         double x1 = Math.random();
         double x2 = Math.random();
 
-        randomNumber = (int) (Math.sqrt(-2 * Math.log(x1)) * Math.cos(2 * Math.PI * x2));
-        randomNumber = (int) (randomNumber * sd + mean);
+        randomNumber = (Math.sqrt(-2 * Math.log(x1)) * Math.cos(2 * Math.PI * x2));
+        randomNumber = (randomNumber * sd + mean);
 
-        return randomNumber;
+        return (int) Math.round(randomNumber);
     }
-
     public static int generateRandomRayleighNumber(double phi){
 
         int randomNumber;

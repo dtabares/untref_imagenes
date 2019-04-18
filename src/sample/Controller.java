@@ -48,13 +48,6 @@ public class Controller extends BorderPane {
         //this.testsFer();
     }
 
-    public void testsFer()throws IOException{
-        BufferedImage bimg = ImageIO.read(new File("C:\\Users\\Fernando.Ares\\Desktop\\Imagenes\\leopard.jpg"));
-        leftImage = bimg;
-        this.displayImageInPane(bimg,leftPane);
-        this.displayImageInPane(filter.applyMedianFilter(bimg,3),rightPane);
-    }
-
     //Top Menu
     @FXML public BufferedImage openImageFile(){
         Stage browser = new Stage();
@@ -174,8 +167,135 @@ public class Controller extends BorderPane {
         }
     }
 
-    //Left Pane
+    //TP0
+    @FXML public void getPixelInformation(){
+        try{
+            ImageView leftImageView = null;
+            ImageView rightImageView = null;
+            if (!leftPane.getChildren().isEmpty())
+            {
+                leftImageView = (ImageView) leftPane.getChildren().get(0);
+            }
 
+            if (!rightPane.getChildren().isEmpty())
+            {
+                rightImageView = (ImageView) rightPane.getChildren().get(0);
+            }
+
+            if (leftImageView == null && rightImageView == null)
+            {
+                Alerts.showAlert("No hay una imagen cargada!");
+            }
+            else
+            {
+                if (leftImageView != null)
+                {
+                    leftImageView.setOnMouseClicked(e -> {
+                        System.out.println("Left Coordinates Info: ["+e.getX()+", "+e.getY()+"]");
+                        String message = this.imageUtilities.getPixelInformation(leftImage,(int)e.getX(),(int)e.getY());
+                        this.setBottomText(message);
+                    });
+                }
+
+
+                if (rightImageView != null) {
+                    rightImageView.setOnMouseClicked(e -> {
+                        System.out.println("Right Coordinates Info:[" + e.getX() + ", " + e.getY() + "]");
+                        String message = this.imageUtilities.getPixelInformation(rightPaneImageList.get(rightPaneImageList.size()), (int) e.getX(), (int) e.getY());
+                        this.setBottomText(message);
+                    });
+                }
+            }
+
+        }
+        catch(Exception e){
+            Alerts.showAlert(e.getMessage());
+        }
+    }
+    @FXML public void modifyPixelInformation(){
+        try{
+            ImageView leftImageView = null;
+            ImageView rightImageView = null;
+            if (!leftPane.getChildren().isEmpty())
+            {
+                leftImageView = (ImageView) leftPane.getChildren().get(0);
+            }
+
+            if (!rightPane.getChildren().isEmpty())
+            {
+                rightImageView = (ImageView) rightPane.getChildren().get(0);
+            }
+
+            if (leftImageView == null && rightImageView == null)
+            {
+                Alerts.showAlert("No hay una imagen cargada!");
+            }
+            else
+            {
+                int red = Integer.valueOf(getInputDialog("Modify Pixel Information", "Enter a new Value", "Red:"));
+                int green = Integer.valueOf(getInputDialog("Modify Pixel Information", "Enter a new Value", "Green:"));
+                int blue = Integer.valueOf(getInputDialog("Modify Pixel Information", "Enter a new Value", "Blue:"));
+                if (leftImageView != null)
+                {
+                    leftImageView.setOnMouseClicked(e -> {
+                        System.out.println("Left Coordinates Info: ["+e.getX()+", "+e.getY()+"]");
+                        BufferedImage modifiedImage = this.imageUtilities.modifyPixelInformation(leftImage,(int)e.getX(),(int)e.getY(),red,green,blue);
+                        this.displayImageInPane(modifiedImage,rightPane);
+                    });
+                }
+
+
+                if (rightImageView != null) {
+                    rightImageView.setOnMouseClicked(e -> {
+                        System.out.println("Right Coordinates Info:[" + e.getX() + ", " + e.getY() + "]");
+                        BufferedImage modifiedImage = this.imageUtilities.modifyPixelInformation(rightPaneImageList.get(rightPaneImageList.size()), (int) e.getX(), (int) e.getY(),red,green,blue);
+                        this.displayImageInPane(modifiedImage,rightPane);
+                    });
+                }
+            }
+        }
+        catch(Exception e){
+            Alerts.showAlert(e.getMessage());
+        }
+    }
+    @FXML public void copyImageSelection(){
+
+        try{
+            ImageView leftImageView = null;
+            if (!leftPane.getChildren().isEmpty())
+            {
+                leftImageView = (ImageView) leftPane.getChildren().get(0);
+            }
+            if (leftImageView == null)
+            {
+                Alerts.showAlert("No hay una imagen cargada!");
+            }
+            else
+            {
+                ImageSelection selection = new ImageSelection();
+                leftImageView.setOnMouseClicked(e -> {
+                    System.out.println("Left Coordinates Info: ["+e.getX()+", "+e.getY()+"]");
+                    selection.submitClickCoordinates((int)e.getX(), (int) e.getY());
+
+                    if(selection.allCoordinatesSubmitted())
+                    {
+                        //Calculate 4 points
+                        selection.calculateWithAndHeight();
+
+                        //Create new buffered image from those 4 points
+                        BufferedImage imageSelection = leftImage.getSubimage(selection.getxOrigin(),selection.getyOrigin(),selection.getWidth(),selection.getHeight());
+
+                        // Display it on the right pane and add it to the list
+                        this.displayImageInPane(imageSelection,rightPane);
+                        selection.reset();
+                    }
+                });
+            }
+        }
+        catch(Exception e){
+            Alerts.showAlert(e.getMessage());
+        }
+    }
     @FXML public void createImageWithCircle(){
         int width = 200;
         int height = 200;
@@ -239,271 +359,15 @@ public class Controller extends BorderPane {
         }
         fc.setInitialDirectory(null);
     }
-
-    //Basics
-
-    public BufferedImage imageAddition(){
-        BufferedImage temp = leftImage;
-        BufferedImage bimg = this.openImageFile();
-        leftImage = temp;
-        BufferedImage result = imageUtilities.imageAddition(leftImage,bimg);
-        this.displayImageInPane(result,rightPane);
-        this.displayImageInPane(leftImage, leftPane);
-        return result;
-    }
-    public BufferedImage imageDifference(){
-        BufferedImage temp = leftImage;
-        BufferedImage bimg = this.openImageFile();
-        leftImage = temp;
-        BufferedImage result = imageUtilities.imageDifference(leftImage,bimg);
-        this.displayImageInPane(result,rightPane);
-        this.displayImageInPane(leftImage, leftPane);
-        return result;
-    }
-    public BufferedImage imageScalarProduct(){
-        int scalar = Integer.valueOf(getInputDialog("Scalar Product", "Enter new Value", "scalar:"));
-        BufferedImage result = imageUtilities.imageScalarProduct(leftImage,scalar);
-        this.displayImageInPane(result,rightPane);
-        return result;
-    }
-    public BufferedImage dynamicRangeCompression(){
-        int alpha=-1;
-        alpha = Integer.valueOf(JOptionPane.showInputDialog(
-                null, "Compression", "Insert Compression %",
-                JOptionPane.DEFAULT_OPTION));
-        while(alpha <= 0 || alpha > 100)
-        {
-            Alerts.showAlert("El valor debe estar entre 1 y 100");
-            alpha = Integer.valueOf(JOptionPane.showInputDialog(
-                    null, "Compression", "Insert Compression %",
-                    JOptionPane.DEFAULT_OPTION));
-            ;
-        }
-        BufferedImage result = imageUtilities.dynamicRangeCompression(leftImage,alpha);
-        this.displayImageInPane(result,rightPane);
-        return result;
-    }
-    @FXML public BufferedImage imagePow(){
-
-        double gamma = Double.valueOf(getInputDialog("Gamma Power Function", "Enter a new Value", "Gamma:"));
-        BufferedImage result = imageUtilities.gammaPowFunction(leftImage,gamma);
-        this.displayImageInPane(result,rightPane);
-        return result;
-    }
-    @FXML public BufferedImage imageNegative(){
-        BufferedImage result = null;
-        if (leftImage != null) {
-            result = imageUtilities.imageNegative(leftImage);
-            this.displayImageInPane(result, rightPane);
-        }
-        else
-        {
-            Alerts.showAlert("No hay una imagen abierta");
-        }
-        return result;
-    }
-    @FXML public void getPixelInformation(){
-        try{
-            ImageView leftImageView = null;
-            ImageView rightImageView = null;
-            if (!leftPane.getChildren().isEmpty())
-            {
-                leftImageView = (ImageView) leftPane.getChildren().get(0);
-            }
-
-            if (!rightPane.getChildren().isEmpty())
-            {
-                rightImageView = (ImageView) rightPane.getChildren().get(0);
-            }
-
-            if (leftImageView == null && rightImageView == null)
-            {
-                Alerts.showAlert("No hay una imagen cargada!");
-            }
-            else
-            {
-                if (leftImageView != null)
-                {
-                    leftImageView.setOnMouseClicked(e -> {
-                        System.out.println("Left Coordinates Info: ["+e.getX()+", "+e.getY()+"]");
-                        String message = this.imageUtilities.getPixelInformation(leftImage,(int)e.getX(),(int)e.getY());
-                        this.setBottomText(message);
-                    });
-                }
-
-
-                if (rightImageView != null) {
-                    rightImageView.setOnMouseClicked(e -> {
-                        System.out.println("Right Coordinates Info:[" + e.getX() + ", " + e.getY() + "]");
-                        String message = this.imageUtilities.getPixelInformation(rightPaneImageList.get(rightPaneImageList.size()), (int) e.getX(), (int) e.getY());
-                        this.setBottomText(message);
-                    });
-                }
-            }
-
-        }
-        catch(Exception e){
-            Alerts.showAlert(e.getMessage());
-        }
-    }
-    @FXML public BufferedImage imageBinary(){
-        BufferedImage result = null;
-        if (leftImage != null) {
-            int threshold = Integer.valueOf(JOptionPane.showInputDialog(
-                    null, "Threshold", "Insert Threshold",
-                    JOptionPane.DEFAULT_OPTION));
-            result = imageUtilities.imageBinary(leftImage, (int) threshold);
-            this.displayImageInPane(result,rightPane);
-        }
-        else
-        {
-            Alerts.showAlert("No hay una imagen abierta");
-        }
-        return result;
-    }
-    @FXML public BufferedImage imageContrast(){
-        BufferedImage result = null;
-        if (leftImage != null) {
-//            int threshold = Integer.valueOf(JOptionPane.showInputDialog(
-//                    null, "Threshold", "Insert Threshold",
-//                    JOptionPane.DEFAULT_OPTION));
-            result = imageUtilities.imageContrast(leftImage);
-            this.displayImageInPane(result,rightPane);
-        }
-        else
-        {
-            Alerts.showAlert("No hay una imagen abierta");
-        }
-        return result;
-    }
-
-    @FXML public void modifyPixelInformation()
-    {
-        try{
-            ImageView leftImageView = null;
-            ImageView rightImageView = null;
-            if (!leftPane.getChildren().isEmpty())
-            {
-                leftImageView = (ImageView) leftPane.getChildren().get(0);
-            }
-
-            if (!rightPane.getChildren().isEmpty())
-            {
-                rightImageView = (ImageView) rightPane.getChildren().get(0);
-            }
-
-            if (leftImageView == null && rightImageView == null)
-            {
-                Alerts.showAlert("No hay una imagen cargada!");
-            }
-            else
-            {
-                int red = Integer.valueOf(getInputDialog("Modify Pixel Information", "Enter a new Value", "Red:"));
-                int green = Integer.valueOf(getInputDialog("Modify Pixel Information", "Enter a new Value", "Green:"));
-                int blue = Integer.valueOf(getInputDialog("Modify Pixel Information", "Enter a new Value", "Blue:"));
-                if (leftImageView != null)
-                {
-                    leftImageView.setOnMouseClicked(e -> {
-                        System.out.println("Left Coordinates Info: ["+e.getX()+", "+e.getY()+"]");
-                        BufferedImage modifiedImage = this.imageUtilities.modifyPixelInformation(leftImage,(int)e.getX(),(int)e.getY(),red,green,blue);
-                        this.displayImageInPane(modifiedImage,rightPane);
-                    });
-                }
-
-
-                if (rightImageView != null) {
-                    rightImageView.setOnMouseClicked(e -> {
-                        System.out.println("Right Coordinates Info:[" + e.getX() + ", " + e.getY() + "]");
-                        BufferedImage modifiedImage = this.imageUtilities.modifyPixelInformation(rightPaneImageList.get(rightPaneImageList.size()), (int) e.getX(), (int) e.getY(),red,green,blue);
-                        this.displayImageInPane(modifiedImage,rightPane);
-                    });
-                }
-            }
-        }
-        catch(Exception e){
-            Alerts.showAlert(e.getMessage());
-        }
-    }
-
-    @FXML public void copyImageSelection()
-    {
-
-        try{
-            ImageView leftImageView = null;
-            if (!leftPane.getChildren().isEmpty())
-            {
-                leftImageView = (ImageView) leftPane.getChildren().get(0);
-            }
-            if (leftImageView == null)
-            {
-                Alerts.showAlert("No hay una imagen cargada!");
-            }
-            else
-            {
-                ImageSelection selection = new ImageSelection();
-                leftImageView.setOnMouseClicked(e -> {
-                    System.out.println("Left Coordinates Info: ["+e.getX()+", "+e.getY()+"]");
-                    selection.submitClickCoordinates((int)e.getX(), (int) e.getY());
-
-                    if(selection.allCoordinatesSubmitted())
-                    {
-                        //Calculate 4 points
-                        selection.calculateWithAndHeight();
-
-                        //Create new buffered image from those 4 points
-                        BufferedImage imageSelection = leftImage.getSubimage(selection.getxOrigin(),selection.getyOrigin(),selection.getWidth(),selection.getHeight());
-
-                        // Display it on the right pane and add it to the list
-                        this.displayImageInPane(imageSelection,rightPane);
-                        selection.reset();
-                    }
-                });
-            }
-        }
-        catch(Exception e){
-            Alerts.showAlert(e.getMessage());
-        }
-    }
-
-    @FXML public void createGrayScaleImage()
-    {
+    @FXML public void createGrayScaleImage(){
         BufferedImage grayScaleImage = this.imageUtilities.createGrayScaleImage();
         this.displayImageInPane(grayScaleImage,rightPane);
     }
-
-    @FXML public void createColorScaleImage()
-    {
+    @FXML public void createColorScaleImage(){
         BufferedImage colorScaleImage = this.imageUtilities.createColorScaleImage();
         this.displayImageInPane(colorScaleImage,rightPane);
     }
-
-    //Information
-    @FXML public void showHistogram(){
-        if(leftImage!=null){
-            Histogram h = new Histogram();
-            h.getImageHistogram(leftImage);
-        }
-        else{
-            Alerts.showAlert("No hay ninguna imagen cargada");
-        }
-
-    }
-
-    @FXML public BufferedImage equalizeHistogram(){
-        BufferedImage result = null;
-        if(leftImage!=null){
-            Histogram histogram = new Histogram();
-            result = histogram.equalizeHistogram(leftImage);
-            this.displayImageInPane(result,rightPane);
-        }
-        else{
-            Alerts.showAlert("No hay ninguna imagen cargada");
-        }
-        return result;
-    }
-
-    @FXML public void RGBtoHSV()
-    {
+    @FXML public void RGBtoHSV(){
         if(leftPane.getChildren().isEmpty())
         {
             Alerts.showAlert("No hay una imagen cargada!");
@@ -548,9 +412,7 @@ public class Controller extends BorderPane {
             }
         }
     }
-
-    @FXML public void averagePerBand()
-    {
+    @FXML public void averagePerBand(){
         try{
             ImageView leftImageView = null;
             if (!leftPane.getChildren().isEmpty())
@@ -601,6 +463,99 @@ public class Controller extends BorderPane {
         }
     }
 
+    //TP1
+    @FXML public BufferedImage imageAddition(){
+        BufferedImage temp = leftImage;
+        BufferedImage bimg = this.openImageFile();
+        leftImage = temp;
+        BufferedImage result = imageUtilities.imageAddition(leftImage,bimg);
+        this.displayImageInPane(result,rightPane);
+        this.displayImageInPane(leftImage, leftPane);
+        return result;
+    }
+    @FXML public BufferedImage imageDifference(){
+        BufferedImage temp = leftImage;
+        BufferedImage bimg = this.openImageFile();
+        leftImage = temp;
+        BufferedImage result = imageUtilities.imageDifference(leftImage,bimg);
+        this.displayImageInPane(result,rightPane);
+        this.displayImageInPane(leftImage, leftPane);
+        return result;
+    }
+    @FXML public BufferedImage imageScalarProduct(){
+        int scalar = Integer.valueOf(getInputDialog("Scalar Product", "Enter new Value", "scalar:"));
+        BufferedImage result = imageUtilities.imageScalarProduct(leftImage,scalar);
+        this.displayImageInPane(result,rightPane);
+        return result;
+    }
+    @FXML public BufferedImage imagePow(){
+
+        double gamma = Double.valueOf(getInputDialog("Gamma Power Function", "Enter a new Value", "Gamma:"));
+        BufferedImage result = imageUtilities.gammaPowFunction(leftImage,gamma);
+        this.displayImageInPane(result,rightPane);
+        return result;
+    }
+    @FXML public BufferedImage imageNegative(){
+        BufferedImage result = null;
+        if (leftImage != null) {
+            result = imageUtilities.imageNegative(leftImage);
+            this.displayImageInPane(result, rightPane);
+        }
+        else
+        {
+            Alerts.showAlert("No hay una imagen abierta");
+        }
+        return result;
+    }
+    @FXML public BufferedImage imageContrast(){
+        BufferedImage result = null;
+        if (leftImage != null) {
+            result = imageUtilities.imageContrast(leftImage);
+            this.displayImageInPane(result,rightPane);
+        }
+        else
+        {
+            Alerts.showAlert("No hay una imagen abierta");
+        }
+        return result;
+    }
+    @FXML public BufferedImage imageBinary(){
+        BufferedImage result = null;
+        if (leftImage != null) {
+            int threshold = Integer.valueOf(JOptionPane.showInputDialog(
+                    null, "Threshold", "Insert Threshold",
+                    JOptionPane.DEFAULT_OPTION));
+            result = imageUtilities.imageBinary(leftImage, (int) threshold);
+            this.displayImageInPane(result,rightPane);
+        }
+        else
+        {
+            Alerts.showAlert("No hay una imagen abierta");
+        }
+        return result;
+    }
+    @FXML public void showHistogram(){
+        if(leftImage!=null){
+            Histogram h = new Histogram();
+            h.getImageHistogram(leftImage);
+        }
+        else{
+            Alerts.showAlert("No hay ninguna imagen cargada");
+        }
+
+    }
+    @FXML public BufferedImage equalizeHistogram(){
+        BufferedImage result = null;
+        if(leftImage!=null){
+            Histogram histogram = new Histogram();
+            result = histogram.equalizeHistogram(leftImage);
+            this.displayImageInPane(result,rightPane);
+        }
+        else{
+            Alerts.showAlert("No hay ninguna imagen cargada");
+        }
+        return result;
+    }
     @FXML public void gaussianNumberGenerator(){
         double standardDev = Double.valueOf(getInputDialog("Gaussian Number Generator", "Enter a new Value", "Standard Deviation:"));
         double mean = Double.valueOf(getInputDialog("Gaussian Number Generator", "Enter a new Value", "Mean:"));
@@ -609,7 +564,6 @@ public class Controller extends BorderPane {
         message = message + randomNumber;
         this.setBottomText(message);
     }
-
     @FXML public void rayleighNumberGenerator(){
         double phi = Double.valueOf(getInputDialog("Rayleigh Number Generator", "Enter a new Value", "Phi:"));
         String message = "Rayleigh Number: ";
@@ -617,7 +571,6 @@ public class Controller extends BorderPane {
         message = message + randomNumber;
         this.setBottomText(message);
     }
-
     @FXML public void exponentialNumberGenerator(){
         double lambda = Double.valueOf(getInputDialog("Exponential Number Generator", "Enter a new Value", "Lambda:"));
         String message = "Exponential Number: ";
@@ -625,14 +578,21 @@ public class Controller extends BorderPane {
         message = message + randomNumber;
         this.setBottomText(message);
     }
-
     @FXML public void generateGaussianNoisedImage(){
         double standardDev = Double.valueOf(getInputDialog("Gaussian Noised Image Generator", "Enter a new Value", "Standard Deviation:"));
         double mean = Double.valueOf(getInputDialog("Gaussian Noised Image Generator", "Enter a new Value", "Mean:"));
         BufferedImage noisedImage = this.imageUtilities.generateGaussianNoisedImage(mean,standardDev);
         this.displayImageInPane(noisedImage,rightPane);
-        Histogram h = new Histogram();
-        h.getImageHistogram(noisedImage);
+    }
+    @FXML public void generateRayleighNoisedImage(){
+        double phi = Double.valueOf(getInputDialog("Rayleigh Noised Image Generator", "Enter a new Value", "Phi:"));
+        BufferedImage noisedImage = this.imageUtilities.generateRayleighNoisedImage(phi);
+        this.displayImageInPane(noisedImage,rightPane);
+    }
+    @FXML public void generateExponentialNoisedImage(){
+        double lambda = Double.valueOf(getInputDialog("Exponential Noised Image Generator", "Enter a new Value", "Lambda:"));
+        BufferedImage noisedImage = this.imageUtilities.generateExponentialNoisedImage(lambda);
+        this.displayImageInPane(noisedImage,rightPane);
     }
     @FXML public void addMultiplicativeExponentialNoise(){
         double lambda = Double.valueOf(getInputDialog("Add Exponential Noise", "Enter a new Value", "Lambda:"));
@@ -640,31 +600,12 @@ public class Controller extends BorderPane {
         BufferedImage noisedImage = this.imageUtilities.addMultiplicativeExponentialNoise(lambda, affectedPixelPercentage, leftImage);
         this.displayImageInPane(noisedImage,rightPane);
     }
-
     @FXML public void addMultiplicativeRayleighNoise(){
         double lambda = Double.valueOf(getInputDialog("Add Rayleigh Noise", "Enter a new Value", "Phi:"));
         int affectedPixelPercentage = Integer.valueOf(getInputDialog("Add Rayleigh Noise", "Enter a new Value", "Affected Pixel %:"));
         BufferedImage noisedImage = this.imageUtilities.addMultiplicativeRayleighNoise(lambda, affectedPixelPercentage, leftImage);
         this.displayImageInPane(noisedImage,rightPane);
     }
-
-    @FXML public void generateRayleighNoisedImage(){
-        double phi = Double.valueOf(getInputDialog("Rayleigh Noised Image Generator", "Enter a new Value", "Phi:"));
-        BufferedImage noisedImage = this.imageUtilities.generateRayleighNoisedImage(phi);
-        this.displayImageInPane(noisedImage,rightPane);
-        Histogram h = new Histogram();
-        h.getImageHistogram(noisedImage);
-    }
-
-    @FXML public void generateExponentialNoisedImage(){
-        double lambda = Double.valueOf(getInputDialog("Exponential Noised Image Generator", "Enter a new Value", "Lambda:"));
-        BufferedImage noisedImage = this.imageUtilities.generateExponentialNoisedImage(lambda);
-        this.displayImageInPane(noisedImage,rightPane);
-        Histogram h = new Histogram();
-        h.getImageHistogram(noisedImage);
-    }
-
-
     @FXML public void addAdditiveGaussianNoise(){
         double standardDev = Double.valueOf(getInputDialog("Add Gaussian Noise", "Enter a new Value", "Standard Deviation:"));
         double mean = Double.valueOf(getInputDialog("Add Gaussian Noise", "Enter a new Value", "Mean:"));
@@ -672,7 +613,6 @@ public class Controller extends BorderPane {
         BufferedImage noisedImage = this.imageUtilities.addAdditiveGaussianNoise(mean,standardDev, affectedPixelPercentage, leftImage);
         this.displayImageInPane(noisedImage,rightPane);
     }
-
     @FXML public void addSaltAndPepperNoise(){
         double p0 = Double.valueOf(getInputDialog("Add Salt & Pepper Noise", "Enter a value between 0 and 1", "p0:"));
         while (p0 < 0 || p0 > 1){
@@ -687,7 +627,6 @@ public class Controller extends BorderPane {
         BufferedImage noisedImage = this.imageUtilities.addSaltAndPepperNoise(p0,p1,affectedPixelPercentage,leftImage);
         this.displayImageInPane(noisedImage,rightPane);
     }
-
     @FXML public BufferedImage applyMeanFilter(){
 
         BufferedImage result = null;
@@ -706,7 +645,6 @@ public class Controller extends BorderPane {
         }
         return result;
     }
-
     @FXML public BufferedImage applyMedianFilter(){
 
         BufferedImage result = null;
@@ -725,7 +663,6 @@ public class Controller extends BorderPane {
         }
         return result;
     }
-
     @FXML public BufferedImage applyWeightedMedianFilter(){
 
         BufferedImage result = null;
@@ -739,7 +676,6 @@ public class Controller extends BorderPane {
         }
         return result;
     }
-
     @FXML public BufferedImage applyGaussFilter(){
         BufferedImage result = null;
         if (leftImage != null) {
@@ -754,7 +690,6 @@ public class Controller extends BorderPane {
         }
         return result;
     }
-
     @FXML public void enhanceEdges(){
         int maskSize = Integer.valueOf(getInputDialog("Enhance Edges", "Enter a new Value", "Mask size:"));
         while(isOdd(maskSize)) {
@@ -783,9 +718,7 @@ public class Controller extends BorderPane {
     {
         this.txtBottom.setText("   " + string);
     }
-
-    private BufferedImage getLastModifiedImage()
-    {
+    private BufferedImage getLastModifiedImage(){
         BufferedImage lastModifiedImage = null;
         if (rightPaneImageList.size() > 0)
         {
@@ -794,9 +727,16 @@ public class Controller extends BorderPane {
         return lastModifiedImage;
 
     }
-
     private boolean isOdd(int number){
         return number % 2 == 0;
     }
 
+    //Tests
+
+    public void testsFer()throws IOException{
+        BufferedImage bimg = ImageIO.read(new File("C:\\Users\\Fernando.Ares\\Desktop\\Imagenes\\leopard.jpg"));
+        leftImage = bimg;
+        this.displayImageInPane(bimg,leftPane);
+        this.displayImageInPane(filter.applyMedianFilter(bimg,3),rightPane);
+    }
 }

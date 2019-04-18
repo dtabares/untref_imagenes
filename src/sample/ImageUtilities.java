@@ -28,10 +28,6 @@ public class ImageUtilities {
     private String supportedFormats[] = {"raw", "ppm", "pgm", "bmp", "png", "jpg"};
     private String currentImageFormat;
 
-    public String getCurrentImageFormat() {
-        return currentImageFormat;
-    }
-
     public BufferedImage copyImageIntoAnother(BufferedImage bimg){
         BufferedImage result = new BufferedImage(bimg.getWidth(),bimg.getHeight(),bimg.getType());
         for (int i = 0; i < bimg.getWidth(); i++){
@@ -732,31 +728,6 @@ public class ImageUtilities {
         return (temp);
     }
 
-    //reemplaza c por un escalar
-    public BufferedImage dynamicRangeCompression(BufferedImage bimg, int multiplier) {
-        BufferedImage temp = null;
-        try {
-            temp = new BufferedImage(bimg.getWidth(), bimg.getHeight(), bimg.getType());
-            int p, red, green, blue;
-            for (int i = 0; i < bimg.getWidth(); i++) {
-                for (int j = 0; j < bimg.getHeight(); j++) {
-                    p = (bimg.getRGB(i, j));
-                    red = ColorUtilities.getRed(p);
-                    green = ColorUtilities.getGreen(p);
-                    blue = ColorUtilities.getBlue(p);
-                    red = (int)Math.round((100 / multiplier) * Math.log10(1 + red));
-                    green = (int) Math.round((100 / multiplier) * Math.log10(1 + green));
-                    blue = (int) Math.round((100 / multiplier) * Math.log10(1 + blue));
-                    int rgb = ColorUtilities.createRGB(red, green, blue);
-                    temp.setRGB(i, j, rgb);
-                }
-            }
-        } catch (Exception e) {
-            Alerts.showAlert(e.getMessage());
-        }
-        return temp;
-    }
-
     //usa la formula entera
     public Channel[] adjustDynamicRange(Channel redChannel, Channel greenChannel, Channel blueChannel) {
         Channel[] channels = new Channel[3];
@@ -1104,15 +1075,6 @@ public class ImageUtilities {
         return result;
     }
 
-    public double[] getAccumulatedDistribution(double[] array){
-        double [] result = new double [256];
-        result[0] = array[0];
-        for(int i = 1;  i < 256; i++){
-            result[i] = result[i-1] + array[i];
-        }
-        return result;
-    }
-
     public boolean isGreyImage(BufferedImage bimg) {
         int rgb;
         int red;
@@ -1132,8 +1094,7 @@ public class ImageUtilities {
         return true;
     }
 
-    public float[] averagePerBand (BufferedImage image)
-    {
+    public float[] averagePerBand (BufferedImage image){
         int width = image.getWidth();
         int height = image.getHeight();
         int rgb;
@@ -1175,7 +1136,7 @@ public class ImageUtilities {
             int R2 = median + deviation;
             //Parametrizar de acuerdo a las pendientes de las recatas
             double pOscuros = 0.60;
-            double pClaros = 3;
+            double pClaros = 1.5;
             //r1 mayor a s1 y r2 menor a s2
             double s1 = (int) Math.round(R1*pOscuros);
             double s2 = (int) Math.round(R2*pClaros);
@@ -1187,6 +1148,7 @@ public class ImageUtilities {
                     r = ColorUtilities.getRed(bimg.getRGB(i,j));
                     g = ColorUtilities.getGreen(bimg.getRGB(i,j));
                     b = ColorUtilities.getBlue(bimg.getRGB(i,j));
+                    int temp = bimg.getRGB(i, j);
                     if (bimg.getRGB(i, j) < R1) {
                         result.setRGB(i, j, ColorUtilities.createRGB((int)Math.round((pOscuros*r)),(int)Math.round(pOscuros*g),(int)Math.round(pOscuros*b)));
                     }
@@ -1277,7 +1239,8 @@ public class ImageUtilities {
         image.setWhite();
         BufferedImage bimg = image.getBufferedImage();
         int randomNumber, rgb;
-
+        int [] channel = new int[100*100];
+        int counter = 0;
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
                 randomNumber = NumberGenerator.generateRandomGaussianNumber(mean,standardDev);
@@ -1286,10 +1249,14 @@ public class ImageUtilities {
                 }
                 System.out.println("Random Gaussian Number: " + randomNumber);
                 rgb = ColorUtilities.createRGB(randomNumber,randomNumber,randomNumber);
+                channel[counter] = randomNumber;
                 bimg.setRGB(i,j,rgb);
+                counter++;
             }
         }
-
+        Histogram h = new Histogram();
+        double [] histogram = h.getHistogram(channel);
+        h.displayHistogram(histogram,histogram,histogram,true);
         return bimg;
     }
 
@@ -1300,7 +1267,8 @@ public class ImageUtilities {
         image.setWhite();
         BufferedImage bimg = image.getBufferedImage();
         int randomNumber, rgb;
-
+        int [] channel = new int[100*100];
+        int counter = 0;
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
                 randomNumber = NumberGenerator.generateRandomRayleighNumber(phi);
@@ -1309,10 +1277,14 @@ public class ImageUtilities {
                 }
                 System.out.println("Random Rayleigh Number: " + randomNumber);
                 rgb = ColorUtilities.createRGB(randomNumber,randomNumber,randomNumber);
+                channel[counter] = randomNumber;
                 bimg.setRGB(i,j,rgb);
+                counter++;
             }
         }
-
+        Histogram h = new Histogram();
+        double [] histogram = h.getHistogram(channel);
+        h.displayHistogram(histogram,histogram,histogram,true);
         return bimg;
     }
 
@@ -1323,7 +1295,8 @@ public class ImageUtilities {
         image.setWhite();
         BufferedImage bimg = image.getBufferedImage();
         int randomNumber, rgb;
-
+        int [] channel = new int[100*100];
+        int counter = 0;
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
                 randomNumber = NumberGenerator.generateRandomExponentialNumber(lambda);
@@ -1332,10 +1305,14 @@ public class ImageUtilities {
                 }
                 System.out.println("Random Exp Number: " + randomNumber);
                 rgb = ColorUtilities.createRGB(randomNumber,randomNumber,randomNumber);
+                channel[counter] = randomNumber;
                 bimg.setRGB(i,j,rgb);
+                counter++;
             }
         }
-
+        Histogram h = new Histogram();
+        double [] histogram = h.getHistogram(channel);
+        h.displayHistogram(histogram,histogram,histogram,true);
         return bimg;
     }
 

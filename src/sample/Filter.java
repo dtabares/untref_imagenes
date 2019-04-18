@@ -73,7 +73,7 @@ public class Filter {
                 redChannel[i + mask.getCenter()][j + mask.getCenter()] = red;
                 greenChannel[i + mask.getCenter()][j + mask.getCenter()] = green;
                 blueChannel[i + mask.getCenter()][j + mask.getCenter()] = blue;
-                System.out.println("r: " +red + " g: " + green + " b:" + blue);
+               // System.out.println("r: " +red + " g: " + green + " b:" + blue);
                 if(red > max){
                     max = red;
                 }

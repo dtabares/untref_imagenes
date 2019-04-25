@@ -441,6 +441,10 @@ public class Controller extends BorderPane {
             if (!leftPane.getChildren().isEmpty())
             {
                 leftImageView = (ImageView) leftPane.getChildren().get(0);
+                //Si quedo un rectangulo dibujado lo borro
+                if(leftPane.getChildren().size() > 1){
+                    this.leftPane.getChildren().remove(1);
+                }
             }
             if (leftImageView == null)
             {
@@ -449,14 +453,22 @@ public class Controller extends BorderPane {
             else
             {
                 ImageSelection selection = new ImageSelection();
+                Rectangle selectionLine = new Rectangle();
                 leftImageView.setOnMouseClicked(e -> {
-                    System.out.println("Left Coordinates Info: ["+e.getX()+", "+e.getY()+"]");
                     selection.submitClickCoordinates((int)e.getX(), (int) e.getY());
 
                     if(selection.allCoordinatesSubmitted())
                     {
                         //Calculate 4 points
                         selection.calculateWithAndHeight();
+                        selectionLine.setX(selection.getxOrigin());
+                        selectionLine.setY(selection.getyOrigin());
+                        selectionLine.setWidth(selection.getWidth());
+                        selectionLine.setHeight(selection.getHeight());
+                        selectionLine.setFill(Color.TRANSPARENT);
+                        selectionLine.setStroke(Color.RED);
+                        selectionLine.setStrokeWidth(3);
+
 
                         //Create new buffered image from those 4 points
                         BufferedImage imageSelection = leftImage.getSubimage(selection.getxOrigin(),selection.getyOrigin(),selection.getWidth(),selection.getHeight());
@@ -476,7 +488,12 @@ public class Controller extends BorderPane {
                             message = message + "Red average: " + averages[0] + " Green average: " + averages[1] + " Blue average: " + averages[2];
                         }
                         this.setBottomText(message);
+                        this.leftPane.getChildren().add(selectionLine);
                         selection.reset();
+                    }
+                    else {
+                        //Removes selection line
+                        this.leftPane.getChildren().remove(selectionLine);
                     }
                 });
             }

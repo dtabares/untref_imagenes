@@ -13,6 +13,10 @@ public class Mask {
         this.center = size/2;
     }
 
+    public Mask(){
+
+    }
+
     public void setMeanMask(){
         for (int i = 0; i < matrix.length; i++){
             for (int j = 0; j < this.matrix[0].length; j++){
@@ -79,6 +83,18 @@ public class Mask {
 
             }
         }
+    }
+
+    public void setHorizontalPrewittMask(){
+        this.size = 3;
+        this.matrix = new double[][] {{-1,-1,-1},{0,0,0},{1,1,1}};
+        this.center = this.size/2;
+    }
+
+    public void setVericalPrewittMask(){
+        this.size = 3;
+        this.matrix = new double[][] {{-1,0,1},{-1,0,1},{-1,0,1}};
+        this.center = this.size/2;
     }
 
     public int getSize(){

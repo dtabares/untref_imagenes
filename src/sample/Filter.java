@@ -44,6 +44,28 @@ public class Filter {
         return result;
     }
 
+    public BufferedImage applyPrewitt(BufferedImage bimg){
+        Mask horizontalMask = new Mask();
+        Mask verticalMask = new Mask();
+
+        horizontalMask.setHorizontalPrewittMask();
+        verticalMask.setVericalPrewittMask();
+
+        BufferedImage horizontalResult = applyConvolution(bimg,horizontalMask);
+        BufferedImage verticalResult = applyConvolution(bimg,verticalMask);
+
+        BufferedImage result = new BufferedImage(bimg.getWidth(), bimg.getHeight(), bimg.getType());
+
+        for (int i = 0; i < bimg.getWidth(); i++) {
+            for (int j = 0; j < bimg.getHeight(); j++) {
+                int rgb = (int) Math.sqrt(Math.pow(horizontalResult.getRGB(i,j),2) + Math.pow(verticalResult.getRGB(i,j),2));
+                result.setRGB(i,j,rgb);
+            }
+        }
+
+        return result;
+    }
+
     private BufferedImage applyConvolution(BufferedImage bimg, Mask mask){
         int rgb, red, green, blue;
         BufferedImage result = imageUtilities.copyImageIntoAnother(bimg);
@@ -73,7 +95,7 @@ public class Filter {
                 redChannel[i + mask.getCenter()][j + mask.getCenter()] = red;
                 greenChannel[i + mask.getCenter()][j + mask.getCenter()] = green;
                 blueChannel[i + mask.getCenter()][j + mask.getCenter()] = blue;
-               // System.out.println("r: " +red + " g: " + green + " b:" + blue);
+                System.out.println("r: " +red + " g: " + green + " b:" + blue);
                 if(red > max){
                     max = red;
                 }

@@ -736,6 +736,10 @@ public class Controller extends BorderPane {
         BufferedImage result = this.filter.enhanceEdges(leftImage,maskSize);
         this.displayImageInPane(result,rightPane);
     }
+    @FXML public void prewitt(){
+        BufferedImage result = this.filter.applyPrewitt(leftImage);
+        this.displayImageInPane(result,rightPane);
+    }
 
     //Panels
 

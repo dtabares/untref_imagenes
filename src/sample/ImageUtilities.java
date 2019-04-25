@@ -290,12 +290,12 @@ public class ImageUtilities {
                 int min = 255;
                 for (int i = 0; i < maxWidth; i++) {
                     for (int j = 0; j < maxHeight; j++) {
-                        System.out.println("Max: " + max + " Min: " + min);
+                        //System.out.println("Max: " + max + " Min: " + min);
                         if (i < minWidth && j < minHeight) {
                             r = image1RedMatrix[i][j] + image2RedMatrix[i][j];
                             g = image1GreenMatrix[i][j] + image2GreenMatrix[i][j];
                             b = image1BlueMatrix[i][j] + image2BlueMatrix[i][j];
-                            System.out.println("r: " + r + " g: " + g + " b: " + b);
+                            //System.out.println("r: " + r + " g: " + g + " b: " + b);
                             redMatrix[i][j]=r;
                             greenMatrix[i][j]=g;
                             blueMatrix[i][j]=b;
@@ -498,12 +498,12 @@ public class ImageUtilities {
                 int min = 255;
                 for (int i = 0; i < maxWidth; i++) {
                     for (int j = 0; j < maxHeight; j++) {
-                        System.out.println("Max: " + max + " Min: " + min);
+                        //System.out.println("Max: " + max + " Min: " + min);
                         if (i < minWidth && j < minHeight) {
                             r = image1RedMatrix[i][j] - image2RedMatrix[i][j];
                             g = image1GreenMatrix[i][j] - image2GreenMatrix[i][j];
                             b = image1BlueMatrix[i][j] - image2BlueMatrix[i][j];
-                            System.out.println("r: " + r + " g: " + g + " b: " + b);
+                            //System.out.println("r: " + r + " g: " + g + " b: " + b);
                             redMatrix[i][j]=r;
                             greenMatrix[i][j]=g;
                             blueMatrix[i][j]=b;
@@ -904,7 +904,7 @@ public class ImageUtilities {
                     final int green = ColorUtilities.getGreen(p);
                     final int blue = ColorUtilities.getBlue(p);
 
-                    System.out.println(red + ";" + green + ";" + blue);
+                    //System.out.println(red + ";" + green + ";" + blue);
                     if (red != green || red != blue || green != blue)
                         throw new IOException("R G B should be equal to be grey! Red: " + red + " Green: " + green + " Blue: " + blue);
                     if (red < 0 || red > MAXVAL)

@@ -562,9 +562,7 @@ public class Controller extends BorderPane {
     @FXML public BufferedImage imageBinary(){
         BufferedImage result = null;
         if (leftImage != null) {
-            int threshold = Integer.valueOf(JOptionPane.showInputDialog(
-                    null, "Threshold", "Insert Threshold",
-                    JOptionPane.DEFAULT_OPTION));
+            int threshold = Integer.valueOf(getInputDialog("Umbralization", "Enter a new Value", "Threshold:"));
             result = imageUtilities.imageBinary(leftImage, (int) threshold);
             this.displayImageInPane(result,rightPane);
         }

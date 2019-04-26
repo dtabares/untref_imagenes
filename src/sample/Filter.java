@@ -47,29 +47,31 @@ public class Filter {
     public BufferedImage applyPrewitt(BufferedImage bimg){
         Mask horizontalMask = new Mask();
         Mask verticalMask = new Mask();
+        int[][] gradient = new int[bimg.getWidth()][bimg.getHeight()];
 
         horizontalMask.setHorizontalPrewittMask();
         verticalMask.setVericalPrewittMask();
         //Calculamos las convoluciones de cada mascara
-        BufferedImage horizontalResult = applyConvolution2(bimg,horizontalMask);
-        BufferedImage verticalResult = applyConvolution2(bimg,verticalMask);
+        int[][] horizontalResult = applyConvolutionReloaded(bimg,horizontalMask);
+        int[][] verticalResult = applyConvolutionReloaded(bimg,verticalMask);
 
         BufferedImage result = new BufferedImage(bimg.getWidth(), bimg.getHeight(), bimg.getType());
-        int hor,ver,rgb;
-        double promR,promG,promB;
         for (int i = 0; i < bimg.getWidth(); i++) {
             for (int j = 0; j < bimg.getHeight(); j++) {
-                hor = horizontalResult.getRGB(i,j);
-                ver = verticalResult.getRGB(i,j);
-                //Calculamos un promedio de ambas imagenes
-                promR = (ColorUtilities.getRed(hor) + ColorUtilities.getRed(ver)) / 2;
-                promG = (ColorUtilities.getGreen(hor) + ColorUtilities.getGreen(ver)) / 2;
-                promB = (ColorUtilities.getBlue(hor) + ColorUtilities.getBlue(ver)) / 2;
-                double norm = (Math.sqrt(Math.pow(ColorUtilities.getRed(hor),2) + Math.pow(ColorUtilities.getRed(ver),2)));
-                System.out.println("r: " +promR + " g: " + promG + " b:" + promB);
-                rgb = ColorUtilities.createRGB((int) Math.round(promR),(int) Math.round(promG),(int) Math.round(promB));
-                //rgb = (int) Math.sqrt(Math.pow(horizontalResult.getRGB(i,j),2) + Math.pow(verticalResult.getRGB(i,j),2));
-                result.setRGB(i,j,rgb);
+                int norm = (int) Math.sqrt(Math.pow(horizontalResult[i][j],2) + Math.pow(verticalResult[i][j],2));
+                //System.out.println("hor: " +hor + " ver: " + ver +" hgrey: " +hgrey + " vgrey: " + vgrey + " norm:" + norm);
+                gradient[i][j] = norm;
+
+            }
+        }
+        int[] minMax = this.imageUtilities.findGreyMinMaxValues(gradient);
+        int min = minMax[0];
+        int max = minMax[1];
+
+        for (int i = 0; i < bimg.getWidth(); i++) {
+            for (int j = 0; j < bimg.getHeight(); j++) {
+                int p = (int) this.imageUtilities.linearTransformation(gradient[i][j],max,min);
+                result.setRGB(i,j,ColorUtilities.createRGB(p,p,p));
             }
         }
         return result;
@@ -130,6 +132,7 @@ public class Filter {
         }
 
         if(max > 255 || min < 0){
+            System.out.println("min: " + min + " max: " + max);
             for (int i = 0; i < result.getWidth(); i++) {
                 for (int j = 0; j < result.getHeight(); j++) {
                         redChannel[i][j] = (int) Math.round(this.imageUtilities.linearTransformation(redChannel[i][j], max, min));
@@ -143,6 +146,37 @@ public class Filter {
         for (int i = 0; i < result.getWidth(); i++) {
             for (int j = 0; j < result.getHeight(); j++) {
                 result.setRGB(i,j,ColorUtilities.createRGB(redChannel[i][j], greenChannel[i][j], blueChannel[i][j]));
+            }
+        }
+        return result;
+    }
+
+    private int[][] applyConvolutionReloaded(BufferedImage bimg, Mask mask){
+        int grey;
+        Image image = new Image(bimg);
+        image.convertToGreyDataMatrix();
+        int[][] greyDataMatrix = image.getGreyDataMatrix();
+        int[][] result = new int[image.getWidth()][image.getHeight()];
+        for (int i = 0; i < image.getWidth(); i++) {
+            for (int j = 0; j < image.getHeight(); j++) {
+                result[i][j] = 0;
+            }
+        }
+        int widthLimit = image.getWidth() - mask.getSize();
+        int heightLimit = image.getHeight() - mask.getSize();
+        grey = 0;
+
+        for (int i = 0; i <= widthLimit; i++) {
+            for (int j = 0; j <= heightLimit; j++) {
+                for (int k = 0; k < mask.getSize(); k++) {
+                    for (int l = 0; l < mask.getSize(); l++) {
+                        grey += (greyDataMatrix[i+k][j+l] * mask.getValue(k,l));
+                    }
+                }
+                result[i + mask.getCenter()][j + mask.getCenter()] = grey;
+                //System.out.println("r: " +grey);
+                grey = 0;
+
             }
         }
         return result;

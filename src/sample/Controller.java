@@ -734,11 +734,16 @@ public class Controller extends BorderPane {
         BufferedImage result = this.filter.enhanceEdges(leftImage,maskSize);
         this.displayImageInPane(result,rightPane);
     }
+
+    //TP2
     @FXML public void prewitt(){
         BufferedImage result = this.filter.applyPrewitt(leftImage);
         this.displayImageInPane(result,rightPane);
     }
-
+    @FXML public void sobel(){
+        BufferedImage result = this.filter.applySobel(leftImage);
+        this.displayImageInPane(result,rightPane);
+    }
     //Panels
 
     public void displayImageInPane(BufferedImage bimg, AnchorPane pane){
@@ -775,6 +780,6 @@ public class Controller extends BorderPane {
         BufferedImage bimg = imageUtilities.openRawImage(new File("C:\\Users\\Fernando.Ares\\Desktop\\Imagenes\\lena.raw"),256,256);
         leftImage = bimg;
         this.displayImageInPane(bimg,leftPane);
-        this.displayImageInPane(filter.applyPrewitt(bimg),rightPane);
+        this.displayImageInPane(filter.applyLaplace(bimg),rightPane);
     }
 }

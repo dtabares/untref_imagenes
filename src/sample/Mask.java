@@ -97,6 +97,25 @@ public class Mask {
         this.center = this.size/2;
     }
 
+    public void setHorizontalSobelMask(){
+        this.size = 3;
+        this.matrix = new double[][] {{-1,-2,-1},{0,0,0},{1,2,1}};
+        this.center = this.size/2;
+    }
+
+    public void setVericalSobelMask(){
+        this.size = 3;
+        this.matrix = new double[][] {{-1,0,1},{-2,0,2},{-1,0,1}};
+        this.center = this.size/2;
+    }
+
+    public void setLaplaceMask(){
+        this.size = 3;
+        this.matrix = new double[][] {{0,-1,0},{-1,4,-1},{0,-1,0}};
+        this.center = this.size/2;
+    }
+
+
     public int getSize(){
         return this.size;
     }

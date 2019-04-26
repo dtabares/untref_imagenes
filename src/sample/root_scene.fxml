@@ -110,14 +110,14 @@
                         <VBox layoutX="0.0" layoutY="0.0" prefHeight="284.0" prefWidth="200.0">
                            <children>
                               <Button mnemonicParsing="false" onAction="#prewitt" prefWidth="205.0" text="Prewitt" />
-                              <Button mnemonicParsing="false" onAction="#modifyPixelInformation" prefWidth="205.0" text="Sobel" />
-                              <Button mnemonicParsing="false" onAction="#copyImageSelection" prefWidth="205.0" text="Select and Duplicate" />
-                              <Button mnemonicParsing="false" onAction="#createImageWithCircle" prefWidth="205.0" text="White Circle" />
-                              <Button mnemonicParsing="false" onAction="#createImageWithSquare" prefWidth="205.0" text="White Square" />
-                              <Button mnemonicParsing="false" onAction="#createGrayScaleImage" prefWidth="200.0" text="Grey Scale" />
-                              <Button mnemonicParsing="false" onAction="#createColorScaleImage" prefWidth="200.0" text="Color Scale" />
-                              <Button mnemonicParsing="false" onAction="#RGBtoHSV" prefWidth="200.0" text="RGB to HSV" />
-                              <Button mnemonicParsing="false" onAction="#averagePerBand" prefWidth="200.0" text="Band Average" />
+                              <Button mnemonicParsing="false" onAction="#sobel" prefWidth="205.0" text="Sobel" />
+                              <!--<Button mnemonicParsing="false" onAction="#copyImageSelection" prefWidth="205.0" text="Select and Duplicate" />-->
+                              <!--<Button mnemonicParsing="false" onAction="#createImageWithCircle" prefWidth="205.0" text="White Circle" />-->
+                              <!--<Button mnemonicParsing="false" onAction="#createImageWithSquare" prefWidth="205.0" text="White Square" />-->
+                              <!--<Button mnemonicParsing="false" onAction="#createGrayScaleImage" prefWidth="200.0" text="Grey Scale" />-->
+                              <!--<Button mnemonicParsing="false" onAction="#createColorScaleImage" prefWidth="200.0" text="Color Scale" />-->
+                              <!--<Button mnemonicParsing="false" onAction="#RGBtoHSV" prefWidth="200.0" text="RGB to HSV" />-->
+                              <!--<Button mnemonicParsing="false" onAction="#averagePerBand" prefWidth="200.0" text="Band Average" />-->
                            </children>
                         </VBox>
                      </children>

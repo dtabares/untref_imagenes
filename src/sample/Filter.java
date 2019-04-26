@@ -49,6 +49,12 @@ public class Filter {
         Mask verticalMask = new Mask();
         int[][] gradient = new int[bimg.getWidth()][bimg.getHeight()];
 
+        for (int i = 0; i < gradient.length; i++) {
+            for (int j = 0; j < gradient[0].length; j++) {
+                gradient[i][j] = 0;
+            }
+        }
+
         horizontalMask.setHorizontalPrewittMask();
         verticalMask.setVericalPrewittMask();
         //Calculamos las convoluciones de cada mascara
@@ -71,6 +77,57 @@ public class Filter {
         for (int i = 0; i < bimg.getWidth(); i++) {
             for (int j = 0; j < bimg.getHeight(); j++) {
                 int p = (int) this.imageUtilities.linearTransformation(gradient[i][j],max,min);
+                result.setRGB(i,j,ColorUtilities.createRGB(p,p,p));
+            }
+        }
+        return result;
+    }
+
+    public BufferedImage applySobel(BufferedImage bimg){
+        Mask horizontalMask = new Mask();
+        Mask verticalMask = new Mask();
+        int[][] gradient = new int[bimg.getWidth()][bimg.getHeight()];
+
+        horizontalMask.setHorizontalSobelMask();
+        verticalMask.setVericalSobelMask();
+        //Calculamos las convoluciones de cada mascara
+        int[][] horizontalResult = applyConvolutionReloaded(bimg,horizontalMask);
+        int[][] verticalResult = applyConvolutionReloaded(bimg,verticalMask);
+
+        BufferedImage result = new BufferedImage(bimg.getWidth(), bimg.getHeight(), bimg.getType());
+        for (int i = 0; i < bimg.getWidth(); i++) {
+            for (int j = 0; j < bimg.getHeight(); j++) {
+                int norm = (int) Math.sqrt(Math.pow(horizontalResult[i][j],2) + Math.pow(verticalResult[i][j],2));
+                //System.out.println("hor: " +hor + " ver: " + ver +" hgrey: " +hgrey + " vgrey: " + vgrey + " norm:" + norm);
+                gradient[i][j] = norm;
+
+            }
+        }
+        int[] minMax = this.imageUtilities.findGreyMinMaxValues(gradient);
+        int min = minMax[0];
+        int max = minMax[1];
+
+        for (int i = 0; i < bimg.getWidth(); i++) {
+            for (int j = 0; j < bimg.getHeight(); j++) {
+                int p = (int) this.imageUtilities.linearTransformation(gradient[i][j],max,min);
+                result.setRGB(i,j,ColorUtilities.createRGB(p,p,p));
+            }
+        }
+        return result;
+    }
+
+    public BufferedImage applyLaplace(BufferedImage bimg){
+        Mask laplaceMask = new Mask();
+        laplaceMask.setLaplaceMask();
+        int[][] matrixResult = applyConvolutionReloaded(bimg,laplaceMask);
+        BufferedImage result = new BufferedImage(bimg.getWidth(), bimg.getHeight(), bimg.getType());
+        int[] minMax = this.imageUtilities.findGreyMinMaxValues(matrixResult);
+        int min = minMax[0];
+        int max = minMax[1];
+
+        for (int i = 0; i < bimg.getWidth(); i++) {
+            for (int j = 0; j < bimg.getHeight(); j++) {
+                int p = (int) this.imageUtilities.linearTransformation(matrixResult[i][j],max,min);
                 result.setRGB(i,j,ColorUtilities.createRGB(p,p,p));
             }
         }

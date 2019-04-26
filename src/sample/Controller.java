@@ -774,9 +774,9 @@ public class Controller extends BorderPane {
     //Tests
 
     public void testsFer()throws IOException{
-        BufferedImage bimg = ImageIO.read(new File("C:\\Users\\Fernando.Ares\\Desktop\\Imagenes\\leopard.jpg"));
+        BufferedImage bimg = imageUtilities.openRawImage(new File("C:\\Users\\Fernando.Ares\\Desktop\\Imagenes\\lena.raw"),256,256);
         leftImage = bimg;
         this.displayImageInPane(bimg,leftPane);
-        this.displayImageInPane(filter.applyMedianFilter(bimg,3),rightPane);
+        this.displayImageInPane(filter.applyPrewitt(bimg),rightPane);
     }
 }

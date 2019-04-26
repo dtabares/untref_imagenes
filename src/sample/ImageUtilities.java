@@ -666,7 +666,7 @@ public class ImageUtilities {
         double b = (-255.0 * (double)min) /(double) (max - min);
         //System.out.println("Max: " + max + " Min: " + min);
         //System.out.println("m: " + m + " b: " + b);
-        return (m * p + b);
+        return ((m * p) + b);
     }
 
     public BufferedImage imageScalarProduct(BufferedImage bimg, int scalar) {

@@ -1,6 +1,7 @@
 package sample;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.nio.Buffer;
 import java.util.Arrays;
 
 public class Filter {
@@ -117,21 +118,39 @@ public class Filter {
     }
 
     public BufferedImage applyLaplace(BufferedImage bimg){
+        BufferedImage result = new BufferedImage(bimg.getWidth(), bimg.getHeight(), bimg.getType());
         Mask laplaceMask = new Mask();
         laplaceMask.setLaplaceMask();
+        //Aplico la mascara de Laplace con una convolucion
         int[][] matrixResult = applyConvolutionReloaded(bimg,laplaceMask);
-        BufferedImage result = new BufferedImage(bimg.getWidth(), bimg.getHeight(), bimg.getType());
-        int[] minMax = this.imageUtilities.findGreyMinMaxValues(matrixResult);
-        int min = minMax[0];
-        int max = minMax[1];
-
+        //Aplico metodo de Zero Crossing
+        int [][] zeroMatrix = applyZeroCrossingEdgeDetection(matrixResult);
+        //Recorro la buffered image y la relleno con el resultado
         for (int i = 0; i < bimg.getWidth(); i++) {
             for (int j = 0; j < bimg.getHeight(); j++) {
-                int p = (int) this.imageUtilities.linearTransformation(matrixResult[i][j],max,min);
-                result.setRGB(i,j,ColorUtilities.createRGB(p,p,p));
+                result.setRGB(i,j,ColorUtilities.createRGB(zeroMatrix[i][j],zeroMatrix[i][j],zeroMatrix[i][j]));
             }
         }
         return result;
+    }
+
+    public int[][] applyZeroCrossingEdgeDetection(int[][] imageMatrix){
+        int[][] resultMatrix = new int[imageMatrix.length][imageMatrix[0].length];
+        //Recorro la matriz hasta la anteultima columna
+        for (int i = 0; i < imageMatrix.length-1; i++) {
+            for (int j = 0; j < imageMatrix[0].length; j++) {
+                int pIzq = imageMatrix[i][j];
+                int pDer = imageMatrix[i+1][j];
+                //Comparo el pixel a izq y a dcha, si hay un cambio de signo pongo un blanco
+                if ( (pIzq > 0 && pDer < 0) || (pIzq < 0 && pDer > 0)){
+                    resultMatrix[i][j] = 255;
+                }
+                else{
+                    resultMatrix[i][j] = 0;
+                }
+            }
+        }
+        return resultMatrix;
     }
 
     private BufferedImage applyConvolution(BufferedImage bimg, Mask mask){
@@ -234,92 +253,6 @@ public class Filter {
                 //System.out.println("r: " +grey);
                 grey = 0;
 
-            }
-        }
-        return result;
-    }
-
-    private BufferedImage applyConvolution2(BufferedImage bimg, Mask mask){
-        int rgb, red, green, blue;
-        BufferedImage result = imageUtilities.copyImageIntoAnother(bimg);
-        int widthLimit = bimg.getWidth() - mask.getSize();
-        int heightLimit = bimg.getHeight() - mask.getSize();
-        Image temp = new Image(bimg);
-        int[][] redChannel = temp.getRedDataMatrixChannel();
-        int[][] greenChannel = temp.getGreenDataMatrixChannel();
-        int[][] blueChannel = temp.getBlueDataMatrixChannel();
-        red = 0;
-        green = 0;
-        blue = 0;
-        int max = 0;
-        int min = 255;
-
-        for (int i = 0; i <= widthLimit; i++) {
-            for (int j = 0; j <= heightLimit; j++) {
-                for (int k = 0; k < mask.getSize(); k++) {
-                    for (int l = 0; l < mask.getSize(); l++) {
-                        rgb = bimg.getRGB(i+k,j+l);
-                        red += (ColorUtilities.getRed(rgb) * mask.getValue(k,l));
-                        green += (ColorUtilities.getGreen(rgb) * mask.getValue(k,l));
-                        blue += (ColorUtilities.getBlue(rgb) * mask.getValue(k,l));
-                    }
-                }
-                redChannel[i + mask.getCenter()][j + mask.getCenter()] = red;
-                greenChannel[i + mask.getCenter()][j + mask.getCenter()] = green;
-                blueChannel[i + mask.getCenter()][j + mask.getCenter()] = blue;
-                //System.out.println("r: " +red + " g: " + green + " b:" + blue);
-                if(red > max){
-                    max = red;
-                }
-                if(green > max){
-                    max = green;
-                }
-                if(blue > max){
-                    max = blue;
-                }
-
-                if(red < min){
-                    min = red;
-                }
-                if(green < min){
-                    min = green;
-                }
-                if(blue < min){
-                    min = blue;
-                }
-                red = 0;
-                green = 0;
-                blue = 0;
-            }
-        }
-
-        if(max > 255 || min < 0){
-            for (int i = 0; i < result.getWidth(); i++) {
-                for (int j = 0; j < result.getHeight(); j++) {
-
-                    if(redChannel[i][j]>255){
-                        redChannel[i][j] = (int)this.imageUtilities.linearTransformation(redChannel[i][j], max, min);
-                        greenChannel[i][j] = (int)this.imageUtilities.linearTransformation(greenChannel[i][j], max, min);
-                        blueChannel[i][j] = (int)this.imageUtilities.linearTransformation(blueChannel[i][j], max, min);
-                    }
-                    //Trunco los valores menores a cero SOLO cuando se van de rango
-                    if(redChannel[i][j]<0){
-                        redChannel[i][j] = 0;
-                        greenChannel[i][j] = 0;
-                        blueChannel[i][j] = 0;
-                    }
-//                        Aplico T. Lineal
-//                        redChannel[i][j] = (int) Math.round(this.imageUtilities.linearTransformation(redChannel[i][j], max, min));
-//                        greenChannel[i][j] = (int) Math.round(this.imageUtilities.linearTransformation(greenChannel[i][j], max, min));
-//                        blueChannel[i][j] = (int) Math.round(this.imageUtilities.linearTransformation(blueChannel[i][j], max, min));
-                }
-            }
-        }
-
-        // Relleno la imagen a devolver
-        for (int i = 0; i < result.getWidth(); i++) {
-            for (int j = 0; j < result.getHeight(); j++) {
-                result.setRGB(i,j,ColorUtilities.createRGB(redChannel[i][j], greenChannel[i][j], blueChannel[i][j]));
             }
         }
         return result;

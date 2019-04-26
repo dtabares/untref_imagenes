@@ -21,6 +21,20 @@ public class ColorUtilities {
         return (rgb_pixel >> 0) & 0xFF;
     }
 
+    public static int getGrey(int rgb_pixel)
+    {
+        int red,green,blue,grey;
+        red = ColorUtilities.getRed(rgb_pixel);
+        green = ColorUtilities.getGreen(rgb_pixel);
+        blue = ColorUtilities.getBlue(rgb_pixel);
+
+        grey = (int) (red + green + blue)/3;
+        //System.out.println("red: " + red + " green: " +green+ " blue: " +blue+ " grey: " + grey);
+
+        return grey;
+
+    }
+
     public static float[] RGBtoHSV(int rgbPixel)
     {
         int rgbRedComponent = getRed(rgbPixel);

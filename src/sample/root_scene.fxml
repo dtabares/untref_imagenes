@@ -111,7 +111,8 @@
                            <children>
                               <Button mnemonicParsing="false" onAction="#prewitt" prefWidth="205.0" text="Prewitt" />
                               <Button mnemonicParsing="false" onAction="#sobel" prefWidth="205.0" text="Sobel" />
-                              <!--<Button mnemonicParsing="false" onAction="#copyImageSelection" prefWidth="205.0" text="Select and Duplicate" />-->
+                              <Button mnemonicParsing="false" onAction="#laplace" prefWidth="205.0" text="Laplace" />
+                              <Button mnemonicParsing="false" onAction="#laplaceAndZeroCrossing" prefWidth="205.0" text="Laplace + Zero Crossing" />
                               <!--<Button mnemonicParsing="false" onAction="#createImageWithCircle" prefWidth="205.0" text="White Circle" />-->
                               <!--<Button mnemonicParsing="false" onAction="#createImageWithSquare" prefWidth="205.0" text="White Square" />-->
                               <!--<Button mnemonicParsing="false" onAction="#createGrayScaleImage" prefWidth="200.0" text="Grey Scale" />-->

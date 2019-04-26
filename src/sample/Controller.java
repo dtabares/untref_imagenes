@@ -744,6 +744,14 @@ public class Controller extends BorderPane {
         BufferedImage result = this.filter.applySobel(leftImage);
         this.displayImageInPane(result,rightPane);
     }
+    @FXML public void laplace(){
+        BufferedImage result = this.filter.applyLaplace(leftImage,false);
+        this.displayImageInPane(result,rightPane);
+    }
+    @FXML public void laplaceAndZeroCrossing(){
+        BufferedImage result = this.filter.applyLaplace(leftImage,true);
+        this.displayImageInPane(result,rightPane);
+    }
     //Panels
 
     public void displayImageInPane(BufferedImage bimg, AnchorPane pane){
@@ -780,6 +788,6 @@ public class Controller extends BorderPane {
         BufferedImage bimg = imageUtilities.openRawImage(new File("C:\\Users\\Fernando.Ares\\Desktop\\Imagenes\\lena.raw"),256,256);
         leftImage = bimg;
         this.displayImageInPane(bimg,leftPane);
-        this.displayImageInPane(filter.applyLaplace(bimg),rightPane);
+        this.displayImageInPane(filter.applyLaplace(bimg,true),rightPane);
     }
 }

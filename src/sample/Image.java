@@ -229,6 +229,16 @@ public class Image {
         this.splittedInHSVbands = true;
     }
 
+    public void convertToGreyDataMatrix(){
+        this.greyDataMatrix = new int[this.width][this.height];
+
+        for (int i = 0; i < this.width; i++) {
+            for (int j = 0; j < this.height; j++) {
+                this.greyDataMatrix[i][j] = ColorUtilities.getGrey(this.bufferedImage.getRGB(i,j));
+            }
+        }
+    }
+
     public BufferedImage getRedBufferedImageChannel() {
         if (this.splittedInRGBbands == false)
         {

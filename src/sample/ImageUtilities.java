@@ -663,10 +663,70 @@ public class ImageUtilities {
 
     public double linearTransformation(int p, int max, int min){
         double  m = 255.0/(double)(max - min);
-        double b = (-255.0 * (double)min) /(double) (max - min);
+        double b = (255 - ((255 * max) / (max - min)));
         //System.out.println("Max: " + max + " Min: " + min);
         //System.out.println("m: " + m + " b: " + b);
         return ((m * p) + b);
+    }
+
+    public int[] findGreyMinMaxValues(int[][] matrix){
+        int[] minMax = new int[2];
+        int min = 255;
+        int max = 0;
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[i].length; j++) {
+                if (i == 0 && j == 0){
+                    min = matrix[i][j];
+                    max = matrix[i][j];
+                }
+                else{
+                    if (matrix[i][j] > max){
+                        max = matrix[i][j];
+                    }
+
+                    if (matrix[i][j] < min){
+                        min = matrix[i][j];
+                    }
+
+                }
+
+            }
+        }
+        System.out.println("Max: " + max + " Min: " + min);
+        minMax[0] = min;
+        minMax[1] = max;
+        return minMax;
+    }
+
+    public int[] findGreyMinMaxValues(BufferedImage bimg){
+        int[] minMax = new int[2];
+        int min = 255;
+        int max = 0;
+        int grey;
+        for (int i = 0; i < bimg.getWidth(); i++) {
+            for (int j = 0; j < bimg.getHeight(); j++) {
+                grey = ColorUtilities.getGrey(bimg.getRGB(i,j));
+                if (i == 0 && j == 0){
+                    min = grey;
+                    max = grey;
+                }
+                else{
+                    if (grey > max){
+                        max = grey;
+                    }
+
+                    if (grey < min){
+                        min = grey;
+                    }
+
+                }
+
+            }
+        }
+        System.out.println("Max: " + max + " Min: " + min);
+        minMax[0] = min;
+        minMax[1] = max;
+        return minMax;
     }
 
     public BufferedImage imageScalarProduct(BufferedImage bimg, int scalar) {

@@ -152,11 +152,21 @@ public class Filter {
         //Recorro la matriz hasta la anteultima columna
         for (int i = 0; i < imageMatrix.length-1; i++) {
             for (int j = 0; j < imageMatrix[0].length; j++) {
-                int pIzq = imageMatrix[i][j];
-                int pDer = imageMatrix[i+1][j];
+                int currentPixel = imageMatrix[i][j];
+                int rightPixel = imageMatrix[i+1][j];
                 //Comparo el pixel a izq y a dcha, si hay un cambio de signo pongo un blanco
-                if ( (pIzq > 0 && pDer < 0) || (pIzq < 0 && pDer > 0)){
+                if ( (currentPixel > 0 && rightPixel < 0) || (currentPixel < 0 && rightPixel > 0)){
                     resultMatrix[i][j] = 255;
+                }
+                //Tengo que ver que hay a mis costados (teniendo cuidado de que i NO sea el elemento 0 del array)
+                else if(currentPixel == 0 && i > 0){
+                    int leftPixel = imageMatrix[i -1][j];
+                    if((leftPixel > 0 && rightPixel < 0) || (leftPixel < 0 && rightPixel > 0)){
+                        resultMatrix[i][j] = 255;
+                    }
+                    else{
+                        resultMatrix[i][j] = 0;
+                    }
                 }
                 else{
                     resultMatrix[i][j] = 0;

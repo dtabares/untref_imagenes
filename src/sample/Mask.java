@@ -85,34 +85,87 @@ public class Mask {
         }
     }
 
-    public void setHorizontalPrewittMask(){
-        this.size = 3;
-        this.matrix = new double[][] {{-1,-1,-1},{0,0,0},{1,1,1}};
+    public void setPrewittMask(BorderDetectionDirection direction){
         this.center = this.size/2;
+        this.size = 3;
+        switch (direction){
+            case HORIZONTAL:
+                this.matrix = new double[][] {{1,0,-1},{1,0,-1},{1,0,-1}};
+                break;
+            case VERTICAL:
+                this.matrix = new double[][] {{-1,-1,-1},{0,0,0},{1,1,1}};
+                break;
+            case DIAGONAL45:
+                this.matrix = new double[][] {{0,-1,-1},{1,0,-1},{1,1,0}};
+                break;
+            case DIAGONAL135:
+                this.matrix = new double[][] {{1,1,0},{1,0,-1},{0,-1,-1}};
+                break;
+        }
     }
 
-    public void setVericalPrewittMask(){
-        this.size = 3;
-        this.matrix = new double[][] {{-1,0,1},{-1,0,1},{-1,0,1}};
+    public void setKirshtMask(BorderDetectionDirection direction){
         this.center = this.size/2;
+        this.size = 3;
+        switch (direction){
+            case HORIZONTAL:
+                this.matrix = new double[][] {{5,3,-3},{5,0,-3},{5,-3,-3}};
+                break;
+            case VERTICAL:
+                this.matrix = new double[][] {{5,5,5},{-3,0,3},{-3,-3,-3}};
+                break;
+            case DIAGONAL45:
+                this.matrix = new double[][] {{3,-3,-3},{5,0,-3},{5,5,-3}};
+                break;
+            case DIAGONAL135:
+                this.matrix = new double[][] {{5,5,3},{5,0,-3},{-3,-3,-3}};
+                break;
+        }
     }
 
-    public void setHorizontalSobelMask(){
-        this.size = 3;
-        this.matrix = new double[][] {{-1,-2,-1},{0,0,0},{1,2,1}};
+    public void setSobeltMask(BorderDetectionDirection direction){
         this.center = this.size/2;
-    }
-
-    public void setVericalSobelMask(){
         this.size = 3;
-        this.matrix = new double[][] {{-1,0,1},{-2,0,2},{-1,0,1}};
-        this.center = this.size/2;
+        switch (direction){
+            case HORIZONTAL:
+                this.matrix = new double[][] {{1,0,-1},{2,0,-2},{1,0,-1}};
+                break;
+            case VERTICAL:
+                this.matrix = new double[][] {{1,2,1},{0,0,0},{-1,-2,-1}};
+                break;
+            case DIAGONAL45:
+                this.matrix = new double[][] {{0,-1,-2},{1,0,-1},{2,1,0}};
+                break;
+            case DIAGONAL135:
+                this.matrix = new double[][] {{2,1,0},{1,0,-1},{0,-1,-2}};
+                break;
+        }
     }
 
     public void setLaplaceMask(){
         this.size = 3;
         this.matrix = new double[][] {{0,-1,0},{-1,4,-1},{0,-1,0}};
         this.center = this.size/2;
+    }
+
+    //Mascara del TP 2  Punto 5-a
+    public void setUnnamedMask(BorderDetectionDirection direction){
+        this.center = this.size/2;
+        this.size = 3;
+        switch (direction){
+            case VERTICAL:
+                this.matrix = new double[][] {{1,1,1},{1,-2,1},{-1,-1,-1}};
+                break;
+            case HORIZONTAL:
+                this.matrix = new double[][] {{1,1,-1},{1,-2,-1},{1,1,-1}};
+                break;
+            case DIAGONAL45:
+                this.matrix = new double[][] {{1,-1,-1},{1,-2,-1},{1,1,1}};
+                break;
+            case DIAGONAL135:
+                this.matrix = new double[][] {{1,1,1},{1,-2,-1},{1,-1,-1}};
+                break;
+        }
     }
 
 

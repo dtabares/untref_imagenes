@@ -56,8 +56,8 @@ public class Filter {
             }
         }
 
-        horizontalMask.setHorizontalPrewittMask();
-        verticalMask.setVericalPrewittMask();
+        horizontalMask.setPrewittMask(BorderDetectionDirection.HORIZONTAL);
+        verticalMask.setPrewittMask(BorderDetectionDirection.VERTICAL);
         //Calculamos las convoluciones de cada mascara
         int[][] horizontalResult = applyConvolutionReloaded(bimg,horizontalMask);
         int[][] verticalResult = applyConvolutionReloaded(bimg,verticalMask);
@@ -89,8 +89,8 @@ public class Filter {
         Mask verticalMask = new Mask();
         int[][] gradient = new int[bimg.getWidth()][bimg.getHeight()];
 
-        horizontalMask.setHorizontalSobelMask();
-        verticalMask.setVericalSobelMask();
+        horizontalMask.setSobeltMask(BorderDetectionDirection.HORIZONTAL);
+        verticalMask.setSobeltMask(BorderDetectionDirection.VERTICAL);
         //Calculamos las convoluciones de cada mascara
         int[][] horizontalResult = applyConvolutionReloaded(bimg,horizontalMask);
         int[][] verticalResult = applyConvolutionReloaded(bimg,verticalMask);

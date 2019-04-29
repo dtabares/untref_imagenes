@@ -109,16 +109,16 @@ public class Mask {
         this.size = 3;
         switch (direction){
             case HORIZONTAL:
-                this.matrix = new double[][] {{5,3,-3},{5,0,-3},{5,-3,-3}};
+                this.matrix = new double[][] {{5,-3,-3},{5,0,-3},{5,-3,-3}};
                 break;
             case VERTICAL:
-                this.matrix = new double[][] {{5,5,5},{-3,0,3},{-3,-3,-3}};
+                this.matrix = new double[][] {{5,5,5},{-3,0,-3},{-3,-3,-3}};
                 break;
             case DIAGONAL45:
-                this.matrix = new double[][] {{3,-3,-3},{5,0,-3},{5,5,-3}};
+                this.matrix = new double[][] {{-3,-3,-3},{5,0,-3},{5,5,-3}};
                 break;
             case DIAGONAL135:
-                this.matrix = new double[][] {{5,5,3},{5,0,-3},{-3,-3,-3}};
+                this.matrix = new double[][] {{5,5,-3},{5,0,-3},{-3,-3,-3}};
                 break;
         }
     }

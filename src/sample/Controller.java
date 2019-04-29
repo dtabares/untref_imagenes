@@ -752,6 +752,79 @@ public class Controller extends BorderPane {
         BufferedImage result = this.filter.applyLaplace(leftImage,true);
         this.displayImageInPane(result,rightPane);
     }
+    @FXML public void compareDirectionalMasks(){
+        if(leftPane.getChildren().isEmpty())
+        {
+            Alerts.showAlert("No hay una imagen cargada!");
+        }
+        else{
+            BufferedImage horizontalPrewitt = this.filter.applyUnidirectionalPrewitt(leftImage,BorderDetectionDirection.HORIZONTAL);
+            BufferedImage verticalPrewitt = this.filter.applyUnidirectionalPrewitt(leftImage,BorderDetectionDirection.VERTICAL);
+            BufferedImage diag45Prewitt = this.filter.applyUnidirectionalPrewitt(leftImage,BorderDetectionDirection.DIAGONAL45);
+            BufferedImage diag135Prewitt = this.filter.applyUnidirectionalPrewitt(leftImage,BorderDetectionDirection.DIAGONAL135);
+
+            BufferedImage horizontalSobel = this.filter.applyUnidirectionalSobel(leftImage,BorderDetectionDirection.HORIZONTAL);
+            BufferedImage verticalSobel = this.filter.applyUnidirectionalSobel(leftImage,BorderDetectionDirection.VERTICAL);
+            BufferedImage diag45Sobel = this.filter.applyUnidirectionalSobel(leftImage,BorderDetectionDirection.DIAGONAL45);
+            BufferedImage diag135Sobel = this.filter.applyUnidirectionalSobel(leftImage,BorderDetectionDirection.DIAGONAL135);
+
+            BufferedImage horizontalUnnamed = this.filter.applyUnidirectionalUnnamed(leftImage,BorderDetectionDirection.HORIZONTAL);
+            BufferedImage verticalUnnamed = this.filter.applyUnidirectionalUnnamed(leftImage,BorderDetectionDirection.VERTICAL);
+            BufferedImage diag45Unnamed = this.filter.applyUnidirectionalUnnamed(leftImage,BorderDetectionDirection.DIAGONAL45);
+            BufferedImage diag135Unnamed = this.filter.applyUnidirectionalUnnamed(leftImage,BorderDetectionDirection.DIAGONAL135);
+
+            BufferedImage horizontalKirsh = this.filter.applyUnidirectionalKirsh(leftImage,BorderDetectionDirection.HORIZONTAL);
+            BufferedImage verticalKirsh = this.filter.applyUnidirectionalKirsh(leftImage,BorderDetectionDirection.VERTICAL);
+            BufferedImage diag45Kirsh = this.filter.applyUnidirectionalKirsh(leftImage,BorderDetectionDirection.DIAGONAL45);
+            BufferedImage diag135Kirsh = this.filter.applyUnidirectionalKirsh(leftImage,BorderDetectionDirection.DIAGONAL135);
+
+            try {
+                FXMLLoader fxmlLoaderPrewitt = new FXMLLoader(getClass().getResource("tp2_5_display_4_border_detection_direction.fxml"));
+                Parent prewittRoot = (Parent) fxmlLoaderPrewitt.load();
+                BorderDirectionController prewittDirectionController = fxmlLoaderPrewitt.<BorderDirectionController>getController();
+                Stage prewittStage = new Stage();
+                prewittStage.setTitle("Prewitt");
+                prewittStage.setScene(new Scene(prewittRoot));
+                prewittDirectionController.displayImages(horizontalPrewitt,verticalPrewitt,diag135Prewitt,diag45Prewitt);
+                prewittStage.show();
+
+                FXMLLoader fxmlLoaderSobel = new FXMLLoader(getClass().getResource("tp2_5_display_4_border_detection_direction.fxml"));
+                Parent sobelRoot = (Parent) fxmlLoaderSobel.load();
+                BorderDirectionController sobelDirectionController = fxmlLoaderSobel.<BorderDirectionController>getController();
+                Stage sobelStage = new Stage();
+                sobelStage.setTitle("Sobel");
+                sobelStage.setScene(new Scene(sobelRoot));
+                sobelDirectionController.displayImages(horizontalSobel,verticalSobel,diag135Sobel,diag45Sobel);
+                sobelStage.show();
+
+
+                FXMLLoader fxmlLoaderUnnamed = new FXMLLoader(getClass().getResource("tp2_5_display_4_border_detection_direction.fxml"));
+                Parent unnamedRoot = (Parent) fxmlLoaderUnnamed.load();
+                BorderDirectionController unnamedDirectionController = fxmlLoaderUnnamed.<BorderDirectionController>getController();
+                Stage unnamedStage = new Stage();
+                unnamedStage.setTitle("Unnamed");
+                unnamedStage.setScene(new Scene(unnamedRoot));
+                unnamedDirectionController.displayImages(horizontalUnnamed,verticalUnnamed,diag135Unnamed,diag45Unnamed);
+                unnamedStage.show();
+
+                FXMLLoader fxmlLoaderKirsh = new FXMLLoader(getClass().getResource("tp2_5_display_4_border_detection_direction.fxml"));
+                Parent kirshRoot = (Parent) fxmlLoaderKirsh.load();
+                BorderDirectionController kirshDirectionController = fxmlLoaderKirsh.<BorderDirectionController>getController();
+                Stage kirshStage = new Stage();
+                kirshStage.setTitle("Kirsh");
+                kirshStage.setScene(new Scene(kirshRoot));
+                kirshDirectionController.displayImages(horizontalKirsh,verticalKirsh,diag135Kirsh,diag45Kirsh);
+                kirshStage.show();
+
+            }
+            catch (Exception e)
+            {
+                System.out.println("No se puede abrir una nueva ventana");
+                e.printStackTrace();
+            }
+
+        }
+    }
     //Panels
 
     public void displayImageInPane(BufferedImage bimg, AnchorPane pane){

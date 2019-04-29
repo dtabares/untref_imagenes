@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="398.0" prefWidth="1029.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.BorderDirectionController">
+   <children>
+      <Label fx:id="label" layoutX="33.0" layoutY="3.0" prefHeight="22.0" prefWidth="108.0" text="Horizontal">
+         <font>
+            <Font size="17.0" />
+         </font>
+      </Label>
+      <ScrollPane layoutY="27.0" prefHeight="373.0" prefWidth="256.0">
+        <content>
+          <AnchorPane fx:id="horizontalPane" minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="200.0" />
+        </content>
+      </ScrollPane>
+      <ScrollPane layoutX="256.0" layoutY="27.0" prefHeight="373.0" prefWidth="256.0">
+         <content>
+            <AnchorPane fx:id="verticalPane" minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="200.0" />
+         </content>
+      </ScrollPane>
+      <ScrollPane layoutX="512.0" layoutY="27.0" prefHeight="373.0" prefWidth="256.0">
+         <content>
+            <AnchorPane fx:id="diag135Pane" minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="200.0" />
+         </content>
+      </ScrollPane>
+      <ScrollPane layoutX="769.0" layoutY="27.0" prefHeight="373.0" prefWidth="256.0">
+         <content>
+            <AnchorPane fx:id="diag45Pane" minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="200.0" />
+         </content>
+      </ScrollPane>
+      <Label fx:id="label1" layoutX="317.0" layoutY="3.0" prefHeight="22.0" prefWidth="108.0" text="Vertical">
+         <font>
+            <Font size="17.0" />
+         </font>
+      </Label>
+      <Label fx:id="label2" layoutX="617.0" layoutY="3.0" prefHeight="22.0" prefWidth="46.0" text="135">
+         <font>
+            <Font size="17.0" />
+         </font>
+      </Label>
+      <Label fx:id="label3" layoutX="883.0" layoutY="3.0" prefHeight="22.0" prefWidth="28.0" text="45">
+         <font>
+            <Font size="17.0" />
+         </font>
+      </Label>
+   </children>
+</Pane>

@@ -84,6 +84,14 @@ public class Filter {
         return result;
     }
 
+    public BufferedImage applyUnidirectionalPrewitt(BufferedImage bimg, BorderDetectionDirection direction){
+        Mask mask = new Mask();
+
+        mask.setPrewittMask(direction);
+
+        return applyUnidirectionalFilter(bimg,direction,mask);
+    }
+
     public BufferedImage applySobel(BufferedImage bimg){
         Mask horizontalMask = new Mask();
         Mask verticalMask = new Mask();
@@ -99,6 +107,59 @@ public class Filter {
         for (int i = 0; i < bimg.getWidth(); i++) {
             for (int j = 0; j < bimg.getHeight(); j++) {
                 int norm = (int) Math.sqrt(Math.pow(horizontalResult[i][j],2) + Math.pow(verticalResult[i][j],2));
+                //System.out.println("hor: " +hor + " ver: " + ver +" hgrey: " +hgrey + " vgrey: " + vgrey + " norm:" + norm);
+                gradient[i][j] = norm;
+
+            }
+        }
+        int[] minMax = this.imageUtilities.findGreyMinMaxValues(gradient);
+        int min = minMax[0];
+        int max = minMax[1];
+
+        for (int i = 0; i < bimg.getWidth(); i++) {
+            for (int j = 0; j < bimg.getHeight(); j++) {
+                int p = (int) this.imageUtilities.linearTransformation(gradient[i][j],max,min);
+                result.setRGB(i,j,ColorUtilities.createRGB(p,p,p));
+            }
+        }
+        return result;
+    }
+
+    public BufferedImage applyUnidirectionalSobel(BufferedImage bimg,BorderDetectionDirection direction){
+        Mask mask = new Mask();
+
+        mask.setSobeltMask(direction);
+
+        return applyUnidirectionalFilter(bimg,direction,mask);
+    }
+
+    public BufferedImage applyUnidirectionalUnnamed(BufferedImage bimg,BorderDetectionDirection direction){
+        Mask mask = new Mask();
+        mask.setUnnamedMask(direction);
+
+        return applyUnidirectionalFilter(bimg,direction,mask);
+    }
+
+    public BufferedImage applyUnidirectionalKirsh(BufferedImage bimg, BorderDetectionDirection direction){
+        Mask mask = new Mask();
+
+        mask.setKirshtMask(direction);
+
+        return applyUnidirectionalFilter(bimg,direction,mask);
+    }
+
+    public BufferedImage applyUnidirectionalFilter(BufferedImage bimg,BorderDetectionDirection direction, Mask mask){
+
+        int[][] gradient = new int[bimg.getWidth()][bimg.getHeight()];
+
+        //Calculamos las convoluciones de cada mascara
+        int[][] convolutionResult = applyConvolutionReloaded(bimg,mask);
+
+
+        BufferedImage result = new BufferedImage(bimg.getWidth(), bimg.getHeight(), bimg.getType());
+        for (int i = 0; i < bimg.getWidth(); i++) {
+            for (int j = 0; j < bimg.getHeight(); j++) {
+                int norm = (int) Math.sqrt(Math.pow(convolutionResult[i][j],2));
                 //System.out.println("hor: " +hor + " ver: " + ver +" hgrey: " +hgrey + " vgrey: " + vgrey + " norm:" + norm);
                 gradient[i][j] = norm;
 

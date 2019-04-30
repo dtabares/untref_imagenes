@@ -6,7 +6,6 @@ public class Mask {
     private double matrix[][];
     private int center;
 
-
     public Mask(int size){
         this.size = size;
         this.matrix = new double[size][size];
@@ -148,6 +147,27 @@ public class Mask {
         this.center = this.size/2;
     }
 
+    public void setLogMask(double sigma){
+        double suma = 0;
+        double valor;
+        int radius = size / 2;
+        //se aplica la formula con el 0,0 centrado en la mascara
+        for (int i = 0 - radius; i < matrix.length - radius; i++) {
+            for (int j = 0 - radius; j < this.matrix[0].length - radius; j++) {
+                //fraccion representa la primer fraccion de la formula
+                double fraccion = (1.0 / ( Math.sqrt(2.0 * Math.PI) * Math.pow(sigma, 3)));
+                //representa la parte entre parentesis de la formula
+                double parentesis = ( 2 - ((Math.pow(i, 2) + Math.pow(j, 2)) / (Math.pow(sigma, 2))));
+                //e representa la segunda parte de la formula
+                double e = Math.exp(-(Math.pow(i, 2) + Math.pow(j, 2)) / (Math.pow(sigma, 2)*2));
+                valor = -(fraccion * parentesis * e);
+                this.matrix[i + radius][j + radius] = valor;
+                //la variable suma es para analizar la matriz
+                suma += valor;
+            }
+        }
+    }
+
     //Mascara del TP 2  Punto 5-a
     public void setUnnamedMask(BorderDetectionDirection direction){
         this.center = this.size/2;
@@ -167,7 +187,6 @@ public class Mask {
                 break;
         }
     }
-
 
     public int getSize(){
         return this.size;

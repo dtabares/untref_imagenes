@@ -208,6 +208,37 @@ public class Filter {
         return result;
     }
 
+    public BufferedImage applyLoG(BufferedImage bimg, double sigma, Boolean zeroCrossing){
+        BufferedImage result = new BufferedImage(bimg.getWidth(), bimg.getHeight(), bimg.getType());
+        int maskSize = (int) Math.round(6*sigma+1);
+        Mask logMask = new Mask(maskSize);
+        logMask.setLogMask(sigma);
+        //Aplico la mascara de Laplace con una convolucion
+        int[][] matrixResult = applyConvolutionReloaded(bimg,logMask);
+        if(zeroCrossing){
+            //Aplico metodo de Zero Crossing
+            int [][] zeroMatrix = applyZeroCrossingEdgeDetection(matrixResult);
+            //Recorro la buffered image y la relleno con el resultado Laplace + Zero Crossing
+            for (int i = 0; i < bimg.getWidth(); i++) {
+                for (int j = 0; j < bimg.getHeight(); j++) {
+                    result.setRGB(i,j,ColorUtilities.createRGB(zeroMatrix[i][j],zeroMatrix[i][j],zeroMatrix[i][j]));
+                }
+            }
+            return result;
+        }
+        // Aplico y devuelvo solo el filtro de Laplace
+        int[] minMax = this.imageUtilities.findGreyMinMaxValues(matrixResult);
+        int min = minMax[0];
+        int max = minMax[1];
+        for (int i = 0; i < bimg.getWidth(); i++) {
+            for (int j = 0; j < bimg.getHeight(); j++) {
+                int p = (int) this.imageUtilities.linearTransformation(matrixResult[i][j],max,min);
+                result.setRGB(i,j,ColorUtilities.createRGB(p,p,p));
+            }
+        }
+        return result;
+    }
+
     public int[][] applyZeroCrossingEdgeDetection(int[][] imageMatrix){
         int[][] resultMatrix = new int[imageMatrix.length][imageMatrix[0].length];
         //Recorro la matriz hasta la anteultima columna

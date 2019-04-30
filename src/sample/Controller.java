@@ -45,7 +45,7 @@ public class Controller extends BorderPane {
         this.historyImageList = new LinkedList<>();
         this.imageUtilities = new ImageUtilities();
         this.filter = new Filter();
-        //this.testsFer();
+        this.testsFer();
     }
 
     //Top Menu
@@ -825,6 +825,17 @@ public class Controller extends BorderPane {
 
         }
     }
+    @FXML public void log(){
+        double sigma = Double.valueOf(getInputDialog("Apply Gauss Filter", "Enter a new Value", "Sigma:"));
+        BufferedImage result = this.filter.applyLoG(leftImage,sigma,false);
+        this.displayImageInPane(result,rightPane);
+    }
+    @FXML public void logAndZeroCrossing(){
+        double sigma = Double.valueOf(getInputDialog("Apply Gauss Filter", "Enter a new Value", "Sigma:"));
+        BufferedImage result = this.filter.applyLoG(leftImage,sigma,true);
+        this.displayImageInPane(result,rightPane);
+    }
+
     //Panels
 
     public void displayImageInPane(BufferedImage bimg, AnchorPane pane){

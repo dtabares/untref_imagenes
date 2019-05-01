@@ -1,6 +1,8 @@
 package sample;
 
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+
 
 public class Threshold {
 
@@ -98,4 +100,129 @@ public class Threshold {
         threshold = (int) (m1 + m2)/2;
         return threshold;
     }
+
+
+    public static BufferedImage appyOtsu(BufferedImage bimg, Controller c){
+        Image image = new Image(bimg);
+        //Paso la imagen a escala de grises
+        image.convertToGreyDataMatrix();
+
+        //Obtengo el histograma normalizado
+        double[] normalizedHistogram = Histogram.getNormalizedHistogram(image.getGreyDataMatrix());
+
+        //Calculo las sumas acumulativas
+        double[] cumulativeSums = Threshold.calculateCumulativeSums(normalizedHistogram);
+
+        //Calculo las medias acumulativas
+        double[] cumulativeMeans = Threshold.calculateCumulativeMeans(normalizedHistogram);
+
+        //Calculo la Media Global
+        double globalMean = Threshold.calculateGlobalMean(normalizedHistogram);
+
+        //Calculo varianza entre clases
+        double[] variances = Threshold.calculateVariance(globalMean,cumulativeSums,cumulativeMeans);
+
+        //Obtengo la maxima varianza (umbral optimo T)
+        int threshold = Threshold.optimizeVariance(variances);
+
+        //Umbralizo con ese valor de T
+        int[][] thresholdedImage = Threshold.applyThreshold(image.getGreyDataMatrix(),threshold,image.getWidth(),image.getHeight());
+
+        Image temp = new Image(thresholdedImage);
+        c.setBottomText("T: " + threshold);
+        return temp.getBufferedImage();
+    }
+
+    private static double[] calculateCumulativeSums(double[] normalizedHistogram){
+        double[] cumulativeSums = new double[256];
+        double sum;
+        for (int i = 0; i < 256; i++) {
+            sum = 0;
+            for (int j = 0; j <= i; j++) {
+                sum = sum + normalizedHistogram[j];
+            }
+            cumulativeSums[i] = sum;
+        }
+
+        return cumulativeSums;
+    }
+
+    private static double[] calculateCumulativeMeans(double[] normalizedHistogram){
+        double[] cumulativeMeans = new double[256];
+        double temp;
+
+        for (int i = 0; i < 256; i++) {
+            temp = 0;
+            for (int j = 0; j <= i; j++) {
+                temp = temp + (normalizedHistogram[j] * j);
+            }
+            cumulativeMeans[i] = temp;
+        }
+        return cumulativeMeans;
+    }
+
+    private static double calculateGlobalMean(double[] normalizedHistogram){
+        double globalMean = 0;
+
+        for (int i = 0; i < 256; i++) {
+            globalMean = globalMean + (normalizedHistogram[i] * i);
+        }
+        return globalMean;
+    }
+
+    private static double[] calculateVariance(double globalMean, double[] cumulativeSums, double[] cumulativeMeans){
+        //Lo creo como array list porque no se cuantos elementos va a tener de antemano
+        ArrayList<Double> variancesTemp = new ArrayList<Double>();
+        double numerator;
+        double denominator;
+
+        for (int i = 0; i < 256; i++) {
+            numerator = Math.pow(((globalMean * cumulativeSums[i]) - cumulativeMeans[i]),2);
+            denominator = (cumulativeSums[i] * (1 - cumulativeSums[i]));
+            variancesTemp.add(numerator/denominator);
+        }
+
+        double[] variances = new double[variancesTemp.size()];
+
+        for (int i = 0; i < variancesTemp.size(); i++) {
+            variances[i] = variancesTemp.get(i);
+        }
+
+        return variances;
+    }
+
+    private static int optimizeVariance(double[] variance){
+        int threshold;
+        double max = variance[0];
+        int maxTPos = 0;
+        boolean unique = true;
+
+        for (int i = 1; i < variance.length; i++) {
+            if(variance[i] > max){
+                max = variance[i];
+                maxTPos = i;
+            }
+            else{
+                if(variance[i] == max){
+                    unique = false;
+                    break;
+                }
+            }
+        }
+
+        if(unique){
+            //threshold = (int) Math.round(max);
+            threshold = maxTPos;
+        }
+        else{
+            double sum = 0;
+            for (int i = 0; i < variance.length; i++) {
+                sum = sum + variance[i];
+            }
+            threshold = (int) Math.round(sum/variance.length);
+        }
+
+        return threshold;
+    }
+
 }

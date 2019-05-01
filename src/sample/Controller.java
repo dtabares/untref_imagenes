@@ -847,6 +847,17 @@ public class Controller extends BorderPane {
         }
     }
 
+    @FXML public void Otsu(){
+        if(leftPane.getChildren().isEmpty())
+        {
+            Alerts.showAlert("No hay una imagen cargada!");
+        }
+        else{
+            BufferedImage bimg = Threshold.appyOtsu(leftImage,this);
+            this.displayImageInPane(bimg,rightPane);
+        }
+    }
+
     //Panels
 
     public void displayImageInPane(BufferedImage bimg, AnchorPane pane){

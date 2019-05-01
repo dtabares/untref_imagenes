@@ -68,13 +68,14 @@ public class Image {
     public Image(int[][] greyDataMatrix) {
         this.greyDataMatrix = greyDataMatrix;
         this.imageType = BufferedImage.TYPE_BYTE_GRAY;
+        this.isGrey = true;
         this.width = this.greyDataMatrix.length;
         this.height = this.greyDataMatrix[0].length;
         this.bufferedImage = new BufferedImage(this.width,this.height,this.imageType);
         this.dataMatrixToBufferedImage();
         this.splittedInRGBbands = false;
         this.splittedInHSVbands = false;
-        this.isGrey = true;
+
         this.isEmpty = false;
     }
 
@@ -237,6 +238,10 @@ public class Image {
                 this.greyDataMatrix[i][j] = ColorUtilities.getGrey(this.bufferedImage.getRGB(i,j));
             }
         }
+    }
+
+    public int getGreyValue(int x, int y){
+        return this.greyDataMatrix[x][y];
     }
 
     public BufferedImage getRedBufferedImageChannel() {

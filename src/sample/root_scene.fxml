@@ -6,7 +6,7 @@
 <?import javafx.scene.text.*?>
 <?import javafx.scene.text.Text?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="900.0" prefWidth="1700.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="650.0" prefWidth="1700.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
   <bottom>
     <GridPane>
       <children>
@@ -114,9 +114,9 @@
                               <Button mnemonicParsing="false" onAction="#laplace" prefWidth="205.0" text="Laplace" />
                               <Button mnemonicParsing="false" onAction="#laplaceAndZeroCrossing" prefWidth="205.0" text="Laplace + Zero Crossing" />
                               <Button mnemonicParsing="false" onAction="#compareDirectionalMasks" prefWidth="205.0" text="Directional Masks Comparison" />
-                               <Button mnemonicParsing="false" onAction="#log" prefWidth="205.0" text="LoG" />
-                               <Button mnemonicParsing="false" onAction="#logAndZeroCrossing" prefWidth="205.0" text="LoG + Zero Crossing" />
-                              <!--<Button mnemonicParsing="false" onAction="#createImageWithSquare" prefWidth="205.0" text="White Square" />-->
+                              <Button mnemonicParsing="false" onAction="#log" prefWidth="205.0" text="LoG" />
+                              <Button mnemonicParsing="false" onAction="#logAndZeroCrossing" prefWidth="205.0" text="LoG + Zero Crossing" />
+                              <Button mnemonicParsing="false" onAction="#globalThresholding" prefWidth="205.0" text="Global Thresholding" />
                               <!--<Button mnemonicParsing="false" onAction="#createGrayScaleImage" prefWidth="200.0" text="Grey Scale" />-->
                               <!--<Button mnemonicParsing="false" onAction="#createColorScaleImage" prefWidth="200.0" text="Color Scale" />-->
                               <!--<Button mnemonicParsing="false" onAction="#RGBtoHSV" prefWidth="200.0" text="RGB to HSV" />-->

@@ -748,9 +748,13 @@ public class Controller extends BorderPane {
         BufferedImage result = this.filter.applyLaplace(leftImage,false);
         this.displayImageInPane(result,rightPane);
     }
-    @FXML public void laplaceAndZeroCrossing(){
-        BufferedImage result = this.filter.applyLaplace(leftImage,true);
-        this.displayImageInPane(result,rightPane);
+    @FXML public void laplaceAndZeroCrossing() {
+        BufferedImage result = this.filter.applyLaplace(leftImage, true);
+        this.displayImageInPane(result, rightPane);
+    }
+    @FXML public void laplaceWithSlopeAndZeroCrossing(){
+        BufferedImage result = this.filter.applyLaplaceWithSlope(leftImage, true);
+        this.displayImageInPane(result, rightPane);
     }
     @FXML public void compareDirectionalMasks(){
         if(leftPane.getChildren().isEmpty())
@@ -894,6 +898,6 @@ public class Controller extends BorderPane {
         BufferedImage bimg = imageUtilities.openRawImage(new File("C:\\Users\\Fernando.Ares\\Desktop\\Imagenes\\lena.raw"),256,256);
         leftImage = bimg;
         this.displayImageInPane(bimg,leftPane);
-        this.displayImageInPane(filter.applyLaplace(bimg,true),rightPane);
+        this.displayImageInPane(filter.applyLaplaceWithSlope(bimg,true),rightPane);
     }
 }

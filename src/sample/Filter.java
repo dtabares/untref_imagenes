@@ -225,17 +225,15 @@ public class Filter {
         //Aplico la mascara de Laplace con una convolucion
         int[][] matrixResult = applyConvolutionReloaded(bimg,laplaceMask);
         if(zeroCrossing){
-            //Aplico metodo de Zero Crossing
-            int [][] zeroMatrix = applyZeroCrossingEdgeDetection(matrixResult);
-            //Recorro la buffered image y la relleno con el resultado Laplace + Zero Crossing
-            for (int i = 0; i < bimg.getWidth(); i++) {
-                for (int j = 0; j < bimg.getHeight(); j++) {
-                    result.setRGB(i,j,ColorUtilities.createRGB(zeroMatrix[i][j],zeroMatrix[i][j],zeroMatrix[i][j]));
-                }
-            }
-            int[] minMax = this.imageUtilities.findGreyMinMaxValues(zeroMatrix);
+            int[] minMax = this.imageUtilities.findGreyMinMaxValues(matrixResult);
             int min = minMax[0];
             int max = minMax[1];
+            //Aplico metodo de Zero Crossing evaluando la Pendiente
+            int [][] zeroMatrix = applyZeroCrossingEdgeDetectionWithSlope(matrixResult, min, max);
+            minMax = this.imageUtilities.findGreyMinMaxValues(zeroMatrix);
+            min = minMax[0];
+            max = minMax[1];
+            //Recorro la buffered image y la relleno con el resultado Laplace + Zero Crossing
             for (int i = 0; i < bimg.getWidth(); i++) {
                 for (int j = 0; j < bimg.getHeight(); j++) {
                     int p = (int) this.imageUtilities.linearTransformation(zeroMatrix[i][j],max,min);
@@ -243,7 +241,6 @@ public class Filter {
                 }
             }
             return result;
-
         }
         // Aplico y devuelvo solo el filtro de Laplace
         int[] minMax = this.imageUtilities.findGreyMinMaxValues(matrixResult);
@@ -306,21 +303,39 @@ public class Filter {
                     if((leftPixel > 0 && rightPixel < 0) || (leftPixel < 0 && rightPixel > 0)){
                         resultMatrix[i][j] = 255;
                     }
-                    else{
-                        //resultMatrix[i][j] = imageMatrix[i][j];
-                        resultMatrix[i][j] = 0;
-                    }
-                }
-                else{
-                    //resultMatrix[i][j] = imageMatrix[i][j];
-                    resultMatrix[i][j] = 0;
                 }
             }
         }
         return resultMatrix;
     }
 
-    //calculo pendiente de una recta
+    public int[][] applyZeroCrossingEdgeDetectionWithSlope(int[][] imageMatrix, int min, int max){
+        int[][] resultMatrix = new int[imageMatrix.length][imageMatrix[0].length];
+        //Recorro la matriz hasta la anteultima columna
+        for (int i = 0; i < imageMatrix.length-1; i++) {
+            for (int j = 0; j < imageMatrix[0].length; j++) {
+                int currentPixel = imageMatrix[i][j];
+                int rightPixel = imageMatrix[i+1][j];
+                //Comparo el pixel a izq y a dcha, si hay un cambio de signo calculo la pendiente entre ambos |a+b|
+                if ( (currentPixel > 0 && rightPixel < 0) || (currentPixel < 0 && rightPixel > 0)){
+                    if(calculateSlopeAbs(currentPixel,rightPixel,min,max)>100){
+                        resultMatrix[i][j] = 255;
+                    }
+                }
+                //Tengo que ver que hay a mis costados (teniendo cuidado de que i NO sea el elemento 0 del array)
+                else if(currentPixel == 0 && i > 0){
+                    int leftPixel = imageMatrix[i -1][j];
+                    if((leftPixel > 0 && rightPixel < 0) || (leftPixel < 0 && rightPixel > 0)){
+                        if(calculateSlopeAbs(currentPixel,rightPixel,min,max)>100){
+                            resultMatrix[i][j] = 255;
+                        }
+                    }
+                }
+            }
+        }
+        return resultMatrix;
+    }
+
     private int calculateSlopeAbs(int a, int b, int min, int max){
         int result = (Math.abs(a+b));
         return (int) imageUtilities.linearTransformation(result, min, max);

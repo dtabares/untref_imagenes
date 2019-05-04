@@ -662,11 +662,14 @@ public class ImageUtilities {
     }
 
     public double linearTransformation(int p, int max, int min){
-        double  m = 255.0/(double)(max - min);
-        double b = (255 - ((255 * max) / (max - min)));
-        //System.out.println("Max: " + max + " Min: " + min);
-        //System.out.println("m: " + m + " b: " + b);
-        return ((m * p) + b);
+        if (max!=min){
+            double  m = 255.0/(double)(max - min);
+            double b = (255 - ((255 * max) / (max - min)));
+            //System.out.println("Max: " + max + " Min: " + min);
+            //System.out.println("m: " + m + " b: " + b);
+            return ((m * p) + b);
+        }
+        return p;
     }
 
     public int[] findGreyMinMaxValues(int[][] matrix){

@@ -15,14 +15,14 @@ public class Filter {
         return result;
     }
 
-    public  BufferedImage applyMedianFilter(BufferedImage bimg, int maskSize){
+    public BufferedImage applyMedianFilter(BufferedImage bimg, int maskSize){
         Mask mask = new Mask(maskSize);
         mask.setMedianMask();
         BufferedImage result = applyMedianConvolution(bimg, mask);
         return result;
     }
 
-    public  BufferedImage applyWeightedMedianFilter(BufferedImage bimg){
+    public BufferedImage applyWeightedMedianFilter(BufferedImage bimg){
         Mask mask = new Mask(3);
         mask.setWeightedMedianMask();
         BufferedImage result = applyMedianConvolution(bimg, mask);
@@ -38,7 +38,7 @@ public class Filter {
         return result;
     }
 
-    public  BufferedImage enhanceEdges(BufferedImage bimg, int maskSize){
+    public BufferedImage enhanceEdges(BufferedImage bimg, int maskSize){
         Mask mask = new Mask(maskSize);
         mask.setHighPassFilterMask();
         BufferedImage result = applyConvolution(bimg,mask);
@@ -193,7 +193,57 @@ public class Filter {
                     result.setRGB(i,j,ColorUtilities.createRGB(zeroMatrix[i][j],zeroMatrix[i][j],zeroMatrix[i][j]));
                 }
             }
+            int[] minMax = this.imageUtilities.findGreyMinMaxValues(zeroMatrix);
+            int min = minMax[0];
+            int max = minMax[1];
+            for (int i = 0; i < bimg.getWidth(); i++) {
+                for (int j = 0; j < bimg.getHeight(); j++) {
+                    int p = (int) this.imageUtilities.linearTransformation(zeroMatrix[i][j],max,min);
+                    result.setRGB(i,j,ColorUtilities.createRGB(p,p,p));
+                }
+            }
             return result;
+
+        }
+        // Aplico y devuelvo solo el filtro de Laplace
+        int[] minMax = this.imageUtilities.findGreyMinMaxValues(matrixResult);
+        int min = minMax[0];
+        int max = minMax[1];
+        for (int i = 0; i < bimg.getWidth(); i++) {
+            for (int j = 0; j < bimg.getHeight(); j++) {
+                int p = (int) this.imageUtilities.linearTransformation(matrixResult[i][j],max,min);
+                result.setRGB(i,j,ColorUtilities.createRGB(p,p,p));
+            }
+        }
+        return result;
+    }
+
+    public BufferedImage applyLaplaceWithSlope (BufferedImage bimg, Boolean zeroCrossing){
+        BufferedImage result = new BufferedImage(bimg.getWidth(), bimg.getHeight(), bimg.getType());
+        Mask laplaceMask = new Mask();
+        laplaceMask.setLaplaceMask();
+        //Aplico la mascara de Laplace con una convolucion
+        int[][] matrixResult = applyConvolutionReloaded(bimg,laplaceMask);
+        if(zeroCrossing){
+            //Aplico metodo de Zero Crossing
+            int [][] zeroMatrix = applyZeroCrossingEdgeDetection(matrixResult);
+            //Recorro la buffered image y la relleno con el resultado Laplace + Zero Crossing
+            for (int i = 0; i < bimg.getWidth(); i++) {
+                for (int j = 0; j < bimg.getHeight(); j++) {
+                    result.setRGB(i,j,ColorUtilities.createRGB(zeroMatrix[i][j],zeroMatrix[i][j],zeroMatrix[i][j]));
+                }
+            }
+            int[] minMax = this.imageUtilities.findGreyMinMaxValues(zeroMatrix);
+            int min = minMax[0];
+            int max = minMax[1];
+            for (int i = 0; i < bimg.getWidth(); i++) {
+                for (int j = 0; j < bimg.getHeight(); j++) {
+                    int p = (int) this.imageUtilities.linearTransformation(zeroMatrix[i][j],max,min);
+                    result.setRGB(i,j,ColorUtilities.createRGB(p,p,p));
+                }
+            }
+            return result;
+
         }
         // Aplico y devuelvo solo el filtro de Laplace
         int[] minMax = this.imageUtilities.findGreyMinMaxValues(matrixResult);
@@ -224,7 +274,7 @@ public class Filter {
                     result.setRGB(i,j,ColorUtilities.createRGB(zeroMatrix[i][j],zeroMatrix[i][j],zeroMatrix[i][j]));
                 }
             }
-            return result;
+            return imageUtilities.imageNegative(result);
         }
         // Aplico y devuelvo solo el filtro de Laplace
         int[] minMax = this.imageUtilities.findGreyMinMaxValues(matrixResult);
@@ -257,15 +307,23 @@ public class Filter {
                         resultMatrix[i][j] = 255;
                     }
                     else{
+                        //resultMatrix[i][j] = imageMatrix[i][j];
                         resultMatrix[i][j] = 0;
                     }
                 }
                 else{
+                    //resultMatrix[i][j] = imageMatrix[i][j];
                     resultMatrix[i][j] = 0;
                 }
             }
         }
         return resultMatrix;
+    }
+
+    //calculo pendiente de una recta
+    private int calculateSlopeAbs(int a, int b, int min, int max){
+        int result = (Math.abs(a+b));
+        return (int) imageUtilities.linearTransformation(result, min, max);
     }
 
     private BufferedImage applyConvolution(BufferedImage bimg, Mask mask){

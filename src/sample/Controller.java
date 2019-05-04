@@ -45,7 +45,7 @@ public class Controller extends BorderPane {
         this.historyImageList = new LinkedList<>();
         this.imageUtilities = new ImageUtilities();
         this.filter = new Filter();
-        this.testsFer();
+        //this.testsFer();
     }
 
     //Top Menu
@@ -834,6 +834,28 @@ public class Controller extends BorderPane {
         double sigma = Double.valueOf(getInputDialog("Apply Gauss Filter", "Enter a new Value", "Sigma:"));
         BufferedImage result = this.filter.applyLoG(leftImage,sigma,true);
         this.displayImageInPane(result,rightPane);
+    }
+    @FXML public void globalThresholding(){
+        if(leftPane.getChildren().isEmpty())
+        {
+            Alerts.showAlert("No hay una imagen cargada!");
+        }
+        else{
+            int delta = Integer.valueOf(getInputDialog("Global Thresholding", "Enter a new Value", "Delta:"));
+            BufferedImage bimg = Threshold.applyGlobalThresholding(leftImage, delta, this);
+            this.displayImageInPane(bimg,rightPane);
+        }
+    }
+
+    @FXML public void Otsu(){
+        if(leftPane.getChildren().isEmpty())
+        {
+            Alerts.showAlert("No hay una imagen cargada!");
+        }
+        else{
+            BufferedImage bimg = Threshold.appyOtsu(leftImage,this);
+            this.displayImageInPane(bimg,rightPane);
+        }
     }
 
     //Panels

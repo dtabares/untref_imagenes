@@ -26,6 +26,22 @@ public class Histogram {
 
     }
 
+    public static double[] getNormalizedHistogram(int[][] image){
+        int pixelsInImage = image[0].length * image.length;
+        double [] histogram = new double [256];
+        for (int i = 0; i < image.length; i++) {
+            for (int j = 0; j < image[0].length ; j++) {
+                histogram[image[i][j]]+=1;
+            }
+        }
+
+        for (int i = 0; i < histogram.length; i++) {
+            histogram[i] = histogram[i]/pixelsInImage;
+        }
+        return histogram;
+
+    }
+
     public void getImageHistogram(BufferedImage bimg) {
 
         boolean grey = imageUtilities.isGreyImage(bimg);

@@ -179,6 +179,7 @@ public class Filter {
     }
 
     public BufferedImage applyLaplace(BufferedImage bimg, Boolean zeroCrossing){
+        System.out.println("*** Applying Laplace ***");
         BufferedImage result = new BufferedImage(bimg.getWidth(), bimg.getHeight(), bimg.getType());
         Mask laplaceMask = new Mask();
         laplaceMask.setLaplaceMask();
@@ -196,12 +197,15 @@ public class Filter {
             int[] minMax = this.imageUtilities.findGreyMinMaxValues(zeroMatrix);
             int min = minMax[0];
             int max = minMax[1];
+            System.out.println("*** Applying linear transformation ***");
             for (int i = 0; i < bimg.getWidth(); i++) {
                 for (int j = 0; j < bimg.getHeight(); j++) {
                     int p = (int) this.imageUtilities.linearTransformation(zeroMatrix[i][j],max,min);
                     result.setRGB(i,j,ColorUtilities.createRGB(p,p,p));
                 }
             }
+            System.out.println("*** Finished applying linear transformation ***");
+            System.out.println("*** Finished applying Laplace ***");
             return result;
 
         }
@@ -209,91 +213,100 @@ public class Filter {
         int[] minMax = this.imageUtilities.findGreyMinMaxValues(matrixResult);
         int min = minMax[0];
         int max = minMax[1];
+        System.out.println("*** Applying linear transformation ***");
         for (int i = 0; i < bimg.getWidth(); i++) {
             for (int j = 0; j < bimg.getHeight(); j++) {
                 int p = (int) this.imageUtilities.linearTransformation(matrixResult[i][j],max,min);
                 result.setRGB(i,j,ColorUtilities.createRGB(p,p,p));
             }
         }
+        System.out.println("*** Finished applying linear transformation ***");
+        System.out.println("*** Finished applying Laplace ***");
         return result;
     }
 
-    public BufferedImage applyLaplaceWithSlope (BufferedImage bimg, Boolean zeroCrossing){
+    public BufferedImage applyLaplaceWithSlope (BufferedImage bimg, double percent, Boolean zeroCrossing){
+        System.out.println("*** Applying Laplace with Slope ***");
         BufferedImage result = new BufferedImage(bimg.getWidth(), bimg.getHeight(), bimg.getType());
         Mask laplaceMask = new Mask();
         laplaceMask.setLaplaceMask();
         //Aplico la mascara de Laplace con una convolucion
         int[][] matrixResult = applyConvolutionReloaded(bimg,laplaceMask);
         if(zeroCrossing){
-            int[] minMax = this.imageUtilities.findGreyMinMaxValues(matrixResult);
-            int min = minMax[0];
-            int max = minMax[1];
             //Aplico metodo de Zero Crossing evaluando la Pendiente
-            int [][] zeroMatrix = applyZeroCrossingEdgeDetectionWithSlope(matrixResult, min, max);
-            minMax = this.imageUtilities.findGreyMinMaxValues(zeroMatrix);
-            min = minMax[0];
-            max = minMax[1];
-            //Recorro la buffered image y la relleno con el resultado Laplace + Zero Crossing
+            int [][] zeroMatrix = applyZeroCrossingEdgeDetectionWithSlope(matrixResult, percent);
+            //Recorro la buffered image y la relleno con el resultado Laplace con Pendiente + Zero Crossing
             for (int i = 0; i < bimg.getWidth(); i++) {
                 for (int j = 0; j < bimg.getHeight(); j++) {
-                    int p = (int) this.imageUtilities.linearTransformation(zeroMatrix[i][j],max,min);
+                    int p = zeroMatrix[i][j];
                     result.setRGB(i,j,ColorUtilities.createRGB(p,p,p));
                 }
             }
+            System.out.println("*** Finished applying Laplace with Slope***");
             return result;
         }
-        // Aplico y devuelvo solo el filtro de Laplace
+        // Devuelvo solo el filtro de Laplace
         int[] minMax = this.imageUtilities.findGreyMinMaxValues(matrixResult);
         int min = minMax[0];
         int max = minMax[1];
+        System.out.println("*** Applying linear transformation ***");
         for (int i = 0; i < bimg.getWidth(); i++) {
             for (int j = 0; j < bimg.getHeight(); j++) {
                 int p = (int) this.imageUtilities.linearTransformation(matrixResult[i][j],max,min);
                 result.setRGB(i,j,ColorUtilities.createRGB(p,p,p));
             }
         }
+        System.out.println("*** Finished applying linear transformation ***");
+        System.out.println("*** Finished applying Laplace with Slope***");
         return result;
     }
 
     public BufferedImage applyLoG(BufferedImage bimg, double sigma, Boolean zeroCrossing){
+        System.out.println("*** Applying LoG ***");
         BufferedImage result = new BufferedImage(bimg.getWidth(), bimg.getHeight(), bimg.getType());
         int maskSize = (int) Math.round(6*sigma+1);
         Mask logMask = new Mask(maskSize);
         logMask.setLogMask(sigma);
-        //Aplico la mascara de Laplace con una convolucion
+        //Aplico la mascara de LoG con una convolucion
         int[][] matrixResult = applyConvolutionReloaded(bimg,logMask);
         if(zeroCrossing){
-            //Aplico metodo de Zero Crossing
-            int [][] zeroMatrix = applyZeroCrossingEdgeDetection(matrixResult);
+            //Aplico metodo de Zero Crossing evaluando la Pendiente, uso un porcentaje fijo, el mas bajo
+            int [][] zeroMatrix = applyZeroCrossingEdgeDetectionWithSlope(matrixResult,1.0);
             //Recorro la buffered image y la relleno con el resultado Laplace + Zero Crossing
             for (int i = 0; i < bimg.getWidth(); i++) {
                 for (int j = 0; j < bimg.getHeight(); j++) {
-                    result.setRGB(i,j,ColorUtilities.createRGB(zeroMatrix[i][j],zeroMatrix[i][j],zeroMatrix[i][j]));
+                    int p = zeroMatrix[i][j];
+                    result.setRGB(i,j,ColorUtilities.createRGB(p,p,p));
                 }
             }
-            return imageUtilities.imageNegative(result);
+            System.out.println("*** Finished applying Log***");
+            return this.imageUtilities.imageNegative(result);
         }
-        // Aplico y devuelvo solo el filtro de Laplace
+        // Si ZC esta en false devuelvo solo el filtro de Laplace
         int[] minMax = this.imageUtilities.findGreyMinMaxValues(matrixResult);
         int min = minMax[0];
         int max = minMax[1];
+        System.out.println("*** Applying linear transformation ***");
         for (int i = 0; i < bimg.getWidth(); i++) {
             for (int j = 0; j < bimg.getHeight(); j++) {
                 int p = (int) this.imageUtilities.linearTransformation(matrixResult[i][j],max,min);
                 result.setRGB(i,j,ColorUtilities.createRGB(p,p,p));
             }
         }
+        System.out.println("*** Finished applying linear transformation ***");
+        System.out.println("*** Finished applying Log ***");
         return result;
     }
 
     public int[][] applyZeroCrossingEdgeDetection(int[][] imageMatrix){
+        System.out.println("*** Applying ZC ***");
         int[][] resultMatrix = new int[imageMatrix.length][imageMatrix[0].length];
-        //Recorro la matriz hasta la anteultima columna
+        //Veo cruces por cero a lo largo de cada fila recorriendo toda la matriz y analizando horizontalmente
         for (int i = 0; i < imageMatrix.length-1; i++) {
             for (int j = 0; j < imageMatrix[0].length; j++) {
                 int currentPixel = imageMatrix[i][j];
                 int rightPixel = imageMatrix[i+1][j];
-                //Comparo el pixel a izq y a dcha, si hay un cambio de signo pongo un blanco
+                //Comparo el pixel actual el de su dcha, si hay un cambio de signo pongo un blanco
                 if ( (currentPixel > 0 && rightPixel < 0) || (currentPixel < 0 && rightPixel > 0)){
                     resultMatrix[i][j] = 255;
                 }
@@ -306,19 +319,47 @@ public class Filter {
                 }
             }
         }
+
+        //Veo cruces por cero a lo largo de cada columna recorriendo toda la matriz y analizando verticalmente
+        for (int i = 0; i < imageMatrix.length; i++) {
+            for (int j = 0; j < imageMatrix[0].length-1; j++) {
+                int currentPixel = imageMatrix[i][j];
+                int downPixel = imageMatrix[i][j+1];
+                //Comparo el pixel actual y el de abajo, si hay un cambio de signo pongo un blanco
+                if ( (currentPixel > 0 && downPixel < 0) || (currentPixel < 0 && downPixel > 0)){
+                    resultMatrix[i][j] = 255;
+                }
+                //Si el pixel actual es cero, comparo el pixel de arriba y abajo (teniendo cuidado de que i NO sea el elemento 0 del array)
+                else if(currentPixel == 0 && j > 0){
+                    int upPixel = imageMatrix[i][j-1];
+                    if((upPixel > 0 && downPixel < 0) || (upPixel < 0 && downPixel > 0)){
+                        resultMatrix[i][j] = 255;
+                    }
+                }
+            }
+        }
+
+        System.out.println("*** Finished applying ZC ***");
         return resultMatrix;
     }
 
-    public int[][] applyZeroCrossingEdgeDetectionWithSlope(int[][] imageMatrix, int min, int max){
+    public int[][] applyZeroCrossingEdgeDetectionWithSlope(int[][] imageMatrix, double percent){
+        System.out.println("*** Applying ZC with slope ***");
         int[][] resultMatrix = new int[imageMatrix.length][imageMatrix[0].length];
-        //Recorro la matriz hasta la anteultima columna
+        //Calculo la pendiente maxima
+        int max = getMaxSlope(imageMatrix);
+        //Defino un umbral usando un porcentaje de la pendiente maxima
+        double treshold = max * (percent/100.0);
+        System.out.println("Umbral: " + treshold );
+        //Veo cruces por cero a lo largo de cada fila recorriendo toda la matriz y analizando horizontalmente
         for (int i = 0; i < imageMatrix.length-1; i++) {
             for (int j = 0; j < imageMatrix[0].length; j++) {
                 int currentPixel = imageMatrix[i][j];
                 int rightPixel = imageMatrix[i+1][j];
-                //Comparo el pixel a izq y a dcha, si hay un cambio de signo calculo la pendiente entre ambos |a+b|
+                //Comparo el pixel con el de su dcha, si hay un cambio de signo calculo la pendiente entre ambos |a|+|b|
                 if ( (currentPixel > 0 && rightPixel < 0) || (currentPixel < 0 && rightPixel > 0)){
-                    if(calculateSlopeAbs(currentPixel,rightPixel,min,max)>100){
+                    //Calculo la pendiente del current y el dcho y umbralizo
+                    if(calculateSlopeAbs(currentPixel,rightPixel) >= treshold){
                         resultMatrix[i][j] = 255;
                     }
                 }
@@ -326,19 +367,77 @@ public class Filter {
                 else if(currentPixel == 0 && i > 0){
                     int leftPixel = imageMatrix[i -1][j];
                     if((leftPixel > 0 && rightPixel < 0) || (leftPixel < 0 && rightPixel > 0)){
-                        if(calculateSlopeAbs(currentPixel,rightPixel,min,max)>100){
+                        //Calculo la pendiente del izq y el dcho y umbralizo
+                        if(calculateSlopeAbs(leftPixel,rightPixel) >= treshold){
                             resultMatrix[i][j] = 255;
                         }
                     }
                 }
             }
         }
+
+        //Veo cruces por cero a lo largo de cada columna recorriendo toda la matriz y analizando verticalmente
+        for (int i = 0; i < imageMatrix.length; i++) {
+            for (int j = 0; j < imageMatrix[0].length-1; j++) {
+                int currentPixel = imageMatrix[i][j];
+                int downPixel = imageMatrix[i][j+1];
+
+                if ( (currentPixel > 0 && downPixel < 0) || (currentPixel < 0 && downPixel > 0)){
+                    if(calculateSlopeAbs(currentPixel,downPixel) >= treshold){
+                        resultMatrix[i][j] = 255;
+                    }
+                }
+
+                else if(currentPixel == 0 && j > 0){
+                    int upPixel = imageMatrix[i][j-1];
+                    if((upPixel > 0 && downPixel < 0) || (upPixel < 0 && downPixel > 0)){
+                        if(calculateSlopeAbs(upPixel,downPixel) >= treshold){
+                            resultMatrix[i][j] = 255;
+                        }
+                    }
+                }
+            }
+        }
+
+        System.out.println("*** Finished applying ZC with slope ***");
         return resultMatrix;
     }
 
-    private int calculateSlopeAbs(int a, int b, int min, int max){
-        int result = (Math.abs(a+b));
-        return (int) imageUtilities.linearTransformation(result, min, max);
+    private int calculateSlopeAbs(int a, int b){
+        int result = (Math.abs(a) + Math.abs(b));
+        return result;
+    }
+
+    private int getMaxSlope(int[][] imageMatrix){
+        int [][] slopeMatrix = new int[imageMatrix.length][imageMatrix[0].length];
+        for (int i = 0; i < imageMatrix.length-1; i++) {
+            for (int j = 0; j < imageMatrix[0].length; j++) {
+                int currentPixel = imageMatrix[i][j];
+                int rightPixel = imageMatrix[i+1][j];
+                //Comparo el pixel a izq y a dcha, si hay un cambio de signo calculo la pendiente entre ambos |a+b|
+                if ( (currentPixel > 0 && rightPixel < 0) || (currentPixel < 0 && rightPixel > 0)){
+                        slopeMatrix[i][j] = calculateSlopeAbs(currentPixel,rightPixel);
+                }
+                //Tengo que ver que hay a mis costados (teniendo cuidado de que i NO sea el elemento 0 del array)
+                else if(currentPixel == 0 && i > 0){
+                    int leftPixel = imageMatrix[i -1][j];
+                    if((leftPixel > 0 && rightPixel < 0) || (leftPixel < 0 && rightPixel > 0)){
+                        //Calculo la pendiente del izq y el dcho y umbralizo
+                        slopeMatrix[i][j] = calculateSlopeAbs(currentPixel,rightPixel);
+                    }
+                }
+            }
+        }
+        int max = 0;
+        for (int i = 0; i < slopeMatrix.length; i++) {
+            for (int j = 0; j < slopeMatrix[0].length; j++) {
+                if (slopeMatrix[i][j]>max){
+                    max = slopeMatrix[i][j];
+                }
+            }
+        }
+        System.out.println("Pendiente maxima: " + max);
+        return max;
     }
 
     private BufferedImage applyConvolution(BufferedImage bimg, Mask mask){
@@ -416,6 +515,7 @@ public class Filter {
     }
 
     private int[][] applyConvolutionReloaded(BufferedImage bimg, Mask mask){
+        System.out.println("*** Applying Convolution Reloaded ***");
         int grey;
         Image image = new Image(bimg);
         image.convertToGreyDataMatrix();
@@ -434,7 +534,7 @@ public class Filter {
             for (int j = 0; j <= heightLimit; j++) {
                 for (int k = 0; k < mask.getSize(); k++) {
                     for (int l = 0; l < mask.getSize(); l++) {
-                        grey += (greyDataMatrix[i+k][j+l] * mask.getValue(k,l));
+                        grey += Math.round(greyDataMatrix[i+k][j+l] * mask.getValue(k,l));
                     }
                 }
                 result[i + mask.getCenter()][j + mask.getCenter()] = grey;
@@ -443,6 +543,7 @@ public class Filter {
 
             }
         }
+        System.out.println("*** Finished applying Convolution Reloaded ***");
         return result;
     }
 

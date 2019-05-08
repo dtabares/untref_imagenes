@@ -148,7 +148,6 @@ public class Mask {
     }
 
     public void setLogMask(double sigma){
-        double suma = 0;
         double valor;
         int radius = size / 2;
         //se aplica la formula con el 0,0 centrado en la mascara
@@ -162,8 +161,6 @@ public class Mask {
                 double e = Math.exp(-(Math.pow(i, 2) + Math.pow(j, 2)) / (Math.pow(sigma, 2)*2));
                 valor = -(fraccion * parentesis * e);
                 this.matrix[i + radius][j + radius] = valor;
-                //la variable suma es para analizar la matriz
-                suma += valor;
             }
         }
     }

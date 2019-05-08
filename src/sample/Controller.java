@@ -753,7 +753,8 @@ public class Controller extends BorderPane {
         this.displayImageInPane(result, rightPane);
     }
     @FXML public void laplaceWithSlopeAndZeroCrossing(){
-        BufferedImage result = this.filter.applyLaplaceWithSlope(leftImage, true);
+        double percent = Double.valueOf(getInputDialog("Apply Laplace With Slope", "Enter a new Value", "Percent:"));
+        BufferedImage result = this.filter.applyLaplaceWithSlope(leftImage, percent,true);
         this.displayImageInPane(result, rightPane);
     }
     @FXML public void compareDirectionalMasks(){
@@ -830,12 +831,12 @@ public class Controller extends BorderPane {
         }
     }
     @FXML public void log(){
-        double sigma = Double.valueOf(getInputDialog("Apply Gauss Filter", "Enter a new Value", "Sigma:"));
+        double sigma = Double.valueOf(getInputDialog("Apply LoG", "Enter a new Value", "Sigma:"));
         BufferedImage result = this.filter.applyLoG(leftImage,sigma,false);
         this.displayImageInPane(result,rightPane);
     }
     @FXML public void logAndZeroCrossing(){
-        double sigma = Double.valueOf(getInputDialog("Apply Gauss Filter", "Enter a new Value", "Sigma:"));
+        double sigma = Double.valueOf(getInputDialog("Apply LoG", "Enter a new Value", "Sigma:"));
         BufferedImage result = this.filter.applyLoG(leftImage,sigma,true);
         this.displayImageInPane(result,rightPane);
     }
@@ -898,6 +899,6 @@ public class Controller extends BorderPane {
         BufferedImage bimg = imageUtilities.openRawImage(new File("C:\\Users\\Fernando.Ares\\Desktop\\Imagenes\\lena.raw"),256,256);
         leftImage = bimg;
         this.displayImageInPane(bimg,leftPane);
-        this.displayImageInPane(filter.applyLaplaceWithSlope(bimg,true),rightPane);
+        this.displayImageInPane(filter.applyLaplaceWithSlope(bimg, 10.0,true),rightPane);
     }
 }

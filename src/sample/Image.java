@@ -41,6 +41,7 @@ public class Image {
         this.width = bufferedImage.getWidth();
         this.imageType = bufferedImage.getType();
         this.greyDataMatrix = new int[this.width][this.height];
+        System.out.println("*** Creating new image ***");
         System.out.println("image type: " + imageType);
         System.out.println("BufferedImage.TYPE_INT_RGB: " + BufferedImage.TYPE_INT_RGB);
         System.out.println("BufferedImage.TYPE_BYTE_GRAY: " + BufferedImage.TYPE_BYTE_GRAY);
@@ -62,7 +63,7 @@ public class Image {
         this.splittedInRGBbands = false;
         this.splittedInHSVbands = false;
         this.isEmpty = false;
-
+        System.out.println("*** Finished new image ***");
     }
 
     public Image(int[][] greyDataMatrix) {

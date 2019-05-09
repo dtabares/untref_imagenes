@@ -851,7 +851,6 @@ public class Controller extends BorderPane {
             this.displayImageInPane(bimg,rightPane);
         }
     }
-
     @FXML public void Otsu(){
         if(leftPane.getChildren().isEmpty())
         {
@@ -861,6 +860,11 @@ public class Controller extends BorderPane {
             BufferedImage bimg = Threshold.appyOtsu(leftImage,this);
             this.displayImageInPane(bimg,rightPane);
         }
+    }
+    @FXML public void isotropicDifussion(){
+        int iterations = Integer.valueOf(getInputDialog("Isotropic Difussion", "Enter a new Value", "Iterations:"));
+        BufferedImage bimg = filter.applyIsotropicDifusion(leftImage, iterations);
+        this.displayImageInPane(bimg,rightPane);
     }
 
     //Panels

@@ -119,6 +119,7 @@
                               <Button mnemonicParsing="false" onAction="#logAndZeroCrossing" prefWidth="205.0" text="LoG + Zero Crossing" />
                               <Button mnemonicParsing="false" onAction="#globalThresholding" prefWidth="205.0" text="Global Thresholding" />
                               <Button mnemonicParsing="false" onAction="#Otsu" prefWidth="200.0" text="Otsu" />
+                              <Button mnemonicParsing="false" onAction="#isotropicDifussion" prefWidth="200.0" text="Isotropic Difussion" />
                            </children>
                         </VBox>
                      </children>

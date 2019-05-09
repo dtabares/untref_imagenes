@@ -298,6 +298,149 @@ public class Filter {
         return result;
     }
 
+    public BufferedImage applyIsotropicDifusion(BufferedImage bimg, int iterations){
+
+        BufferedImage result = new BufferedImage(bimg.getWidth(),bimg.getHeight(),bimg.getType());
+        int counter = 0;
+        if (imageUtilities.isGreyImage(bimg)){
+            Image image = new Image(bimg);
+            image.convertToGreyDataMatrix();
+            int [][] greyDataMatrix = image.getGreyDataMatrix();
+            while(counter < iterations){
+                greyDataMatrix = applyFirstDerivate(greyDataMatrix);
+                counter ++;
+            }
+            int[] minMax = this.imageUtilities.findGreyMinMaxValues(greyDataMatrix);
+            int min = minMax[0];
+            int max = minMax[1];
+            System.out.println("*** Applying linear transformation ***");
+            for (int i = 0; i < greyDataMatrix.length; i++) {
+                for (int j = 0; j < greyDataMatrix[0].length; j++) {
+                    int p = (int) this.imageUtilities.linearTransformation(greyDataMatrix[i][j],max,min);
+                    result.setRGB(i,j,ColorUtilities.createRGB(p,p,p));
+                }
+            }
+            System.out.println("*** Finished applying linear transformation ***");
+        }
+        else{
+           Image image = new Image(bimg);
+           int [][] redChannelMatrix = image.getRedDataMatrixChannel();
+           int [][] greenChannelMatrix = image.getGreenDataMatrixChannel();
+           int [][] blueChannelMatrix = image.getBlueDataMatrixChannel();
+            while(counter < iterations){
+                redChannelMatrix = applyFirstDerivate(redChannelMatrix);
+                greenChannelMatrix = applyFirstDerivate(greenChannelMatrix);
+                blueChannelMatrix = applyFirstDerivate(blueChannelMatrix);
+                counter ++;
+            }
+            int[] redMinMax = this.imageUtilities.findGreyMinMaxValues(redChannelMatrix);
+            int[] greenMinMax = this.imageUtilities.findGreyMinMaxValues(greenChannelMatrix);
+            int[] blueMinMax = this.imageUtilities.findGreyMinMaxValues(blueChannelMatrix);
+            int redMin = redMinMax[0];
+            int redMax = redMinMax[1];
+            int greenMin = greenMinMax[0];
+            int greenMax = greenMinMax[1];
+            int blueMin = blueMinMax[0];
+            int blueMax = blueMinMax[1];
+            System.out.println("*** Applying linear transformation ***");
+            for (int i = 0; i < result.getWidth(); i++) {
+                for (int j = 0; j < result.getHeight(); j++) {
+                    int r = (int) this.imageUtilities.linearTransformation(redChannelMatrix[i][j],redMax,redMin);
+                    int g = (int) this.imageUtilities.linearTransformation(greenChannelMatrix[i][j],greenMax,greenMin);
+                    int b = (int) this.imageUtilities.linearTransformation(blueChannelMatrix[i][j],blueMax,blueMin);
+                    result.setRGB(i,j,ColorUtilities.createRGB(r,g,b));
+                }
+            }
+            System.out.println("*** Finished applying linear transformation ***");
+        }
+
+        return result;
+    }
+
+    public int [][] applyFirstDerivate(int [][] channelMatrix){
+        int[][] matrixResult = new int[channelMatrix.length][channelMatrix[0].length];
+        double P;
+        double Dn=0,Ds=0,De=0,Do=0;
+        //Recorro la matriz del canal
+        for (int i = 0; i < channelMatrix.length; i++) {
+            for (int j = 0; j < channelMatrix[0].length; j++) {
+                P = (double) channelMatrix[i][j];
+                if(i==0){
+                    //Esquina sup izq
+                    if(j==0){
+                        Dn = 0;
+                        Ds = (double) channelMatrix[i][j+1] - (double) channelMatrix[i][j];
+                        De = (double) channelMatrix[i+1][j] - (double) channelMatrix[i][j];
+                        Do = 0;
+                    }
+                    //Esquina inf izq
+                    else if(j==channelMatrix[0].length-1){
+                        Dn = (double) channelMatrix[i][j-1] - (double) channelMatrix[i][j];
+                        Ds = 0;
+                        De = (double) channelMatrix[i+1][j] - (double) channelMatrix[i][j];
+                        Do = 0;
+                    }
+                    //Borde izq
+                    else {
+                        Dn = (double) channelMatrix[i][j-1] - (double) channelMatrix[i][j];
+                        Ds = (double) channelMatrix[i][j+1] - (double) channelMatrix[i][j];
+                        De = (double) channelMatrix[i+1][j] - (double) channelMatrix[i][j];
+                        Do = 0;
+                    }
+                }
+                else if(i==channelMatrix.length-1) {
+                    //Esquina sup dcha
+                    if (j == 0) {
+                        Dn = 0;
+                        Ds = (double) channelMatrix[i][j + 1] - (double) channelMatrix[i][j];
+                        De = 0;
+                        Do = (double) channelMatrix[i - 1][j] - (double) channelMatrix[i][j];
+                    }
+                    //Esquina inf dcha
+                    else if(j==channelMatrix[0].length-1){
+                        Dn = (double) channelMatrix[i][j-1] - (double) channelMatrix[i][j];
+                        Ds = 0;
+                        De = 0;
+                        Do = (double) channelMatrix[i-1][j] - (double) channelMatrix[i][j];
+                    }
+                    //Borde dcho
+                    else {
+                        Dn = (double) channelMatrix[i][j-1] - (double) channelMatrix[i][j];
+                        Ds = (double) channelMatrix[i][j+1] - (double) channelMatrix[i][j];
+                        De = 0;
+                        Do = (double) channelMatrix[i-1][j] - (double) channelMatrix[i][j];
+                    }
+                }
+                else{
+                    //Borde superior
+                    if(i!=0 && j==0){
+                        Dn = 0;
+                        Ds = (double) channelMatrix[i][j + 1] - (double) channelMatrix[i][j];
+                        De = (double) channelMatrix[i + 1][j] - (double) channelMatrix[i][j];
+                        Do = (double) channelMatrix[i - 1][j] - (double) channelMatrix[i][j];
+                    }
+                    //Borde inferior
+                    else if(i!=0 && j==channelMatrix[0].length-1){
+                        Dn = (double) channelMatrix[i][j - 1] - (double) channelMatrix[i][j];
+                        Ds = 0;
+                        De = (double) channelMatrix[i + 1][j] - (double) channelMatrix[i][j];
+                        Do = (double) channelMatrix[i - 1][j] - (double) channelMatrix[i][j];
+                    }
+                    //Imagen sin bordes
+                    else if (i!=0 && j!=0){
+                        Dn = (double) channelMatrix[i][j - 1] - (double) channelMatrix[i][j];
+                        Ds = (double) channelMatrix[i][j + 1] - (double) channelMatrix[i][j];
+                        De = (double) channelMatrix[i + 1][j] - (double) channelMatrix[i][j];
+                        Do = (double) channelMatrix[i - 1][j] - (double) channelMatrix[i][j];
+                    }
+                }
+                P = P + (Dn + Ds + De + Do)/4.0;
+                matrixResult[i][j] = (int) Math.round(P);
+            }
+        }
+        return matrixResult;
+    }
+
     public int[][] applyZeroCrossingEdgeDetection(int[][] imageMatrix){
         System.out.println("*** Applying ZC ***");
         int[][] resultMatrix = new int[imageMatrix.length][imageMatrix[0].length];

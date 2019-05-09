@@ -120,6 +120,7 @@
                               <Button mnemonicParsing="false" onAction="#globalThresholding" prefWidth="205.0" text="Global Thresholding" />
                               <Button mnemonicParsing="false" onAction="#Otsu" prefWidth="200.0" text="Otsu" />
                               <Button mnemonicParsing="false" onAction="#isotropicDifussion" prefWidth="200.0" text="Isotropic Difussion" />
+                              <Button mnemonicParsing="false" onAction="#anisotropicDifussion" prefWidth="200.0" text="Anisotropic Difussion" />
                            </children>
                         </VBox>
                      </children>

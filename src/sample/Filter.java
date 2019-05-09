@@ -307,7 +307,7 @@ public class Filter {
             image.convertToGreyDataMatrix();
             int [][] greyDataMatrix = image.getGreyDataMatrix();
             while(counter < iterations){
-                greyDataMatrix = applyFirstDerivate(greyDataMatrix);
+                greyDataMatrix = applyFirstDerivate(greyDataMatrix,false, 0.0);
                 counter ++;
             }
             int[] minMax = this.imageUtilities.findGreyMinMaxValues(greyDataMatrix);
@@ -328,9 +328,9 @@ public class Filter {
            int [][] greenChannelMatrix = image.getGreenDataMatrixChannel();
            int [][] blueChannelMatrix = image.getBlueDataMatrixChannel();
             while(counter < iterations){
-                redChannelMatrix = applyFirstDerivate(redChannelMatrix);
-                greenChannelMatrix = applyFirstDerivate(greenChannelMatrix);
-                blueChannelMatrix = applyFirstDerivate(blueChannelMatrix);
+                redChannelMatrix = applyFirstDerivate(redChannelMatrix,false, 0.0);
+                greenChannelMatrix = applyFirstDerivate(greenChannelMatrix,false, 0.0);
+                blueChannelMatrix = applyFirstDerivate(blueChannelMatrix,false, 0.0);
                 counter ++;
             }
             int[] redMinMax = this.imageUtilities.findGreyMinMaxValues(redChannelMatrix);
@@ -357,10 +357,70 @@ public class Filter {
         return result;
     }
 
-    public int [][] applyFirstDerivate(int [][] channelMatrix){
+    public BufferedImage applyAnisotropicDifusion(BufferedImage bimg, int iterations, double sigma){
+
+        BufferedImage result = new BufferedImage(bimg.getWidth(),bimg.getHeight(),bimg.getType());
+        int counter = 0;
+        if (imageUtilities.isGreyImage(bimg)){
+            Image image = new Image(bimg);
+            image.convertToGreyDataMatrix();
+            int [][] greyDataMatrix = image.getGreyDataMatrix();
+            while(counter < iterations){
+                greyDataMatrix = applyFirstDerivate(greyDataMatrix,true,sigma);
+                counter ++;
+            }
+            int[] minMax = this.imageUtilities.findGreyMinMaxValues(greyDataMatrix);
+            int min = minMax[0];
+            int max = minMax[1];
+            System.out.println("*** Applying linear transformation ***");
+            for (int i = 0; i < greyDataMatrix.length; i++) {
+                for (int j = 0; j < greyDataMatrix[0].length; j++) {
+                    int p = (int) this.imageUtilities.linearTransformation(greyDataMatrix[i][j],max,min);
+                    result.setRGB(i,j,ColorUtilities.createRGB(p,p,p));
+                }
+            }
+            System.out.println("*** Finished applying linear transformation ***");
+        }
+        else{
+            Image image = new Image(bimg);
+            int [][] redChannelMatrix = image.getRedDataMatrixChannel();
+            int [][] greenChannelMatrix = image.getGreenDataMatrixChannel();
+            int [][] blueChannelMatrix = image.getBlueDataMatrixChannel();
+            while(counter < iterations){
+                redChannelMatrix = applyFirstDerivate(redChannelMatrix,true, sigma);
+                greenChannelMatrix = applyFirstDerivate(greenChannelMatrix,true, sigma);
+                blueChannelMatrix = applyFirstDerivate(blueChannelMatrix,true, sigma);
+                counter ++;
+            }
+            int[] redMinMax = this.imageUtilities.findGreyMinMaxValues(redChannelMatrix);
+            int[] greenMinMax = this.imageUtilities.findGreyMinMaxValues(greenChannelMatrix);
+            int[] blueMinMax = this.imageUtilities.findGreyMinMaxValues(blueChannelMatrix);
+            int redMin = redMinMax[0];
+            int redMax = redMinMax[1];
+            int greenMin = greenMinMax[0];
+            int greenMax = greenMinMax[1];
+            int blueMin = blueMinMax[0];
+            int blueMax = blueMinMax[1];
+            System.out.println("*** Applying linear transformation ***");
+            for (int i = 0; i < result.getWidth(); i++) {
+                for (int j = 0; j < result.getHeight(); j++) {
+                    int r = (int) this.imageUtilities.linearTransformation(redChannelMatrix[i][j],redMax,redMin);
+                    int g = (int) this.imageUtilities.linearTransformation(greenChannelMatrix[i][j],greenMax,greenMin);
+                    int b = (int) this.imageUtilities.linearTransformation(blueChannelMatrix[i][j],blueMax,blueMin);
+                    result.setRGB(i,j,ColorUtilities.createRGB(r,g,b));
+                }
+            }
+            System.out.println("*** Finished applying linear transformation ***");
+        }
+
+        return result;
+    }
+
+    public int [][] applyFirstDerivate(int [][] channelMatrix, boolean anisotropic, double sigma){
         int[][] matrixResult = new int[channelMatrix.length][channelMatrix[0].length];
         double P;
         double Dn=0,Ds=0,De=0,Do=0;
+        double Cn=1,Cs=1,Ce=1,Co=1;
         //Recorro la matriz del canal
         for (int i = 0; i < channelMatrix.length; i++) {
             for (int j = 0; j < channelMatrix[0].length; j++) {
@@ -372,6 +432,12 @@ public class Filter {
                         Ds = (double) channelMatrix[i][j+1] - (double) channelMatrix[i][j];
                         De = (double) channelMatrix[i+1][j] - (double) channelMatrix[i][j];
                         Do = 0;
+                        if(anisotropic){
+                            Cn = lorentzGradient(sigma,Dn);
+                            Cs = lorentzGradient(sigma,Ds);
+                            Ce = lorentzGradient(sigma,De);
+                            Co = lorentzGradient(sigma,Do);
+                        }
                     }
                     //Esquina inf izq
                     else if(j==channelMatrix[0].length-1){
@@ -379,6 +445,12 @@ public class Filter {
                         Ds = 0;
                         De = (double) channelMatrix[i+1][j] - (double) channelMatrix[i][j];
                         Do = 0;
+                        if(anisotropic){
+                            Cn = lorentzGradient(sigma,Dn);
+                            Cs = lorentzGradient(sigma,Ds);
+                            Ce = lorentzGradient(sigma,De);
+                            Co = lorentzGradient(sigma,Do);
+                        }
                     }
                     //Borde izq
                     else {
@@ -386,6 +458,12 @@ public class Filter {
                         Ds = (double) channelMatrix[i][j+1] - (double) channelMatrix[i][j];
                         De = (double) channelMatrix[i+1][j] - (double) channelMatrix[i][j];
                         Do = 0;
+                        if(anisotropic){
+                            Cn = lorentzGradient(sigma,Dn);
+                            Cs = lorentzGradient(sigma,Ds);
+                            Ce = lorentzGradient(sigma,De);
+                            Co = lorentzGradient(sigma,Do);
+                        }
                     }
                 }
                 else if(i==channelMatrix.length-1) {
@@ -395,6 +473,12 @@ public class Filter {
                         Ds = (double) channelMatrix[i][j + 1] - (double) channelMatrix[i][j];
                         De = 0;
                         Do = (double) channelMatrix[i - 1][j] - (double) channelMatrix[i][j];
+                        if(anisotropic){
+                            Cn = lorentzGradient(sigma,Dn);
+                            Cs = lorentzGradient(sigma,Ds);
+                            Ce = lorentzGradient(sigma,De);
+                            Co = lorentzGradient(sigma,Do);
+                        }
                     }
                     //Esquina inf dcha
                     else if(j==channelMatrix[0].length-1){
@@ -402,6 +486,12 @@ public class Filter {
                         Ds = 0;
                         De = 0;
                         Do = (double) channelMatrix[i-1][j] - (double) channelMatrix[i][j];
+                        if(anisotropic){
+                            Cn = lorentzGradient(sigma,Dn);
+                            Cs = lorentzGradient(sigma,Ds);
+                            Ce = lorentzGradient(sigma,De);
+                            Co = lorentzGradient(sigma,Do);
+                        }
                     }
                     //Borde dcho
                     else {
@@ -409,6 +499,12 @@ public class Filter {
                         Ds = (double) channelMatrix[i][j+1] - (double) channelMatrix[i][j];
                         De = 0;
                         Do = (double) channelMatrix[i-1][j] - (double) channelMatrix[i][j];
+                        if(anisotropic){
+                            Cn = lorentzGradient(sigma,Dn);
+                            Cs = lorentzGradient(sigma,Ds);
+                            Ce = lorentzGradient(sigma,De);
+                            Co = lorentzGradient(sigma,Do);
+                        }
                     }
                 }
                 else{
@@ -418,6 +514,12 @@ public class Filter {
                         Ds = (double) channelMatrix[i][j + 1] - (double) channelMatrix[i][j];
                         De = (double) channelMatrix[i + 1][j] - (double) channelMatrix[i][j];
                         Do = (double) channelMatrix[i - 1][j] - (double) channelMatrix[i][j];
+                        if(anisotropic){
+                            Cn = lorentzGradient(sigma,Dn);
+                            Cs = lorentzGradient(sigma,Ds);
+                            Ce = lorentzGradient(sigma,De);
+                            Co = lorentzGradient(sigma,Do);
+                        }
                     }
                     //Borde inferior
                     else if(i!=0 && j==channelMatrix[0].length-1){
@@ -425,6 +527,12 @@ public class Filter {
                         Ds = 0;
                         De = (double) channelMatrix[i + 1][j] - (double) channelMatrix[i][j];
                         Do = (double) channelMatrix[i - 1][j] - (double) channelMatrix[i][j];
+                        if(anisotropic){
+                            Cn = lorentzGradient(sigma,Dn);
+                            Cs = lorentzGradient(sigma,Ds);
+                            Ce = lorentzGradient(sigma,De);
+                            Co = lorentzGradient(sigma,Do);
+                        }
                     }
                     //Imagen sin bordes
                     else if (i!=0 && j!=0){
@@ -432,13 +540,27 @@ public class Filter {
                         Ds = (double) channelMatrix[i][j + 1] - (double) channelMatrix[i][j];
                         De = (double) channelMatrix[i + 1][j] - (double) channelMatrix[i][j];
                         Do = (double) channelMatrix[i - 1][j] - (double) channelMatrix[i][j];
+                        if(anisotropic){
+                            Cn = lorentzGradient(sigma,Dn);
+                            Cs = lorentzGradient(sigma,Ds);
+                            Ce = lorentzGradient(sigma,De);
+                            Co = lorentzGradient(sigma,Do);
+                        }
                     }
                 }
-                P = P + (Dn + Ds + De + Do)/4.0;
-                matrixResult[i][j] = (int) Math.round(P);
+                //System.out.print("I = " + P + " + ((" + Cn + " * " + Dn + " + " + Cs + " * " + Ds + " + " + Ce + " * " + De + " + " + Co + " * " + Do + " + " + ") * 0.25)");
+                P = P + ((Cn*Dn) + (Cs*Ds) + (Ce*De) + (Co*Do))/4.0;
+//                System.out.print(" = " + P);
+//                System.out.println(" | I Casteado: " + (int) Math.round(P));
+                matrixResult[i][j] = (int) Math.ceil(P);
             }
         }
         return matrixResult;
+    }
+
+    public double lorentzGradient(double sigma, double derivate){
+        //System.out.println((double) ( 1/ ( ((double) (Math.pow(Math.abs(derivate), 2) / Math.pow(sigma, 2))) + 1) ));
+        return (double) ( 1/ ( ((double) (Math.pow(Math.abs(derivate), 2) / Math.pow(sigma, 2))) + 1) );
     }
 
     public int[][] applyZeroCrossingEdgeDetection(int[][] imageMatrix){

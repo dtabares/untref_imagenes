@@ -45,7 +45,9 @@ public class Controller extends BorderPane {
         this.historyImageList = new LinkedList<>();
         this.imageUtilities = new ImageUtilities();
         this.filter = new Filter();
-        //this.testsFer();
+        BufferedImage bimg = imageUtilities.readPGM(new File("src/sample/lena512.pgm"));
+        leftImage = bimg;
+        this.displayImageInPane(bimg,leftPane);
     }
 
     //Top Menu
@@ -866,6 +868,12 @@ public class Controller extends BorderPane {
         BufferedImage bimg = filter.applyIsotropicDifusion(leftImage, iterations);
         this.displayImageInPane(bimg,rightPane);
     }
+    @FXML public void anisotropicDifussion(){
+        int iterations = Integer.valueOf(getInputDialog("Isotropic Difussion", "Enter a new Value", "Iterations:"));
+        double sigma = Double.valueOf(getInputDialog("Isotropic Difussion", "Enter a new Value", "Sigma:"));
+        BufferedImage bimg = filter.applyAnisotropicDifusion(leftImage, iterations, sigma);
+        this.displayImageInPane(bimg,rightPane);
+    }
 
     //Panels
 
@@ -899,7 +907,7 @@ public class Controller extends BorderPane {
 
     //Tests
 
-    public void testsFer()throws IOException{
+    public void test()throws IOException{
         BufferedImage bimg = imageUtilities.openRawImage(new File("C:\\Users\\Fernando.Ares\\Desktop\\Imagenes\\lena.raw"),256,256);
         leftImage = bimg;
         this.displayImageInPane(bimg,leftPane);

@@ -173,7 +173,6 @@ public class ImageUtilities {
                         throw new IOException("Reached end-of-file prematurely.");
                     else if (p < 0 || p > max)
                         throw new IOException("Pixel value " + p + " outside of range [0, " + max + "].");
-                    System.out.println(p);
                     int rgb = createRGB(p, p, p);
 
                     bimg.setRGB(j, i, rgb);

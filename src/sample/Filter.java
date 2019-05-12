@@ -416,6 +416,58 @@ public class Filter {
         return result;
     }
 
+    public BufferedImage applyBilateralFilter(BufferedImage bimg, double sigma_r, double sigma_s){
+
+        double maxSigma = Math.max(sigma_r,sigma_s);
+        int maskSize = (int) Math.round(2 *  maxSigma + 1);
+        Mask bilateralMask = new Mask(7);
+        Image image = new Image(bimg);
+        int[][] redChannel = image.getRedDataMatrixChannel();
+        int[][] greenChannel = image.getGreenDataMatrixChannel();
+        int[][] blueChannel = image.getBlueDataMatrixChannel();
+
+        int[][] filteredRedChannel = this.applyBilateralFilterToChannel(redChannel,sigma_r,sigma_s,bilateralMask, image.getWidth(),image.getHeight());
+        int[][] filteredGreenChannel = this.applyBilateralFilterToChannel(greenChannel,sigma_r,sigma_s,bilateralMask, image.getWidth(),image.getHeight());
+        int[][] filteredBlueChannel = this.applyBilateralFilterToChannel(blueChannel,sigma_r,sigma_s,bilateralMask, image.getWidth(),image.getHeight());
+
+        BufferedImage result = imageUtilities.copyImageIntoAnother(bimg);
+
+        // Relleno la imagen a devolver
+        for (int i = 0; i < result.getWidth(); i++) {
+            for (int j = 0; j < result.getHeight(); j++) {
+                result.setRGB(i,j,ColorUtilities.createRGB(filteredRedChannel[i][j], filteredGreenChannel[i][j], filteredBlueChannel[i][j]));
+            }
+        }
+        return result;
+    }
+
+    private int[][] applyBilateralFilterToChannel(int[][] channelData, double sigma_r, double sigma_s, Mask mask, int imageWidth, int imageHeight){
+        int[][] filteredChannel = this.imageUtilities.cloneChannelData(channelData);
+        int widthLimit = imageWidth - mask.getSize();
+        int heightLimit = imageHeight - mask.getSize();
+        int value = 0;
+        double temp;
+        for (int i = 0; i <= widthLimit; i++) {
+            for (int j = 0; j <= heightLimit; j++) {
+                mask.setBilateralMask(channelData,i + mask.getCenter(),j + + mask.getCenter(),sigma_r,sigma_s);
+                for (int k = 0; k < mask.getSize(); k++) {
+                    for (int l = 0; l < mask.getSize(); l++) {
+                        value += Math.round(channelData[i+k][j+l] * mask.getValue(k,l));
+                    }
+                }
+                temp = value / mask.getSum();
+                filteredChannel[i + mask.getCenter()][j + mask.getCenter()] = (int)temp;
+                if(temp < 0 || temp > 255){
+                    System.out.println("out of range value: " +value);
+                }
+                value = 0;
+            }
+        }
+
+
+        return filteredChannel;
+    }
+
     public int [][] applyFirstDerivate(int [][] channelMatrix, boolean anisotropic, double sigma){
         int[][] matrixResult = new int[channelMatrix.length][channelMatrix[0].length];
         double P;

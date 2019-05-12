@@ -1560,5 +1560,17 @@ public class ImageUtilities {
         return dimg;
     }
 
+    public int[][] cloneChannelData(int[][] channelData){
+        int[][] clone = new int[channelData.length][channelData[0].length];
+
+        for (int i = 0; i < channelData.length; i++) {
+            for (int j = 0; j < channelData[0].length; j++) {
+                clone[i][j] = channelData[i][j];
+            }
+        }
+
+        return clone;
+    }
+
 }
 

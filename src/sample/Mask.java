@@ -185,6 +185,45 @@ public class Mask {
         }
     }
 
+    public void setBilateralMask(int[][] originalImage, int i, int j, double signma_r, double sigma_s){
+        int kOrigin = i - this.center;
+        int kEnd = i + this.center;
+        int lOrigin = j - this.center;
+        int lEnd = j + this.center;
+
+        int a = 0;
+        int b = 0;
+
+        for (int k = kOrigin; k <= kEnd; k++) {
+            for (int l = lOrigin; l <= lEnd; l++) {
+                this.matrix[a][b] = calculateBilateralFilterWp(originalImage,i,j,k,l,signma_r,sigma_s);
+                b++;
+            }
+            a++;
+            b = 0;
+        }
+
+    }
+
+    private double calculateBilateralFilterWp(int[][] originalImage, int i, int j, int k, int l, double sigma_r, double sigma_s){
+        double spacialTerm = (Math.pow((i - k),2) + Math.pow((j - l),2))/ (2.0 * sigma_s);
+        double intensityTerm = Math.sqrt(Math.pow(originalImage[i][j] - originalImage [k][l],2)) /(2.0 * sigma_r);
+        double wp = Math.exp(-spacialTerm - intensityTerm);
+
+        return wp;
+    }
+
+    public double getSum(){
+        double sum = 0;
+        for (int i = 0; i < this.size; i++) {
+            for (int j = 0; j < this.size; j++) {
+                sum = sum + this.matrix[i][j];
+            }
+        }
+
+        return sum;
+    }
+
     public int getSize(){
         return this.size;
     }

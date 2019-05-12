@@ -875,6 +875,19 @@ public class Controller extends BorderPane {
         this.displayImageInPane(bimg,rightPane);
     }
 
+    @FXML public void bilateralFilter(){
+        if (leftImage != null) {
+            double sigma_s = Double.valueOf(getInputDialog("Bilateral Filter", "Enter a new Value", "Sigma S:"));
+            double sigma_r = Double.valueOf(getInputDialog("Bilateral Filter", "Enter a new Value", "Sigma R:"));
+            BufferedImage bimg = filter.applyBilateralFilter(leftImage,sigma_r,sigma_s);
+            this.displayImageInPane(bimg,rightPane);
+        }
+        else
+        {
+            Alerts.showAlert("No hay una imagen abierta");
+        }
+    }
+
     //Panels
 
     public void displayImageInPane(BufferedImage bimg, AnchorPane pane){

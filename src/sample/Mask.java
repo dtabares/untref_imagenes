@@ -206,8 +206,8 @@ public class Mask {
     }
 
     private double calculateBilateralFilterWp(int[][] originalImage, int i, int j, int k, int l, double sigma_r, double sigma_s){
-        double spacialTerm = (Math.pow((i - k),2) + Math.pow((j - l),2))/ (2.0 * sigma_s);
-        double intensityTerm = Math.sqrt(Math.pow(originalImage[i][j] - originalImage [k][l],2)) /(2.0 * sigma_r);
+        double spacialTerm = (Math.pow((i - k),2) + Math.pow((j - l),2))/ (2.0 * Math.pow( sigma_s,2));
+        double intensityTerm = Math.pow(Math.sqrt(Math.pow(originalImage[i][j] - originalImage [k][l],2)),2) / (2.0 * Math.pow(sigma_r,2));
         double wp = Math.exp(-spacialTerm - intensityTerm);
 
         return wp;

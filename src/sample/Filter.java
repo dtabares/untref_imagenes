@@ -420,7 +420,7 @@ public class Filter {
 
         double maxSigma = Math.max(sigma_r,sigma_s);
         int maskSize = (int) Math.round(2 *  maxSigma + 1);
-        Mask bilateralMask = new Mask(7);
+        Mask bilateralMask = new Mask(11);
         Image image = new Image(bimg);
         int[][] redChannel = image.getRedDataMatrixChannel();
         int[][] greenChannel = image.getGreenDataMatrixChannel();
@@ -449,17 +449,20 @@ public class Filter {
         double temp;
         for (int i = 0; i <= widthLimit; i++) {
             for (int j = 0; j <= heightLimit; j++) {
+                //Genero máscara
                 mask.setBilateralMask(channelData,i + mask.getCenter(),j + + mask.getCenter(),sigma_r,sigma_s);
+                //Convoluciono
                 for (int k = 0; k < mask.getSize(); k++) {
                     for (int l = 0; l < mask.getSize(); l++) {
                         value += Math.round(channelData[i+k][j+l] * mask.getValue(k,l));
                     }
                 }
+                //Fin Convolucion
                 temp = value / mask.getSum();
-                filteredChannel[i + mask.getCenter()][j + mask.getCenter()] = (int)temp;
-                if(temp < 0 || temp > 255){
-                    System.out.println("out of range value: " +value);
+                if(temp> 255 || temp < 0){
+                    System.out.println("Value out of range:" + temp);
                 }
+                filteredChannel[i + mask.getCenter()][j + mask.getCenter()] = (int)temp;
                 value = 0;
             }
         }

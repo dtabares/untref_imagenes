@@ -172,7 +172,8 @@ public class Threshold {
 
     private static double[] calculateVariance(double globalMean, double[] cumulativeSums, double[] cumulativeMeans){
         //Lo creo como array list porque no se cuantos elementos va a tener de antemano
-        ArrayList<Double> variancesTemp = new ArrayList<Double>();
+        //ArrayList<Double> variancesTemp = new ArrayList<Double>();
+        double[] variances = new double[256];
         double numerator;
         double denominator;
 
@@ -180,14 +181,11 @@ public class Threshold {
             numerator = Math.pow(((globalMean * cumulativeSums[i]) - cumulativeMeans[i]),2);
             denominator = (cumulativeSums[i] * (1 - cumulativeSums[i]));
             if(denominator > 0.0){
-                variancesTemp.add(numerator/denominator);
+                variances[i] = (numerator/denominator);
             }
-        }
-
-        double[] variances = new double[variancesTemp.size()];
-
-        for (int i = 0; i < variancesTemp.size(); i++) {
-            variances[i] = variancesTemp.get(i);
+            else{
+                variances[i] = 0;
+            }
         }
 
         return variances;

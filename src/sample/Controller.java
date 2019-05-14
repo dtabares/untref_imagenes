@@ -45,7 +45,7 @@ public class Controller extends BorderPane {
         this.historyImageList = new LinkedList<>();
         this.imageUtilities = new ImageUtilities();
         this.filter = new Filter();
-        BufferedImage bimg = imageUtilities.readPGM(new File("src/sample/lena512.pgm"));
+        BufferedImage bimg = imageUtilities.openRawImage(new File("src/sample/lena512.raw"),512,512);
         leftImage = bimg;
         this.displayImageInPane(bimg,leftPane);
     }

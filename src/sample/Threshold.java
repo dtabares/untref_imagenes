@@ -179,7 +179,9 @@ public class Threshold {
         for (int i = 0; i < 256; i++) {
             numerator = Math.pow(((globalMean * cumulativeSums[i]) - cumulativeMeans[i]),2);
             denominator = (cumulativeSums[i] * (1 - cumulativeSums[i]));
-            variancesTemp.add(numerator/denominator);
+            if(denominator > 0.0){
+                variancesTemp.add(numerator/denominator);
+            }
         }
 
         double[] variances = new double[variancesTemp.size()];
@@ -196,19 +198,25 @@ public class Threshold {
         double max = variance[0];
         int maxTPos = 0;
         boolean unique = true;
+        int occurrences = 0;
 
         for (int i = 1; i < variance.length; i++) {
             if(variance[i] > max){
                 max = variance[i];
                 maxTPos = i;
             }
-            else{
-                if(variance[i] == max){
-                    unique = false;
-                    break;
-                }
+        }
+
+        for (int i = 0; i < variance.length; i++) {
+            if(variance[i] == max){
+                occurrences++;
             }
         }
+
+        if(occurrences > 1){
+            unique = false;
+        }
+
 
         if(unique){
             //threshold = (int) Math.round(max);
@@ -217,9 +225,11 @@ public class Threshold {
         else{
             double sum = 0;
             for (int i = 0; i < variance.length; i++) {
-                sum = sum + variance[i];
+                if(variance[i] == max){
+                    sum = sum + i;
+                }
             }
-            threshold = (int) Math.round(sum/variance.length);
+            threshold = (int) Math.round(sum/occurrences);
         }
 
         return threshold;

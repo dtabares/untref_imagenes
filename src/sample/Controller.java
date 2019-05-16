@@ -874,13 +874,27 @@ public class Controller extends BorderPane {
         BufferedImage bimg = filter.applyAnisotropicDifusion(leftImage, iterations, sigma);
         this.displayImageInPane(bimg,rightPane);
     }
-
     @FXML public void bilateralFilter(){
         if (leftImage != null) {
             double sigma_s = Double.valueOf(getInputDialog("Bilateral Filter", "Enter a new Value", "Sigma S:"));
             double sigma_r = Double.valueOf(getInputDialog("Bilateral Filter", "Enter a new Value", "Sigma R:"));
             BufferedImage bimg = filter.applyBilateralFilter(leftImage,sigma_r,sigma_s);
             this.displayImageInPane(bimg,rightPane);
+        }
+        else
+        {
+            Alerts.showAlert("No hay una imagen abierta");
+        }
+    }
+    @FXML public void canny(){
+        BufferedImage result = null;
+        if (leftImage != null) {
+            double sigma = Double.valueOf(getInputDialog("Canny", "Enter a new Value", "Sigma for Gauss:"));
+            int t1 = Integer.valueOf(getInputDialog("Canny", "Enter a new Value", "T1:"));
+            int t2 = Integer.valueOf(getInputDialog("Canny", "Enter a new Value", "T2:"));
+
+            result = this.filter.applyCanny(leftImage,sigma,t1,t2);
+            this.displayImageInPane(result,rightPane);
         }
         else
         {

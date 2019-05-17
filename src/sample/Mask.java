@@ -67,6 +67,32 @@ public class Mask {
         //printMask();
     }
 
+    public void setGaussMaskRevised(double sigma) {
+        double suma = 0;
+        double valor;
+        int radius = size / 2;
+        //se aplica la formula con el 0,0 centrado en la mascara
+        for (int i = 0 - radius; i < matrix.length - radius; i++) {
+            for (int j = 0 - radius; j < this.matrix[0].length - radius; j++) {
+                //fraccion representa la primer parte de la formula
+                double fraccion = (1.0 / (2.0 * Math.PI * Math.pow(sigma, 2)));
+                //e representa la segunda parte de la formula
+                double e = Math.exp(-(Math.pow(i, 2) + Math.pow(j, 2)) / (Math.pow(sigma, 2)*2));
+                valor = fraccion * e;
+                this.matrix[i + radius][j + radius] = valor;
+                //la variable suma es para analizar la matriz
+                suma += valor;
+            }
+        }
+        printMask();
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix.length; j++) {
+                this.matrix[i][j] = this.matrix[i][j]/suma;
+            }
+        }
+        printMask();
+    }
+
     public void setHighPassFilterMask(){
         double centerValue = ((this.size * this.size) - 1.0)/(size*size);
         double otherValue = (- 1.0)/(size*size);

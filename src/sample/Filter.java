@@ -38,6 +38,14 @@ public class Filter {
         return result;
     }
 
+    public int[][] applyRawGaussFilter(BufferedImage bimg, double sigma){
+        int maskSize = (int) Math.round(2*sigma+1);
+        Mask mask = new Mask(maskSize);
+        mask.setGaussMaskRevised(sigma);
+        int[][] result = applyConvolutionReloaded(bimg, mask);
+        return result;
+    }
+
     public BufferedImage enhanceEdges(BufferedImage bimg, int maskSize){
         Mask mask = new Mask(maskSize);
         mask.setHighPassFilterMask();
@@ -133,6 +141,14 @@ public class Filter {
         return applyUnidirectionalFilter(bimg,direction,mask);
     }
 
+    public int[][] applyUnidirectionalRawSobel(int[][] image,BorderDetectionDirection direction, int width, int height){
+        Mask mask = new Mask();
+
+        mask.setSobeltMask(direction);
+
+        return applyRawUnidirectionalFilter(image,direction,mask,width,height);
+    }
+
     public BufferedImage applyUnidirectionalUnnamed(BufferedImage bimg,BorderDetectionDirection direction){
         Mask mask = new Mask();
         mask.setUnnamedMask(direction);
@@ -176,6 +192,24 @@ public class Filter {
             }
         }
         return result;
+    }
+
+    public int[][] applyRawUnidirectionalFilter(int[][] image,BorderDetectionDirection direction, Mask mask,int width, int height){
+
+        int[][] gradient = new int[width][height];
+
+        //Calculamos las convoluciones de cada mascara
+        int[][] convolutionResult = applyRawConvolutionReloaded(image,mask,width,height);
+        //return convolutionResult;
+
+
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
+                int norm = (int) Math.sqrt(Math.pow(convolutionResult[i][j],2));
+                gradient[i][j] = norm;
+            }
+        }
+        return gradient;
     }
 
     public BufferedImage applyLaplace(BufferedImage bimg, Boolean zeroCrossing){
@@ -439,6 +473,264 @@ public class Filter {
             }
         }
         return result;
+    }
+
+    public BufferedImage applyCanny(BufferedImage bimg, double sigma, int t1, int t2){
+        BufferedImage result = new BufferedImage(bimg.getWidth(),bimg.getHeight(),BufferedImage.TYPE_BYTE_GRAY);
+
+        //Llamo a apply Canny que me devuelve un int[][]
+        int[][] temp = this.applyRawCanny(bimg,sigma,t1,t2);
+
+        //Transformo eso a buffered image
+        for (int i = 0; i < bimg.getWidth(); i++) {
+            for (int j = 0; j < bimg.getHeight(); j++) {
+                int p = ColorUtilities.createRGB(temp[i][j],temp[i][j],temp[i][j]);
+                result.setRGB(i,j,p);
+            }
+        }
+
+
+        return result;
+
+    }
+
+    public int[][] applyRawCanny(BufferedImage bimg, double sigma, int t1, int t2){
+        //int[][] result = new int[bimg.getWidth()][bimg.getHeight()];
+        int[][] angles = new int[bimg.getWidth()][bimg.getHeight()];
+        int[][] gradient = new int[bimg.getWidth()][bimg.getHeight()];
+
+        //Aplico el Filtro Gaussiano
+        int[][] gaussFilteredImage = this.applyRawGaussFilter(bimg,sigma);
+        int[] minMax = this.imageUtilities.findGreyMinMaxValues(gaussFilteredImage);
+
+        //Aplico Sobel y obtengo Gx (horizontal) y Gy (vertical)
+        int[][] gx = this.applyUnidirectionalRawSobel(gaussFilteredImage,BorderDetectionDirection.HORIZONTAL,bimg.getWidth(),bimg.getHeight());
+        int[][] gy = this.applyUnidirectionalRawSobel(gaussFilteredImage,BorderDetectionDirection.VERTICAL,bimg.getWidth(),bimg.getHeight());
+
+        // Calculo G como la suma de los modulos de Gx y Gy
+        for (int i = 0; i < bimg.getWidth(); i++) {
+            for (int j = 0; j < bimg.getHeight(); j++) {
+                gradient[i][j] = (int) Math.sqrt(Math.pow(gx[i][j],2) + Math.pow(gy[i][j],2));
+            }
+        }
+
+        //pruebo de hacer una TL antes de seguir
+        minMax = this.imageUtilities.findGreyMinMaxValues(gradient);
+        int min = minMax[0];
+        int max = minMax[1];
+
+        for (int i = 0; i < bimg.getWidth(); i++) {
+            for (int j = 0; j < bimg.getHeight(); j++) {
+                gradient[i][j] = (int) this.imageUtilities.linearTransformation(gradient[i][j],max,min);
+            }
+        }
+
+
+        //Voy calculando el angulo y me guardo en la matriz de angulos la direccion del borde
+        double angle;
+        for (int i = 0; i < bimg.getWidth(); i++) {
+            for (int j = 0; j < bimg.getHeight(); j++) {
+                if(gx[i][j] == 0){
+                    angle = 0;
+                }
+                else{
+                    angle = Math.toDegrees(Math.atan2(gy[i][j], gx[i][j])) + 90;
+                }
+                //System.out.println(angle);
+                angles[i][j] = this.classifyAngleForCanny(angle);
+                //System.out.println(angles[i][j]);
+            }
+        }
+        //Aplico supresion de no maximos
+        int neighborA = 0;
+        int neighborB = 0;
+        for (int i = 0; i < bimg.getWidth(); i++) {
+            for (int j = 0; j < bimg.getHeight(); j++) {
+                if(gradient[i][j] != 0){
+                    switch (angles[i][j]){
+                        case 0:
+                            //West
+                            if(i - 1 >= 0){
+                                neighborA = gradient[i-1][j];
+                            }
+                            else {
+                                neighborA = 0;
+                            }
+                            //East
+                            if(i + 1 <= bimg.getWidth()){
+                                neighborB = gradient[i+1][j];
+                            }
+                            else {
+                                neighborB = 0;
+                            }
+                            break;
+                        case 45:
+                            //NE
+                            if(i + 1 <= bimg.getWidth() && j -1 >= 0){
+                                neighborB = gradient[i+1][j-1];
+                            }
+                            else {
+                                neighborB = 0;
+                            }
+                            //SW
+                            if(i - 1 >= 0 && j + 1 <= bimg.getHeight()){
+                                neighborA = gradient[i-1][j+1];
+                            }
+                            else {
+                                neighborA = 0;
+                            }
+                            break;
+                        case 90:
+                            //North
+                            if(j - 1 >= 0){
+                                neighborA = gradient[i][j-1];
+                            }
+                            else {
+                                neighborA = 0;
+                            }
+                            //South
+                            if(j + 1 <= bimg.getHeight()){
+                                neighborB = gradient[i][j+1];
+                            }
+                            else {
+                                neighborB = 0;
+                            }
+                            break;
+                        case 135:
+                            //North West
+                            if(i - 1 >= 0 && j -1 >= 0){
+                                neighborA = gradient[i-1][j-1];
+                            }
+                            else {
+                                neighborA = 0;
+                            }
+                            //South East
+                            if(i + 1 <= bimg.getWidth() && j + 1 <= bimg.getHeight()){
+                                neighborB = gradient[i+1][j+1];
+                            }
+                            else {
+                                neighborB = 0;
+                            }
+                            break;
+                    }
+
+                    //Hago la comparacion, si alguno de sus vecinos es mayor, lo borro como borde
+                    if(neighborA > gradient[i][j] || neighborB > gradient[i][j]){
+                        gradient[i][j] = 0;
+                    }
+                }
+            }
+        }
+        //Aplico Umbralizacion por histeresis
+        //Primer pasada
+        for (int i = 0; i < bimg.getWidth(); i++) {
+            for (int j = 0; j < bimg.getHeight(); j++) {
+                if(gradient[i][j] >= t2){
+                    gradient[i][j] = 255;
+                }
+                else if(gradient[i][j] <= t1){
+                    gradient[i][j] = 0;
+                }
+            }
+        }
+
+        //Segunda pasada
+        for (int i = 0; i < bimg.getWidth(); i++) {
+            for (int j = 0; j < bimg.getHeight(); j++) {
+                if(gradient[i][j] > t1 && gradient[i][j] < t2){
+                    if (anyNeighborIsBorder(gradient, i, j, bimg.getWidth(), bimg.getHeight())){
+                        gradient[i][j] = 255;
+                    }
+                    else{
+                        gradient[i][j] = 0;
+                    }
+                }
+
+                if(gradient[i][j] != 0 && gradient[i][j] != 255)
+                {
+                    System.out.println( i +" " +j +" "+ gradient[i][j]);
+                }
+
+            }
+        }
+
+        return gradient;
+        //return gaussFilteredImage;
+
+    }
+
+    private boolean anyNeighborIsBorder(int[][] image, int i, int j, int width, int height){
+        boolean borderFound = false;
+        boolean hasNorth = false;
+        boolean hasSouth = false;
+        boolean hasEast = false;
+        boolean hasWest = false;
+
+        if(j -1 >= 0){
+            hasNorth = true;
+        }
+        if(j + 1 <= height){
+            hasSouth = true;
+        }
+        if(i + 1 <= width){
+            hasEast = true;
+        }
+        if(i -1 >= 0){
+            hasWest = true;
+        }
+
+        if(hasWest){
+            //W
+            if(image[i-1][j] == 255){
+                return true;
+            }
+        }
+        if(hasEast){
+            //E
+            if(image[i+1][j] == 255){
+                return true;
+            }
+        }
+
+        if(hasNorth){
+            //N
+            if(image[i][j-1] == 255){
+                return true;
+            }
+            if(hasWest){
+                //NW
+                if(image[i-1][j-1] == 255){
+                    return true;
+                }
+            }
+            if(hasEast){
+                //NE
+                if(image[i+1][j-1] == 255){
+                    return true;
+                }
+            }
+        }
+
+        if(hasSouth){
+            //S
+            if(image[i][j+1] == 255){
+                return true;
+            }
+            if(hasWest){
+                //SW
+                if(image[i-1][j+1] == 255){
+                    return true;
+                }
+            }
+            if(hasEast){
+                //SE
+                if(image[i+1][j+1] == 255){
+                    return true;
+                }
+            }
+        }
+
+        return borderFound;
     }
 
     private int[][] applyBilateralFilterToChannel(int[][] channelData, double sigma_r, double sigma_s, Mask mask, int imageWidth, int imageHeight){
@@ -844,7 +1136,7 @@ public class Filter {
         int[][] result = new int[image.getWidth()][image.getHeight()];
         for (int i = 0; i < image.getWidth(); i++) {
             for (int j = 0; j < image.getHeight(); j++) {
-                result[i][j] = 0;
+                result[i][j] = greyDataMatrix[i][j];
             }
         }
         int widthLimit = image.getWidth() - mask.getSize();
@@ -865,6 +1157,33 @@ public class Filter {
             }
         }
         System.out.println("*** Finished applying Convolution Reloaded ***");
+        return result;
+    }
+
+    private int[][] applyRawConvolutionReloaded(int[][] image, Mask mask, int width, int height){
+        int grey;
+        int[][] result = new int[width][height];
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
+                result[i][j] = 0;
+            }
+        }
+        int widthLimit = width - mask.getSize();
+        int heightLimit = height - mask.getSize();
+        grey = 0;
+
+        for (int i = 0; i <= widthLimit; i++) {
+            for (int j = 0; j <= heightLimit; j++) {
+                for (int k = 0; k < mask.getSize(); k++) {
+                    for (int l = 0; l < mask.getSize(); l++) {
+                        grey += Math.round(image[i+k][j+l] * mask.getValue(k,l));
+                    }
+                }
+                result[i + mask.getCenter()][j + mask.getCenter()] = grey;
+                grey = 0;
+
+            }
+        }
         return result;
     }
 
@@ -925,6 +1244,24 @@ public class Filter {
             }
         }
         return result;
+    }
+
+    private int classifyAngleForCanny(double angle){
+        int newAngle = 0;
+
+
+        if(angle >= 22.5 && angle < 67.5){
+            newAngle = 45;
+        }
+        else if(angle >= 67.5 && angle < 112.5){
+            newAngle = 90;
+        }
+        else if(angle >= 112.5 && angle < 157.5){
+            newAngle = 135;
+        }
+
+
+        return newAngle;
     }
 
 }

@@ -128,7 +128,7 @@
                   </AnchorPane>
                </content>
             </TitledPane>
-            <TitledPane animated="false" text="TP 2">
+            <TitledPane animated="false" text="TP 3">
                 <content>
                   <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                       <children>

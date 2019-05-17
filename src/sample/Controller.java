@@ -887,6 +887,9 @@ public class Controller extends BorderPane {
             Alerts.showAlert("No hay una imagen abierta");
         }
     }
+
+    // TP 3
+
     @FXML public void canny(){
         BufferedImage result = null;
         if (leftImage != null) {
@@ -901,6 +904,11 @@ public class Controller extends BorderPane {
         {
             Alerts.showAlert("No hay una imagen abierta");
         }
+    }
+
+    @FXML public void hough(){
+        Hough h = new Hough(180,10);
+        this.displayImageInPane(h.findLines(leftImage),rightPane);
     }
 
     //Panels
@@ -939,7 +947,5 @@ public class Controller extends BorderPane {
         BufferedImage bimg = ImageIO.read(new File("C:\\Users\\Fernando.Ares\\Desktop\\Imagenes\\squareHough.png"));
         leftImage = bimg;
         this.displayImageInPane(bimg,leftPane);
-        Hough h = new Hough(180,10);
-        this.displayImageInPane(h.findLines(bimg),rightPane);
     }
 }

@@ -48,6 +48,7 @@ public class Controller extends BorderPane {
         BufferedImage bimg = imageUtilities.openRawImage(new File("src/sample/lena512.raw"),512,512);
         leftImage = bimg;
         this.displayImageInPane(bimg,leftPane);
+        this.test();
     }
 
     //Top Menu
@@ -921,9 +922,10 @@ public class Controller extends BorderPane {
     //Tests
 
     public void test()throws IOException{
-        BufferedImage bimg = imageUtilities.openRawImage(new File("C:\\Users\\Fernando.Ares\\Desktop\\Imagenes\\lena.raw"),256,256);
+        BufferedImage bimg = ImageIO.read(new File("C:\\Users\\Fernando.Ares\\Desktop\\Imagenes\\squareHough.png"));
         leftImage = bimg;
         this.displayImageInPane(bimg,leftPane);
-        this.displayImageInPane(filter.applyLaplaceWithSlope(bimg, 10.0,true),rightPane);
+        Hough h = new Hough(180,10);
+        this.displayImageInPane(h.findLines(bimg),rightPane);
     }
 }

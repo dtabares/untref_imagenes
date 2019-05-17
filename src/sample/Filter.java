@@ -725,6 +725,7 @@ public class Filter {
 
     private int calculateSlopeAbs(int a, int b){
         int result = (Math.abs(a) + Math.abs(b));
+        //int result = (Math.abs(a+b));
         return result;
     }
 

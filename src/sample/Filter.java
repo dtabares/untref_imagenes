@@ -41,7 +41,7 @@ public class Filter {
     public int[][] applyRawGaussFilter(BufferedImage bimg, double sigma){
         int maskSize = (int) Math.round(2*sigma+1);
         Mask mask = new Mask(maskSize);
-        mask.setGaussMask(sigma);
+        mask.setGaussMaskRevised(sigma);
         int[][] result = applyConvolutionReloaded(bimg, mask);
         return result;
     }
@@ -140,6 +140,7 @@ public class Filter {
 
         return applyUnidirectionalFilter(bimg,direction,mask);
     }
+
     public int[][] applyUnidirectionalRawSobel(int[][] image,BorderDetectionDirection direction, int width, int height){
         Mask mask = new Mask();
 
@@ -199,6 +200,7 @@ public class Filter {
 
         //Calculamos las convoluciones de cada mascara
         int[][] convolutionResult = applyRawConvolutionReloaded(image,mask,width,height);
+        //return convolutionResult;
 
 
         for (int i = 0; i < width; i++) {
@@ -499,17 +501,31 @@ public class Filter {
 
         //Aplico el Filtro Gaussiano
         int[][] gaussFilteredImage = this.applyRawGaussFilter(bimg,sigma);
+        int[] minMax = this.imageUtilities.findGreyMinMaxValues(gaussFilteredImage);
 
         //Aplico Sobel y obtengo Gx (horizontal) y Gy (vertical)
         int[][] gx = this.applyUnidirectionalRawSobel(gaussFilteredImage,BorderDetectionDirection.HORIZONTAL,bimg.getWidth(),bimg.getHeight());
         int[][] gy = this.applyUnidirectionalRawSobel(gaussFilteredImage,BorderDetectionDirection.VERTICAL,bimg.getWidth(),bimg.getHeight());
 
-        // Calculo G como la suma de los modulos de Gx y Gy (que ya vienen en modulo)
+        // Calculo G como la suma de los modulos de Gx y Gy
         for (int i = 0; i < bimg.getWidth(); i++) {
             for (int j = 0; j < bimg.getHeight(); j++) {
-                gradient[i][j] = gx[i][j] + gy[i][j];
+                gradient[i][j] = (int) Math.sqrt(Math.pow(gx[i][j],2) + Math.pow(gy[i][j],2));
             }
         }
+
+        //pruebo de hacer una TL antes de seguir
+        minMax = this.imageUtilities.findGreyMinMaxValues(gradient);
+        int min = minMax[0];
+        int max = minMax[1];
+
+        for (int i = 0; i < bimg.getWidth(); i++) {
+            for (int j = 0; j < bimg.getHeight(); j++) {
+                gradient[i][j] = (int) this.imageUtilities.linearTransformation(gradient[i][j],max,min);
+            }
+        }
+
+
         //Voy calculando el angulo y me guardo en la matriz de angulos la direccion del borde
         double angle;
         for (int i = 0; i < bimg.getWidth(); i++) {
@@ -518,9 +534,11 @@ public class Filter {
                     angle = 0;
                 }
                 else{
-                    angle = Math.atan(gy[i][j] / gx[i][j]);
+                    angle = Math.toDegrees(Math.atan2(gy[i][j], gx[i][j])) + 90;
                 }
-                angles[i][j] = this.classifyAngleForCanny(angle);;
+                //System.out.println(angle);
+                angles[i][j] = this.classifyAngleForCanny(angle);
+                //System.out.println(angles[i][j]);
             }
         }
         //Aplico supresion de no maximos
@@ -623,11 +641,21 @@ public class Filter {
                     if (anyNeighborIsBorder(gradient, i, j, bimg.getWidth(), bimg.getHeight())){
                         gradient[i][j] = 255;
                     }
+                    else{
+                        gradient[i][j] = 0;
+                    }
                 }
+
+                if(gradient[i][j] != 0 && gradient[i][j] != 255)
+                {
+                    System.out.println( i +" " +j +" "+ gradient[i][j]);
+                }
+
             }
         }
 
         return gradient;
+        //return gaussFilteredImage;
 
     }
 
@@ -1107,7 +1135,7 @@ public class Filter {
         int[][] result = new int[image.getWidth()][image.getHeight()];
         for (int i = 0; i < image.getWidth(); i++) {
             for (int j = 0; j < image.getHeight(); j++) {
-                result[i][j] = 0;
+                result[i][j] = greyDataMatrix[i][j];
             }
         }
         int widthLimit = image.getWidth() - mask.getSize();

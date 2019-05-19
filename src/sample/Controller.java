@@ -907,8 +907,16 @@ public class Controller extends BorderPane {
     }
 
     @FXML public void hough(){
-        Hough h = new Hough((180*10),100);
+        Hough h = new Hough((180),800);
         this.displayImageInPane(h.findLines(leftImage),rightPane);
+    }
+
+    @FXML public void drawLine(){
+        double angle = Double.valueOf(getInputDialog("Draw Test Line", "Enter a new Value", "Angle:"));
+        double radius = Double.valueOf(getInputDialog("Draw Test Line", "Enter a new Value", "Radius:"));
+        Hough h = new Hough( 10,10);
+        this.displayImageInPane(h.drawLine(leftImage,angle,radius),rightPane);
+        this.setBottomText("Angle: " + angle + " Radius: " + radius);
     }
 
     //Panels
@@ -944,7 +952,7 @@ public class Controller extends BorderPane {
     //Tests
 
     public void test()throws IOException{
-        BufferedImage bimg = ImageIO.read(new File("C:\\Users\\Fernando.Ares\\Desktop\\Imagenes\\squareHough.png"));
+        BufferedImage bimg = ImageIO.read(new File("C:\\Users\\Fernando.Ares\\Desktop\\Imagenes\\triangleHough500.png"));
         leftImage = bimg;
         this.displayImageInPane(bimg,leftPane);
     }

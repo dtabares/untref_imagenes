@@ -91,11 +91,12 @@ public class Hough {
                 double A = x * Math.cos(angle);
                 double B = y * Math.sin(angle);
                 double line = A + B;
-                //Si la posicion del pixel pertenece a una recta dada por ambos parametros entonces incremento la matriz acumulada
-//                if(x > 21 && angleTemp == -45.0 && radius == 30.0){
+//                //Esto es una prueba
+//                if(x > 21 && angleTemp == -45.0 && (radius > 20.0 && radius < 31.0)) {
 //                    double var = 1;
 //                }
-                if ( Math.abs(line) - radius < 0.5 && Math.abs(line) - radius >= 0){
+                //Si la posicion del pixel pertenece a una recta dada por ambos parametros entonces incremento la matriz acumulada
+                if ( Math.abs(line) - radius >= 0 && Math.abs(line) - radius < 0.5){
                     cumulativeMatrix[i][j]++;
                 }
             }
@@ -156,10 +157,10 @@ public class Hough {
             return LineType.HORIZONTAL;
         }
         else if (angle > -90 && angle < 0){
-            return LineType.DIAGONAL_UP;
+            return LineType.DIAGONAL_DOWN;
         }
         else {
-            return LineType.DIAGONAL_DOWN;
+            return LineType.DIAGONAL_UP;
         }
     }
 

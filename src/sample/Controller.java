@@ -48,7 +48,7 @@ public class Controller extends BorderPane {
         BufferedImage bimg = imageUtilities.openRawImage(new File("src/sample/lena512.raw"),512,512);
         leftImage = bimg;
         this.displayImageInPane(bimg,leftPane);
-        this.test();
+        //this.test();
     }
 
     //Top Menu

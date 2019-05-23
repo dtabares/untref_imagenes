@@ -907,7 +907,7 @@ public class Controller extends BorderPane {
     }
 
     @FXML public void hough(){
-        Hough h = new Hough((180),800);
+        Hough h = new Hough((360),400);
         this.displayImageInPane(h.findLines(leftImage),rightPane);
     }
 

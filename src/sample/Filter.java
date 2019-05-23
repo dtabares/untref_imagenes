@@ -500,7 +500,11 @@ public class Filter {
         int[][] gradient = new int[bimg.getWidth()][bimg.getHeight()];
 
         //Aplico el Filtro Gaussiano
-        int[][] gaussFilteredImage = this.applyRawGaussFilter(bimg,sigma);
+        //int[][] gaussFilteredImage = this.applyRawGaussFilter(bimg,sigma);
+        Image im = new Image(bimg);
+        im.convertToGreyDataMatrix();
+        int[][] gaussFilteredImage = im.getGreyDataMatrix();
+
         int[] minMax = this.imageUtilities.findGreyMinMaxValues(gaussFilteredImage);
 
         //Aplico Sobel y obtengo Gx (horizontal) y Gy (vertical)

@@ -41,7 +41,7 @@ public class Hough {
         }
     }
 
-    public BufferedImage findLines(BufferedImage bimg){
+    public BufferedImage findLines(BufferedImage bimg, double percent){
         System.out.println("*** Finding lines ***");
         BufferedImage newBimg = imageUtilities.copyImageIntoAnother(bimg);
         Image image = new Image(newBimg);
@@ -66,7 +66,7 @@ public class Hough {
         //Recorro la matriz acumulada para buscar los parametros dentro del 80% del maximo
         for (int i = 0; i < cumulativeMatrix.length; i++) {
             for (int j = 0; j < cumulativeMatrix[0].length; j++) {
-                if (max > 5 && cumulativeMatrix[i][j] >= max * 0.5){
+                if (max > 5 && cumulativeMatrix[i][j] >= max * (percent/100)){
                     //Dibujo las lineas si supera el 80% del max
                         System.out.println("Dibujando linea con angulo: " + angleArray[i] + " radio: " + radiusArray[j] + " tipo: " + getLineType(angleArray[i]) + " Votes: " + cumulativeMatrix[i][j]);
                         newBimg = drawLine(newBimg, angleArray[i], radiusArray[j]);
@@ -87,14 +87,14 @@ public class Hough {
                 double radius = radiusArray[j];
                 double A = x * Math.cos(angle);
                 double B = y * Math.sin(angle);
-                double line = Math.round(A + B);
+                double line = A + B;
                 if(angleTemp == 76 && (radius > 48.0 && radius < 49.0)){
                     //if(x == 147 && y == 22) {
                         int test = 1;
                     //}
                 }
                 //Si la posicion del pixel pertenece a una recta dada por ambos parametros entonces incremento la matriz acumulada
-                if ( Math.abs(line - radius) >= 0 && Math.abs(line -  radius) < 0.3){
+                if ( Math.abs(line - radius) >= 0 && Math.abs(line -  radius) < 0.2){
                     cumulativeMatrix[i][j]++;
                 }
             }

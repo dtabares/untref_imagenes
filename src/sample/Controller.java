@@ -907,8 +907,9 @@ public class Controller extends BorderPane {
     }
 
     @FXML public void hough(){
+        double angle = Double.valueOf(getInputDialog("Hough", "Enter a new Value", "Detection Percent:"));
         Hough h = new Hough((360),400);
-        this.displayImageInPane(h.findLines(leftImage),rightPane);
+        this.displayImageInPane(h.findLines(leftImage, angle),rightPane);
     }
 
     @FXML public void drawLine(){

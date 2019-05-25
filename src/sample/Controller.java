@@ -342,6 +342,7 @@ public class Controller extends BorderPane {
         leftPane.getChildren().setAll(r,c);
         WritableImage image = leftPane.snapshot(null, null);
         BufferedImage bImage = SwingFXUtils.fromFXImage(image, null);
+
         Stage browser = new Stage();
         FileChooser fc = new FileChooser();
         try {
@@ -349,12 +350,30 @@ public class Controller extends BorderPane {
             File f = fc.showSaveDialog (browser);
             String fileName = f.getName();
             this.imageUtilities.WriteImage(bImage, f);
+            String fileExtension = this.imageUtilities.getImageExtension(f.getName());
+            BufferedImage bimg;
+            switch(fileExtension)
+            {
+                case "raw":
+                    bimg = this.imageUtilities.openRawImage(f,width,height);
+                    leftImage = bimg;
+                    break;
+                case "pgm":
+                    bimg = this.imageUtilities.readPGM(f);
+                    leftImage = bimg;
+                    break;
+                default:
+                    bimg = ImageIO.read(f);
+                    leftImage = bimg;
+            }
+            this.displayImageInPane(bimg,leftPane);
         }
         catch (Exception e)
         {
             Alerts.showAlert(e.getMessage());
         }
         fc.setInitialDirectory(null);
+
     }
     @FXML public void createImageWithSquare(){
         int width = 200;
@@ -380,6 +399,23 @@ public class Controller extends BorderPane {
             fc.setTitle("Select File");
             File f = fc.showSaveDialog (browser);
             this.imageUtilities.WriteImage(bImage, f);
+            String fileExtension = this.imageUtilities.getImageExtension(f.getName());
+            BufferedImage bimg;
+            switch(fileExtension)
+            {
+                case "raw":
+                    bimg = this.imageUtilities.openRawImage(f,width,height);
+                    leftImage = bimg;
+                    break;
+                case "pgm":
+                    bimg = this.imageUtilities.readPGM(f);
+                    leftImage = bimg;
+                    break;
+                default:
+                    bimg = ImageIO.read(f);
+                    leftImage = bimg;
+            }
+            this.displayImageInPane(bimg,leftPane);
         }
         catch (Exception e)
         {

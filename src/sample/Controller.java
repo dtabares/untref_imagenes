@@ -218,7 +218,8 @@ public class Controller extends BorderPane {
                 {
                     leftImageView.setOnMouseClicked(e -> {
                         System.out.println("Left Coordinates Info: ["+e.getX()+", "+e.getY()+"]");
-                        String message = this.imageUtilities.getPixelInformation(leftImage,(int)e.getX(),(int)e.getY());
+                        String message = "x: " + e.getX() + " y: " +e.getY() + " ";
+                        message = message + this.imageUtilities.getPixelInformation(leftImage,(int)e.getX(),(int)e.getY());
                         this.setBottomText(message);
                     });
                 }
@@ -227,7 +228,8 @@ public class Controller extends BorderPane {
                 if (rightImageView != null) {
                     rightImageView.setOnMouseClicked(e -> {
                         System.out.println("Right Coordinates Info:[" + e.getX() + ", " + e.getY() + "]");
-                        String message = this.imageUtilities.getPixelInformation(rightPaneImageList.get(rightPaneImageList.size()), (int) e.getX(), (int) e.getY());
+                        String message = "x: " + e.getX() + " y: " +e.getY() + " ";
+                        message = message + this.imageUtilities.getPixelInformation(rightPaneImageList.get(rightPaneImageList.size()), (int) e.getX(), (int) e.getY());
                         this.setBottomText(message);
                     });
                 }

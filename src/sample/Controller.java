@@ -48,7 +48,7 @@ public class Controller extends BorderPane {
         BufferedImage bimg = imageUtilities.openRawImage(new File("src/sample/lena512.raw"),512,512);
         leftImage = bimg;
         this.displayImageInPane(bimg,leftPane);
-        //this.test();
+        this.test();
     }
 
     //Top Menu
@@ -906,10 +906,16 @@ public class Controller extends BorderPane {
         }
     }
 
-    @FXML public void hough(){
+    @FXML public void getHoughLines(){
         double angle = Double.valueOf(getInputDialog("Hough", "Enter a new Value", "Detection Percent:"));
         Hough h = new Hough((360),400);
-        this.displayImageInPane(h.findLines(leftImage, angle),rightPane);
+        this.displayImageInPane(h.findLines(leftImage, angle, Hough.GeometricType.LINE),rightPane);
+    }
+
+    @FXML public void getHoughCircles(){
+        double angle = Double.valueOf(getInputDialog("Hough", "Enter a new Value", "Detection Percent:"));
+        Hough h = new Hough(leftImage);
+        this.displayImageInPane(h.findLines(leftImage, angle, Hough.GeometricType.CIRCLE),rightPane);
     }
 
     @FXML public void drawLine(){
@@ -918,6 +924,15 @@ public class Controller extends BorderPane {
         Hough h = new Hough( 10,10);
         this.displayImageInPane(h.drawLine(leftImage,angle,radius),rightPane);
         this.setBottomText("Angle: " + angle + " Radius: " + radius);
+    }
+
+    @FXML public void drawCircle(){
+        int x = Integer.valueOf(getInputDialog("Draw Test Circle", "Enter a new Value", "x Center:"));
+        int y = Integer.valueOf(getInputDialog("Draw Test Circle", "Enter a new Value", "y Center:"));
+        double radiusCircle = Double.valueOf(getInputDialog("Draw Test Circle", "Enter a new Value", "Radius Circle:"));
+        Hough h = new Hough( 10,10);
+        this.displayImageInPane(h.drawCircle(leftImage,x,y, radiusCircle),rightPane);
+        //this.setBottomText("X: " + x + " Y: " + y + " Radius: " + radius);
     }
 
     //Panels
@@ -953,7 +968,7 @@ public class Controller extends BorderPane {
     //Tests
 
     public void test()throws IOException{
-        BufferedImage bimg = ImageIO.read(new File("C:\\Users\\Fernando.Ares\\Desktop\\Imagenes\\triangleHough500.png"));
+        BufferedImage bimg = ImageIO.read(new File("C:\\Users\\Fernando.Ares\\Desktop\\Imagenes\\circleSmall.png"));
         leftImage = bimg;
         this.displayImageInPane(bimg,leftPane);
     }

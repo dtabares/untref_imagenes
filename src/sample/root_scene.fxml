@@ -135,9 +135,10 @@
                           <VBox layoutX="0.0" layoutY="0.0" prefHeight="284.0" prefWidth="200.0">
                               <children>
                                   <Button mnemonicParsing="false" onAction="#canny" prefWidth="205.0" text="Canny" />
+                                  <Button mnemonicParsing="false" onAction="#susan" prefWidth="205.0" text="S.U.S.A.N" />
                                   <Button mnemonicParsing="false" onAction="#getHoughLines" prefWidth="205.0" text="Hough Lines" />
-                                  <Button mnemonicParsing="false" onAction="#getHoughCircles" prefWidth="205.0" text="Hough Circles" />
                                   <Button mnemonicParsing="false" onAction="#drawLine" prefWidth="205.0" text="Draw Line" />
+                                  <Button mnemonicParsing="false" onAction="#getHoughCircles" prefWidth="205.0" text="Hough Circles" />
                                   <Button mnemonicParsing="false" onAction="#drawCircle" prefWidth="205.0" text="Draw Circle" />
                               </children>
                           </VBox>

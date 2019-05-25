@@ -30,6 +30,16 @@ public class ImageUtilities {
         return result;
     }
 
+    public BufferedImage copyImageIntoAnother(BufferedImage bimg, int type){
+        BufferedImage result = new BufferedImage(bimg.getWidth(),bimg.getHeight(),type);
+        for (int i = 0; i < bimg.getWidth(); i++){
+            for (int j = 0; j < bimg.getHeight(); j++){
+                result.setRGB(i,j,bimg.getRGB(i,j));
+            }
+        }
+        return result;
+    }
+
     public boolean isSupportedFormat(String extension) {
         for (String s : supportedFormats) {
             if (extension.toLowerCase().equals(s)) {

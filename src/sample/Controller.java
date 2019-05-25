@@ -218,7 +218,8 @@ public class Controller extends BorderPane {
                 {
                     leftImageView.setOnMouseClicked(e -> {
                         System.out.println("Left Coordinates Info: ["+e.getX()+", "+e.getY()+"]");
-                        String message = this.imageUtilities.getPixelInformation(leftImage,(int)e.getX(),(int)e.getY());
+                        String message = "x: " + e.getX() + " y: " +e.getY() + " ";
+                        message = message + this.imageUtilities.getPixelInformation(leftImage,(int)e.getX(),(int)e.getY());
                         this.setBottomText(message);
                     });
                 }
@@ -227,7 +228,8 @@ public class Controller extends BorderPane {
                 if (rightImageView != null) {
                     rightImageView.setOnMouseClicked(e -> {
                         System.out.println("Right Coordinates Info:[" + e.getX() + ", " + e.getY() + "]");
-                        String message = this.imageUtilities.getPixelInformation(rightPaneImageList.get(rightPaneImageList.size()), (int) e.getX(), (int) e.getY());
+                        String message = "x: " + e.getX() + " y: " +e.getY() + " ";
+                        message = message + this.imageUtilities.getPixelInformation(rightPaneImageList.get(rightPaneImageList.size()), (int) e.getX(), (int) e.getY());
                         this.setBottomText(message);
                     });
                 }
@@ -340,6 +342,7 @@ public class Controller extends BorderPane {
         leftPane.getChildren().setAll(r,c);
         WritableImage image = leftPane.snapshot(null, null);
         BufferedImage bImage = SwingFXUtils.fromFXImage(image, null);
+
         Stage browser = new Stage();
         FileChooser fc = new FileChooser();
         try {
@@ -347,12 +350,30 @@ public class Controller extends BorderPane {
             File f = fc.showSaveDialog (browser);
             String fileName = f.getName();
             this.imageUtilities.WriteImage(bImage, f);
+            String fileExtension = this.imageUtilities.getImageExtension(f.getName());
+            BufferedImage bimg;
+            switch(fileExtension)
+            {
+                case "raw":
+                    bimg = this.imageUtilities.openRawImage(f,width,height);
+                    leftImage = bimg;
+                    break;
+                case "pgm":
+                    bimg = this.imageUtilities.readPGM(f);
+                    leftImage = bimg;
+                    break;
+                default:
+                    bimg = ImageIO.read(f);
+                    leftImage = bimg;
+            }
+            this.displayImageInPane(bimg,leftPane);
         }
         catch (Exception e)
         {
             Alerts.showAlert(e.getMessage());
         }
         fc.setInitialDirectory(null);
+
     }
     @FXML public void createImageWithSquare(){
         int width = 200;
@@ -378,6 +399,23 @@ public class Controller extends BorderPane {
             fc.setTitle("Select File");
             File f = fc.showSaveDialog (browser);
             this.imageUtilities.WriteImage(bImage, f);
+            String fileExtension = this.imageUtilities.getImageExtension(f.getName());
+            BufferedImage bimg;
+            switch(fileExtension)
+            {
+                case "raw":
+                    bimg = this.imageUtilities.openRawImage(f,width,height);
+                    leftImage = bimg;
+                    break;
+                case "pgm":
+                    bimg = this.imageUtilities.readPGM(f);
+                    leftImage = bimg;
+                    break;
+                default:
+                    bimg = ImageIO.read(f);
+                    leftImage = bimg;
+            }
+            this.displayImageInPane(bimg,leftPane);
         }
         catch (Exception e)
         {
@@ -898,6 +936,21 @@ public class Controller extends BorderPane {
             int t2 = Integer.valueOf(getInputDialog("Canny", "Enter a new Value", "T2:"));
 
             result = this.filter.applyCanny(leftImage,sigma,t1,t2);
+            this.displayImageInPane(result,rightPane);
+        }
+        else
+        {
+            Alerts.showAlert("No hay una imagen abierta");
+        }
+    }
+
+    @FXML public void susan(){
+        BufferedImage result = null;
+        if (leftImage != null) {
+
+            int selection = Integer.valueOf(getInputDialog("S.U.S.A.N", "0: Border - 1: Corner ", "Detection Type:"));
+
+            result = this.filter.applySusan(leftImage,selection);
             this.displayImageInPane(result,rightPane);
         }
         else

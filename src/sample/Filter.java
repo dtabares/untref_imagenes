@@ -737,6 +737,131 @@ public class Filter {
         return borderFound;
     }
 
+    public BufferedImage applySusan(BufferedImage bimg, int selection){
+        BufferedImage result = this.imageUtilities.copyImageIntoAnother(bimg, BufferedImage.TYPE_INT_RGB);
+        int cornerColor = ColorUtilities.createRGB(255,0,0);
+        int borderColor = ColorUtilities.createRGB(0,255,0);
+        int color;
+        if(selection == 0){
+            color = borderColor;
+        }
+        else{
+            color = cornerColor;
+        }
+
+        //Llamo a apply Susan que me devuelve un int[][]
+        int[][] temp = this.applyRawSusan(bimg, selection);
+
+        //Transformo eso a buffered image
+        for (int i = 0; i < bimg.getWidth(); i++) {
+            for (int j = 0; j < bimg.getHeight(); j++) {
+                if(temp[i][j] == 1){
+                    result.setRGB(i,j,color);
+                }
+            }
+        }
+
+
+        return result;
+    }
+
+    private int[][] applyRawSusan(BufferedImage bimg, int selection){
+        int maskSize = 7;
+        int[][] cornersMatrix = new int[bimg.getWidth()][bimg.getHeight()];
+        int[][] borderMatrix = new int[bimg.getWidth()][bimg.getHeight()];
+        int center = 3;
+        Image im = new Image(bimg);
+        im.convertToGreyDataMatrix();
+        int[][] greyImage = im.getGreyDataMatrix();
+        int widthLimit = bimg.getWidth() - maskSize;
+        int heightLimit = bimg.getHeight() - maskSize;
+        int r0;
+        int r;
+        int threshold = 27;
+        double sr0;
+        int nr0;
+
+        //recorro la imagen
+        for (int i = 0; i < widthLimit; i++) {
+            for (int j = 0; j < heightLimit; j++) {
+                // tomo el pixel central
+                r0 = greyImage[i+center][j+center];
+                nr0 = 0;
+                // creo un array donde voy a poner el resultado de c(r,r0)
+                int[] nr0Array = new int[37];
+                int nr0Index = 0;
+                //Voy pasando la mascara verticalmente
+                for (int k = j; k < j+maskSize; k++) {
+                    //Dependiendo de la altura de la mascara, se como me tengo que mover horizontalmente
+                    //ya que la mascara es circular
+                    if (k == j || k == j+6){
+                        //eval 3
+                        for (int l = (i + center - 1); l <= (i + center + 1); l++) {
+                            r = greyImage[l][k];
+                            if (Math.abs(r - r0) < threshold){
+                                nr0Array[nr0Index] = 1;
+                            }
+                            else{
+                                nr0Array[nr0Index] = 0;
+                            }
+                            nr0Index++;
+                        }
+
+                    }
+                    else if(k == j+1 || k == j+5){
+                        // eval 5
+                        for (int l = (i + center - 2); l <= (i + center + 2); l++) {
+                            r = greyImage[l][k];
+                            if (Math.abs(r - r0) < threshold){
+                                nr0Array[nr0Index] = 1;
+                            }
+                            else{
+                                nr0Array[nr0Index] = 0;
+                            }
+                            nr0Index++;
+                        }
+                    }
+                    else{
+                        // eval 7
+                        for (int l = i; l < (i+7); l++) {
+                            r = greyImage[l][k];
+                            if (Math.abs(r - r0) < threshold){
+                                nr0Array[nr0Index] = 1;
+                            }
+                            else{
+                                nr0Array[nr0Index] = 0;
+                            }
+                            nr0Index++;
+                        }
+                    }
+                }
+
+                //Termine de comparar todas las intensidades y nr0Array esta lleno
+                //Debo calcular nr0 como la sumatoria de sus elementos
+                for (int k = 0; k < nr0Array.length; k++) {
+                    nr0 = nr0 + nr0Array[k];
+                }
+                sr0 = 1.0 - (nr0/37.0);
+
+                if(sr0 >= 0.40 && sr0 < 0.55){
+                    //border
+                    borderMatrix[i+center][j+center] = 1;
+                }
+                else if(sr0 >= 0.60){
+                    //corner
+                    cornersMatrix[i+center][j+center] = 1;
+                }
+
+
+            }
+        }
+
+        if (selection == 0){
+            return borderMatrix;
+        }
+        return cornersMatrix;
+    }
+
     private int[][] applyBilateralFilterToChannel(int[][] channelData, double sigma_r, double sigma_s, Mask mask, int imageWidth, int imageHeight){
         int[][] filteredChannel = this.imageUtilities.cloneChannelData(channelData);
         int widthLimit = imageWidth - mask.getSize();

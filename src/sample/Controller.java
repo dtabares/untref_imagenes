@@ -906,6 +906,21 @@ public class Controller extends BorderPane {
         }
     }
 
+    @FXML public void susan(){
+        BufferedImage result = null;
+        if (leftImage != null) {
+
+            int selection = Integer.valueOf(getInputDialog("S.U.S.A.N", "0: Border - 1: Corner ", "Detection Type:"));
+
+            result = this.filter.applySusan(leftImage,selection);
+            this.displayImageInPane(result,rightPane);
+        }
+        else
+        {
+            Alerts.showAlert("No hay una imagen abierta");
+        }
+    }
+
     @FXML public void hough(){
         double angle = Double.valueOf(getInputDialog("Hough", "Enter a new Value", "Detection Percent:"));
         Hough h = new Hough((360),400);

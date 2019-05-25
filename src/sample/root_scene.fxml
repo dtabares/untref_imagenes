@@ -135,6 +135,7 @@
                           <VBox layoutX="0.0" layoutY="0.0" prefHeight="284.0" prefWidth="200.0">
                               <children>
                                   <Button mnemonicParsing="false" onAction="#canny" prefWidth="205.0" text="Canny" />
+                                  <Button mnemonicParsing="false" onAction="#susan" prefWidth="205.0" text="S.U.S.A.N" />
                                   <Button mnemonicParsing="false" onAction="#hough" prefWidth="205.0" text="Hough" />
                                   <Button mnemonicParsing="false" onAction="#drawLine" prefWidth="205.0" text="Draw Line" />
                               </children>

@@ -960,14 +960,15 @@ public class Controller extends BorderPane {
     }
 
     @FXML public void getHoughLines(){
-        double angle = Double.valueOf(getInputDialog("Hough", "Enter a new Value", "Detection Percent:"));
+        double angle = Double.valueOf(getInputDialog("Hough", "Enter a new Value", "Max Percent:"));
         Hough h = new Hough((360),400);
         this.displayImageInPane(h.findLines(leftImage, angle, Hough.GeometricType.LINE),rightPane);
     }
 
     @FXML public void getHoughCircles(){
-        double angle = Double.valueOf(getInputDialog("Hough", "Enter a new Value", "Detection Percent:"));
-        Hough h = new Hough(leftImage);
+        double angle = Double.valueOf(getInputDialog("Hough", "Enter a new Value", "Max Percent:"));
+        double maxRadius = Double.valueOf(getInputDialog("Hough", "Enter a new Value", "Max Radius:"));
+        Hough h = new Hough(leftImage, maxRadius);
         this.displayImageInPane(h.findLines(leftImage, angle, Hough.GeometricType.CIRCLE),rightPane);
     }
 

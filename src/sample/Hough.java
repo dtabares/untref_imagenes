@@ -27,15 +27,16 @@ public class Hough {
         }
     }
 
-    public Hough(BufferedImage bimg){
+    public Hough(BufferedImage bimg, double maxRadius){
         imageUtilities = new ImageUtilities();
         int width = bimg.getWidth();
         int height = bimg.getHeight();
-        int radiusMax = (int) Math.round(Math.sqrt(Math.pow(width,2) + Math.pow(height,2)));
-        this.cumulativeMatrixCircle = new int[width][height][radiusMax];
+        int r = (int) Math.round(maxRadius);
+        //int radiusMax = (int) Math.round(Math.sqrt(Math.pow(width,2) + Math.pow(height,2)));
+        this.cumulativeMatrixCircle = new int[width][height][r];
         this.xCenterArray = new int[width];
         this.yCenterArray = new int[height];
-        this.radiusArray = new double[radiusMax];
+        this.radiusArray = new double[r];
         if (cumulativeMatrixCircle!=null){
             for (int i = 0; i < cumulativeMatrixCircle.length; i++) {
                 for (int j = 0; j < cumulativeMatrixCircle[0].length; j++) {
@@ -212,7 +213,7 @@ public class Hough {
     }
 
     public BufferedImage drawLine(BufferedImage bimg, double angle, double radius){
-        BufferedImage newBimg = imageUtilities.copyImageIntoAnother(bimg);
+        BufferedImage newBimg = imageUtilities.copyImageIntoAnother(bimg,13);
         angle = angle * Math.PI / 180;
         Image image = new Image(newBimg);
         image.convertToGreyDataMatrix();
@@ -243,7 +244,7 @@ public class Hough {
     }
 
     public BufferedImage drawCircle(BufferedImage bimg, int xCenter, int yCenter, double circleRadius){
-        BufferedImage newBimg = imageUtilities.copyImageIntoAnother(bimg);
+        BufferedImage newBimg = imageUtilities.copyImageIntoAnother(bimg,13);
         Image image = new Image(newBimg);
         image.convertToGreyDataMatrix();
 

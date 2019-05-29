@@ -4,7 +4,6 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
-<?import javafx.scene.text.Text?>
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="650.0" prefWidth="1700.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
   <bottom>
@@ -140,6 +139,7 @@
                                   <Button mnemonicParsing="false" onAction="#drawLine" prefWidth="205.0" text="Draw Line" />
                                   <Button mnemonicParsing="false" onAction="#getHoughCircles" prefWidth="205.0" text="Hough Circles" />
                                   <Button mnemonicParsing="false" onAction="#drawCircle" prefWidth="205.0" text="Draw Circle" />
+                                  <Button mnemonicParsing="false" onAction="#activeContours" prefWidth="205.0" text="Active Contours" />
                               </children>
                           </VBox>
                       </children>

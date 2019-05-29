@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="779.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="sample.ImageSequenceController">
+  <children>
+    <BorderPane layoutX="0.0" layoutY="0.0" prefHeight="400.0" prefWidth="779.0">
+      <center>
+        <ScrollPane prefHeight="200.0" prefWidth="200.0">
+          <content>
+            <AnchorPane fx:id="imagePane" minHeight="0.0" minWidth="0.0" prefHeight="385.0" prefWidth="559.0" />
+          </content>
+        </ScrollPane>
+      </center>
+      <left>
+        <Accordion>
+          <expandedPane>
+            <TitledPane fx:id="x1" animated="false" text="Actions">
+              <content>
+                <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                  <children>
+                    <VBox layoutX="0.0" layoutY="0.0" prefHeight="368.0" prefWidth="200.0">
+                      <children>
+                        <Button mnemonicParsing="false" onAction="#next" prefWidth="205.0" text="Next" />
+                        <Button mnemonicParsing="false" onAction="#apply" prefWidth="200.0" text="Apply Contours" />
+                        <Button mnemonicParsing="false" onAction="#play" prefWidth="200.0" text="Play Sequence" />
+                        <Button mnemonicParsing="false" onAction="#reset" prefWidth="205.0" text="Reset" />
+                      </children>
+                    </VBox>
+                  </children>
+                </AnchorPane>
+              </content>
+            </TitledPane>
+          </expandedPane>
+          <panes>
+            <fx:reference source="x1" />
+          </panes>
+        </Accordion>
+      </left>
+    </BorderPane>
+  </children>
+</AnchorPane>

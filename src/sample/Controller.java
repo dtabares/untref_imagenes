@@ -23,6 +23,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.fxml.FXML;
 import javafx.scene.image.ImageView;
+import sun.plugin.javascript.navig.Anchor;
 
 import static sample.InterfaceHelper.getInputDialog;
 
@@ -34,6 +35,7 @@ public class Controller extends BorderPane {
     private List<BufferedImage> historyImageList;
     private ImageUtilities imageUtilities;
     private Filter filter;
+    private ImageSequenceController imageSequenceController;
 
     @FXML private AnchorPane leftPane;
     @FXML private AnchorPane rightPane;
@@ -48,7 +50,7 @@ public class Controller extends BorderPane {
         BufferedImage bimg = imageUtilities.openRawImage(new File("src/sample/lena512.raw"),512,512);
         leftImage = bimg;
         this.displayImageInPane(bimg,leftPane);
-        this.test();
+        //this.test();
     }
 
     //Top Menu
@@ -987,6 +989,20 @@ public class Controller extends BorderPane {
         Hough h = new Hough( 10,10);
         this.displayImageInPane(h.drawCircle(leftImage,x,y, radiusCircle),rightPane);
         //this.setBottomText("X: " + x + " Y: " + y + " Radius: " + radius);
+    }
+
+    @FXML public void activeContours() throws Exception{
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("image_sequence_scene.fxml"));
+            Parent parent = (Parent) fxmlLoader.load();
+            Stage activeContoursStage = new Stage();
+            activeContoursStage.setTitle("Active Contours");
+            activeContoursStage.setScene(new Scene(parent));
+            activeContoursStage.show();
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     //Panels

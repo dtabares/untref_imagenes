@@ -10,6 +10,7 @@ public class ImageSelection {
     private int height;
     private boolean firstClickCoordinatesSubmitted;
     private boolean secondClickCoordinatesSubmitted;
+    private int size;
 
     public ImageSelection() {
         this.firstClickCoordinatesSubmitted = false;
@@ -78,5 +79,18 @@ public class ImageSelection {
 
         this.height = this.yFinal - this.yOrigin;
         this.width = this.xFinal - this.xOrigin;
+        this.size = this.width * this.height;
+    }
+
+    public int getxFinal() {
+        return xFinal;
+    }
+
+    public int getyFinal() {
+        return yFinal;
+    }
+
+    public int getSize() {
+        return size;
     }
 }

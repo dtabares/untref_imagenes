@@ -13,12 +13,12 @@ public class ActiveContours {
     List<Pixel> lout;
 
 
-    public ActiveContours(BufferedImage bimg){
+    public ActiveContours(Image image, List<Pixel> lin, List<Pixel> lout){
         imageUtilities = new ImageUtilities();
-        this.bimg = bimg;
-        phiMatrix = new int[bimg.getWidth()][bimg.getHeight()];
-        lin = new LinkedList<>();
-        lout = new LinkedList<>();
+        phiMatrix = new int[image.getWidth()][image.getHeight()];
+        this.lin = lin;
+        this.lout = lout;
+        this.bimg = image.getBufferedImage();
     }
 
     public void setInitialCurve(){
@@ -48,16 +48,23 @@ public class ActiveContours {
 
     public BufferedImage paintContours(){
 
-        BufferedImage bimg = imageUtilities.copyImageIntoAnother(this.bimg) ;
+        BufferedImage bimg = imageUtilities.copyImageIntoAnother(this.bimg);
         //Pinto lin
         for (Pixel p: lin){
-            bimg.setRGB(p.x,p.y, ColorUtilities.createRGB(255,0,0));
+            bimg.setRGB(p.getX(),p.getY(), ColorUtilities.createRGB(255,0,0));
         }
         //Pinto lout
         for (Pixel p: lout) {
-            bimg.setRGB(p.x,p.y, ColorUtilities.createRGB(0,0,255));
+            bimg.setRGB(p.getX(),p.getY(), ColorUtilities.createRGB(246,219,41));
         }
         return bimg;
     }
 
+    public List<Pixel> getLin() {
+        return lin;
+    }
+
+    public List<Pixel> getLout() {
+        return lout;
+    }
 }

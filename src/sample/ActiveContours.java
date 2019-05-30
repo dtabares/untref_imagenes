@@ -11,17 +11,21 @@ public class ActiveContours {
     BufferedImage bimg; //
     List<Pixel> lin;
     List<Pixel> lout;
+    double objectTheta;
+    double backgroundTheta;
 
 
-    public ActiveContours(Image image, List<Pixel> lin, List<Pixel> lout){
+    public ActiveContours(Image image, List<Pixel> lin, List<Pixel> lout,double objectTheta, double backgroundTheta){
         imageUtilities = new ImageUtilities();
         phiMatrix = new int[image.getWidth()][image.getHeight()];
         this.lin = lin;
         this.lout = lout;
         this.bimg = image.getBufferedImage();
+        this.objectTheta = objectTheta;
+        this.backgroundTheta = backgroundTheta;
     }
 
-    public void setInitialCurve(){
+    public void apply(){
         /*
         ************ Aca hay que crear el famoso cuadrado y calcular el promedio, actualizar lin y lout y la funcion phi como estado inicial ************
         Algoritmo (realizar n veces para frenarlo por las dudas)

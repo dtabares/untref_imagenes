@@ -23,8 +23,9 @@ public class ImageSequenceController {
     private Image image;
     private ImageSelection objectSelection;
     private ImageSelection backgroundSelection;
-    List<Pixel> lin;
-    List<Pixel> lout;
+    private List<Pixel> lin;
+    private List<Pixel> lout;
+    private double backgroundTheta;
 
     public void initialize() throws Exception{
         counter = 0;
@@ -60,13 +61,19 @@ public class ImageSequenceController {
     @FXML public void apply(){
         //Si estoy en el primer frame
         if(counter == 1){
-            double backgroundPhi = this.calculatePhi(this.backgroundSelection);
-            double objectPhi = this.calculatePhi(this.objectSelection);
+            backgroundTheta = this.calculateTheta(this.backgroundSelection);
+            double objectTheta = this.calculateTheta(this.objectSelection);
             this.generateLinAndLoutBasedOnObjectSelection();
-            ActiveContours activeContours = new ActiveContours(this.image, lin,lout);
+            ActiveContours activeContours = new ActiveContours(this.image, lin,lout,objectTheta, backgroundTheta);
+            activeContours.apply();
+            //this.lin = activeContours.getLin();
+            //this.lout = activeContours.getLout();
             WritableImage wimg = imageUtilities.readImage(activeContours.paintContours());
             ImageView imageView = new ImageView(wimg);
             imagePane.getChildren().setAll(imageView);
+        }
+        else{
+            //double objectPhi = this.calculateTheta(this.objectSelection);
         }
         //ActiveContours activeContours = new ActiveContours();
     }
@@ -150,20 +157,20 @@ public class ImageSequenceController {
         });
     }
 
-    private double calculatePhi(ImageSelection selection){
-        double phi = 0.0;
+    private double calculateTheta(ImageSelection selection){
+        double theta = 0.0;
 
         int[][] imageDataMatrix = this.image.getGreyDataMatrix();
         for (int i = selection.getxOrigin(); i <= selection.getxFinal(); i++) {
             for (int j = selection.getyOrigin(); j <= selection.getyFinal(); j++) {
-                phi += (double) imageDataMatrix[i][j];
+                theta += (double) imageDataMatrix[i][j];
             }
         }
 
-        phi = phi /(double) selection.getSize();
-        System.out.println("Phi: " + phi);
+        theta = theta /(double) selection.getSize();
+        System.out.println("Theta: " + theta);
 
-        return phi;
+        return theta;
     }
 
 

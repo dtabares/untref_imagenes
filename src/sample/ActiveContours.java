@@ -58,12 +58,16 @@ public class ActiveContours {
     }
 
     public void apply(){
-        
+        makeMagic();
     }
 
-    public int getFd(){
-        //Implementar funcion logaritmica aca
-        return 0;
+    public int getFd(Pixel p, double objectTheta){
+        //***** Tomo un X que pertenece a Lout, tita(x) color del pixel y tita1 es el color del objeto, si || theta(x) - theta1 || < 10 entonces Fd = 1
+        if (Math.sqrt(Math.pow(p.getValue(),2)-Math.pow(objectTheta,2))<10){
+            return 1;
+        }
+
+        return -1;
     }
 
     public void makeMagic(){
@@ -71,7 +75,7 @@ public class ActiveContours {
         while (counter < 1000){
             //2. Para cada x en Lout si Fd > 0 lo sacamos de Lout y lo ponemos en Lin, luego para cada vecino donde Phi vale 3, hay que agregarlo a lin y actualizarlo en phi como 1
             for (Pixel p: lout) {
-                if (this.getFd()>0){
+                if (this.getFd(p,this.objectTheta)>0){
                     lout.remove(p);
                     lin.add(p);
                     int x = p.getX();
@@ -97,7 +101,7 @@ public class ActiveContours {
             //3. Hecho el paso 2 revisar los pixels de Lin ya que pueden ser ahora puntos interiores al objeto, si es asi se sacan de lin y se maracn en phi como -3
             //4. Para cada pixel de lin si Fd < 0 se borran de lin y se agregan a lout se miran los vecinos y si phi vale -3 entonces se agregan a lin y se marcan en phi como 1
             for (Pixel p: lin) {
-                if (this.getFd()<0){
+                if (this.getFd(p, this.objectTheta)<0){
                     lin.remove(p);
                     lout.add(p);
                     int x = p.getX();

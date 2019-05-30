@@ -11,13 +11,17 @@ public class ActiveContours {
     BufferedImage bimg; //
     List<Pixel> lin;
     List<Pixel> lout;
+    double objectTheta;
+    double backgroundTheta;
 
 
-    public ActiveContours(Image image, List<Pixel> lin, List<Pixel> lout){
+    public ActiveContours(Image image, List<Pixel> lin, List<Pixel> lout,double objectTheta, double backgroundTheta){
         imageUtilities = new ImageUtilities();
         this.lin = lin;
         this.lout = lout;
         this.bimg = image.getBufferedImage();
+        this.objectTheta = objectTheta;
+        this.backgroundTheta = backgroundTheta;
         phiMatrix = new int[image.getWidth()][image.getHeight()];
         this.fillPhiMatrix();
     }
@@ -51,6 +55,10 @@ public class ActiveContours {
                 phiMatrix[i][j] = -3;
             }
         }
+    }
+
+    public void apply(){
+        
     }
 
     public int getFd(){

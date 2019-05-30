@@ -15,23 +15,105 @@ public class ActiveContours {
 
     public ActiveContours(Image image, List<Pixel> lin, List<Pixel> lout){
         imageUtilities = new ImageUtilities();
-        phiMatrix = new int[image.getWidth()][image.getHeight()];
         this.lin = lin;
         this.lout = lout;
         this.bimg = image.getBufferedImage();
+        phiMatrix = new int[image.getWidth()][image.getHeight()];
+        this.fillPhiMatrix();
     }
 
-    public void setInitialCurve(){
-        /*
-        ************ Aca hay que crear el famoso cuadrado y calcular el promedio, actualizar lin y lout y la funcion phi como estado inicial ************
-        Algoritmo (realizar n veces para frenarlo por las dudas)
-        1. Definir el cuadradito dentro del objeto de interes y definir Lin Lout
-        2. Para cada x en Lout si Fd > 0 lo sacamos de Lout y lo ponemos en Lin, luego para cada vecino donde Phy vale 3, hay que agregarlo a lin y actualizarlo en phi como 1
-        3. Hecho el paso 2 revisar los pixels de Lin ya que pueden ser ahora puntos interiores al objeto, si es asi se sacan de lin y se maracn en phi como -3
-        4. Para cada pixel de lin si Fd < 0 se borran de lin y se agregan a lout se miran los vecinos y si phi vale -3 entonces se agregan a lin y se marcan en phi como 1
-        5. Se hace el paso 3 pero al reves
-        NOTA: la funcion phi inicial define un cuadradito con todos valores -3, el borde del cuadrado es 1, el borde exterior es -1 y todo el resto es 3
-         */
+    private void fillPhiMatrix() {
+        //NOTA: la funcion phi inicial define un cuadradito con todos valores -3, el borde del cuadrado es -1, el borde exterior es 1 y todo el resto es 3
+        //Lleno la matriz de 3
+        for (int i = 0; i < phiMatrix.length; i++) {
+            for (int j = 0; j < phiMatrix[0].length; j++) {
+                phiMatrix[i][j] = 3;
+            }
+        }
+        //Recorro lout y relleno
+        for (Pixel p: lout) {
+            phiMatrix[p.getX()][p.getY()] = 1;
+        }
+        //Recorro lin y relleno
+        for (Pixel p: lin) {
+            phiMatrix[p.getX()][p.getY()] = -1;
+        }
+
+        //Caluclo maximos y minimos del borde interion
+        int xMin = this.getMinBorderXPosition();
+        int xMax = this.getMaxBorderXPosition();
+        int yMix = this.getMinBorderYPosition();
+        int yMax = this.getMaxBorderYPosition();
+
+        //Lleno el interior del objeto
+        for (int i = xMin + 1; i < xMax; i++) {
+            for (int j = yMix + 1; j < yMax; j++) {
+                phiMatrix[i][j] = -3;
+            }
+        }
+    }
+
+    public int getFd(){
+        //Implementar funcion logaritmica aca
+        return 0;
+    }
+
+    public void makeMagic(){
+        int counter = 0; //contador de control para no loopear de forma infinita
+        while (counter < 1000){
+            //2. Para cada x en Lout si Fd > 0 lo sacamos de Lout y lo ponemos en Lin, luego para cada vecino donde Phi vale 3, hay que agregarlo a lin y actualizarlo en phi como 1
+            for (Pixel p: lout) {
+                if (this.getFd()>0){
+                    lout.remove(p);
+                    lin.add(p);
+                    int x = p.getX();
+                    int y = p.getY();
+                    if(phiMatrix[x-1][y] == 3){
+                        lin.add(new Pixel(x-1,y,bimg.getRGB(x-1,y)));
+                        phiMatrix[x-1][y]=1;
+                    }
+                    if(phiMatrix[x+1][y] == 3){
+                        lin.add(new Pixel(x+1,y,bimg.getRGB(x+1,y)));
+                        phiMatrix[x+1][y]=1;
+                    }
+                    if(phiMatrix[x][y-1] == 3){
+                        lin.add(new Pixel(x,y-1,bimg.getRGB(x,y-1)));
+                        phiMatrix[x][y-1]=1;
+                    }
+                    if(phiMatrix[x][y+1] == 3){
+                        lin.add(new Pixel(x,y+1,bimg.getRGB(x,y+1)));
+                        phiMatrix[x][y+1]=1;
+                    }
+                }
+            }
+            //3. Hecho el paso 2 revisar los pixels de Lin ya que pueden ser ahora puntos interiores al objeto, si es asi se sacan de lin y se maracn en phi como -3
+            //4. Para cada pixel de lin si Fd < 0 se borran de lin y se agregan a lout se miran los vecinos y si phi vale -3 entonces se agregan a lin y se marcan en phi como 1
+            for (Pixel p: lin) {
+                if (this.getFd()<0){
+                    lin.remove(p);
+                    lout.add(p);
+                    int x = p.getX();
+                    int y = p.getY();
+                    if(phiMatrix[x-1][y] == -3){
+                        lin.add(new Pixel(x-1,y,bimg.getRGB(x-1,y)));
+                        phiMatrix[x-1][y]=1;
+                    }
+                    if(phiMatrix[x+1][y] == -3){
+                        lin.add(new Pixel(x+1,y,bimg.getRGB(x+1,y)));
+                        phiMatrix[x+1][y]=1;
+                    }
+                    if(phiMatrix[x][y-1] == -3){
+                        lin.add(new Pixel(x,y-1,bimg.getRGB(x,y-1)));
+                        phiMatrix[x][y-1]=1;
+                    }
+                    if(phiMatrix[x][y+1] == -3){
+                        lin.add(new Pixel(x,y+1,bimg.getRGB(x,y+1)));
+                        phiMatrix[x][y+1]=1;
+                    }
+                }
+            }
+            //5. Se hace el paso 3 pero al reves
+        }
     }
 
     public void expand(){
@@ -39,10 +121,6 @@ public class ActiveContours {
     }
 
     public void contract(){
-
-    }
-
-    public void updatePhiMatrix(){
 
     }
 
@@ -66,5 +144,49 @@ public class ActiveContours {
 
     public List<Pixel> getLout() {
         return lout;
+    }
+
+    public int getMaxBorderXPosition(){
+        int max = 0;
+        for (Pixel p: lin
+             ) {
+            if(p.getX() > max){
+                max = p.getX();
+            }
+        }
+        return max;
+    }
+
+    public int getMinBorderXPosition(){
+        int min = phiMatrix.length;
+        for (Pixel p: lin
+        ) {
+            if(p.getX() < min){
+                min = p.getX();
+            }
+        }
+        return min;
+    }
+
+    public int getMaxBorderYPosition(){
+        int max = 0;
+        for (Pixel p: lin
+        ) {
+            if(p.getY() > max){
+                max = p.getY();
+            }
+        }
+        return max;
+    }
+
+    public int getMinBorderYPosition(){
+        int min = phiMatrix[0].length;
+        for (Pixel p: lin
+        ) {
+            if(p.getY() < min){
+                min = p.getY();
+            }
+        }
+        return min;
     }
 }

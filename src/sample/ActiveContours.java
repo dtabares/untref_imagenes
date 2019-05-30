@@ -46,12 +46,12 @@ public class ActiveContours {
         //Caluclo maximos y minimos del borde interion
         int xMin = this.getMinBorderXPosition();
         int xMax = this.getMaxBorderXPosition();
-        int yMix = this.getMinBorderYPosition();
+        int yMin = this.getMinBorderYPosition();
         int yMax = this.getMaxBorderYPosition();
 
         //Lleno el interior del objeto
         for (int i = xMin + 1; i < xMax; i++) {
-            for (int j = yMix + 1; j < yMax; j++) {
+            for (int j = yMin + 1; j < yMax; j++) {
                 phiMatrix[i][j] = -3;
             }
         }
@@ -125,6 +125,7 @@ public class ActiveContours {
                 }
             }
             //5. Se hace el paso 3 pero al reves
+            counter++;
         }
     }
 

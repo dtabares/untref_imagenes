@@ -132,7 +132,7 @@ public class ActiveContours {
                 int upperPhi = phiMatrix[x][y-1];
                 int lowerPhi = phiMatrix[x][y+1];
 
-                if (leftPhi != 1 && rightPhi != 1 && upperPhi != 1 && lowerPhi != 1){
+                if (leftPhi < 0 && rightPhi < 0  && upperPhi < 0 && lowerPhi < 0 ){
                     //iterator.remove();
                     toBeRemoved.add(p);
                     phiMatrix[x][y] = -3;
@@ -199,7 +199,7 @@ public class ActiveContours {
                 int upperPhi = phiMatrix[x][y-1];
                 int lowerPhi = phiMatrix[x][y+1];
 
-                if (leftPhi != -1 && rightPhi != -1 && upperPhi != -1 && lowerPhi != -1){
+                if (leftPhi > 0 && rightPhi > 0  && upperPhi > 0  && lowerPhi > 0 ){
                     //iterator.remove();
                     toBeRemoved.add(p);
                     phiMatrix[x][y] = 3;
@@ -210,15 +210,16 @@ public class ActiveContours {
 
             //5. Hago el chequeo para ver si terminamos
             finished = this.finished();
-            System.out.println(counter);
+
 
             counter++;
         }
+        System.out.println(counter);
     }
 
     private int calculateFd(Pixel p){
         //***** Tomo un X que pertenece a Lout, tita(x) color del pixel y tita1 es el color del objeto, si || theta(x) - theta1 || < 10 entonces Fd = 1
-        if (Math.sqrt(Math.pow(p.getValue(),2)-Math.pow(this.objectTheta,2))<10){
+        if (Math.sqrt(Math.pow(p.getValue(),2)-Math.pow(this.objectTheta,2)) < 10){
             return 1;
         }
 

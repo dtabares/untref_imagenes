@@ -1,18 +1,15 @@
 package sample;
 
 import java.awt.image.BufferedImage;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.ListIterator;
+import java.util.*;
 
 public class ActiveContours {
 
     ImageUtilities imageUtilities;
     int [][] phiMatrix;
     BufferedImage bimg; //
-    List<Pixel> lin;
-    List<Pixel> lout;
+    ArrayList<Pixel> lin;
+    ArrayList<Pixel> lout;
     double objectTheta;
     double backgroundTheta;
 
@@ -29,8 +26,8 @@ public class ActiveContours {
 
     public ActiveContours(Image image, List<Pixel> lin, List<Pixel> lout,double objectTheta, int[][] phiMatrix){
         imageUtilities = new ImageUtilities();
-        this.lin = lin;
-        this.lout = lout;
+        this.lin = this.cloneList(lin);
+        this.lout = this.cloneList(lout);
         this.bimg = image.getBufferedImage();
         this.objectTheta = objectTheta;
         this.phiMatrix = phiMatrix;
@@ -68,6 +65,8 @@ public class ActiveContours {
     }
 
     public void apply(){
+        ArrayList<Pixel> toBeRemoved = new ArrayList<>();
+        ArrayList<Pixel> toBeAdded = new ArrayList<>();
         int counter = 0; //contador de control para no loopear de forma infinita
         boolean finished = false;
         while (counter < 100000 && !finished){
@@ -78,7 +77,8 @@ public class ActiveContours {
                 Pixel p = iterator.next();
                 if (this.calculateFd(p) > 0){
                     //lout.remove(p);
-                    iterator.remove();
+                    //iterator.remove();
+                    toBeRemoved.add(p);
                     lin.add(p);
                     int x = p.getX();
                     int y = p.getY();
@@ -87,31 +87,41 @@ public class ActiveContours {
 
                     //Reviso a izquierda
                     if(phiMatrix[x-1][y] == 3){
-                        lout.add(new Pixel(x-1,y,bimg.getRGB(x-1,y)));
+                        //lout.add(new Pixel(x-1,y,bimg.getRGB(x-1,y)));
+                        toBeAdded.add(new Pixel(x-1,y,bimg.getRGB(x-1,y)));
                         phiMatrix[x-1][y]=1;
                     }
                     //Reviso a derecha
                     if(phiMatrix[x+1][y] == 3){
-                        lout.add(new Pixel(x+1,y,bimg.getRGB(x+1,y)));
+                        //lout.add(new Pixel(x+1,y,bimg.getRGB(x+1,y)));
+                        toBeAdded.add(new Pixel(x+1,y,bimg.getRGB(x+1,y)));
                         phiMatrix[x+1][y]=1;
                     }
 
                     //Reviso a arriba
                     if(phiMatrix[x][y-1] == 3){
-                        lout.add(new Pixel(x,y-1,bimg.getRGB(x,y-1)));
+                        //lout.add(new Pixel(x,y-1,bimg.getRGB(x,y-1)));
+                        toBeAdded.add(new Pixel(x,y-1,bimg.getRGB(x,y-1)));
                         phiMatrix[x][y-1]=1;
                     }
                     //Reviso a abajo
                     if(phiMatrix[x][y+1] == 3){
-                        lout.add(new Pixel(x,y+1,bimg.getRGB(x,y+1)));
+                        //lout.add(new Pixel(x,y+1,bimg.getRGB(x,y+1)));
+                        toBeAdded.add(new Pixel(x,y+1,bimg.getRGB(x,y+1)));
                         phiMatrix[x][y+1]=1;
                     }
                 }
             }
+            this.lout.removeAll(toBeRemoved);
+            this.lout.addAll(toBeAdded);
+            toBeRemoved.clear();
+            toBeAdded.clear();
             //2. Luego del paso anterior, algunos pixels de Lin ahora pueden ser interiores, entonces hay que recorrer
             //cada p de Lin, y buscar quien NO tiene un vecino Lout (phi == 1). El que no tenga, lo sacamos de Lin y seteamos
             // phi(p) = -3.
-            for( iterator = lin.listIterator(); iterator.hasNext();){
+
+            iterator = this.lin.listIterator();
+            while(iterator.hasNext()){
                 Pixel p = iterator.next();
                 // Ojo aca con los bordes no estamos validando y nos podemos ir a out of bounds
                 int x = p.getX();
@@ -123,45 +133,62 @@ public class ActiveContours {
                 int lowerPhi = phiMatrix[x][y+1];
 
                 if (leftPhi != 1 && rightPhi != 1 && upperPhi != 1 && lowerPhi != 1){
-                    iterator.remove();
+                    //iterator.remove();
+                    toBeRemoved.add(p);
                     phiMatrix[x][y] = -3;
                 }
             }
+
+            this.lin.removeAll(toBeRemoved);
+            toBeRemoved.clear();
 
 
             //3.Luego vuelvo a recorrer los Lin y les calculo Fd. Si Fd < 0, hay que borrarlo de Lin y agregarlo a Lout.
             //De ese pixel, reviso los 4 vecinos(pv), y los que sean phi(pv) == -3 los agrego a lin y cambio phi(pv) == -1
 
             // Ojo aca con los bordes no estamos validando y nos podemos ir a out of bounds
-            for(iterator = lin.listIterator(); iterator.hasNext();){
+            iterator = this.lin.listIterator();
+            while(iterator.hasNext()){
                 Pixel p = iterator.next();
                 if (this.calculateFd(p)<0){
-                    iterator.remove();
+
+                    //iterator.remove();
+                    toBeRemoved.add(p);
                     lout.add(p);
                     int x = p.getX();
                     int y = p.getY();
                     if(phiMatrix[x-1][y] == -3){
-                        lin.add(new Pixel(x-1,y,bimg.getRGB(x-1,y)));
+                        //lin.add(new Pixel(x-1,y,bimg.getRGB(x-1,y)));
+                        toBeAdded.add(new Pixel(x-1,y,bimg.getRGB(x-1,y)));
                         phiMatrix[x-1][y]=-1;
                     }
                     if(phiMatrix[x+1][y] == -3){
-                        lin.add(new Pixel(x+1,y,bimg.getRGB(x+1,y)));
+                        //lin.add(new Pixel(x+1,y,bimg.getRGB(x+1,y)));
+                        toBeAdded.add(new Pixel(x+1,y,bimg.getRGB(x+1,y)));
                         phiMatrix[x+1][y]=-1;
                     }
                     if(phiMatrix[x][y-1] == -3){
-                        lin.add(new Pixel(x,y-1,bimg.getRGB(x,y-1)));
+                        //lin.add(new Pixel(x,y-1,bimg.getRGB(x,y-1)));
+                        toBeAdded.add(new Pixel(x,y-1,bimg.getRGB(x,y-1)));
                         phiMatrix[x][y-1]=-1;
                     }
                     if(phiMatrix[x][y+1] == -3){
-                        lin.add(new Pixel(x,y+1,bimg.getRGB(x,y+1)));
+                        //lin.add(new Pixel(x,y+1,bimg.getRGB(x,y+1)));
+                        toBeAdded.add(new Pixel(x,y+1,bimg.getRGB(x,y+1)));
                         phiMatrix[x][y+1]=-1;
                     }
                 }
             }
+            this.lin.removeAll(toBeRemoved);
+            this.lout.addAll(toBeAdded);
+            toBeRemoved.clear();
+            toBeAdded.clear();
+
             //4. Vuelvo a loopear por cada pixel de Lout, ya que algunos pixels pudieron transformarse en exteriores.
             //Si p NO tiene vecino Lin, quiere decir que es un Lout aislado que ahora debe ser parte del fondo, entonces
             //lo eliminamos de Lout y seteamos phi(p) = 3
-            for(iterator = lout.listIterator(); iterator.hasNext();){
+            iterator = this.lout.listIterator();
+            while(iterator.hasNext()){
                 Pixel p = iterator.next();
                 int x = p.getX();
                 int y = p.getY();
@@ -172,14 +199,16 @@ public class ActiveContours {
                 int lowerPhi = phiMatrix[x][y+1];
 
                 if (leftPhi != -1 && rightPhi != -1 && upperPhi != -1 && lowerPhi != -1){
-                    iterator.remove();
+                    //iterator.remove();
+                    toBeRemoved.add(p);
                     phiMatrix[x][y] = 3;
                 }
             }
-
+            this.lout.removeAll(toBeRemoved);
+            toBeRemoved.clear();
 
             //5. Hago el chequeo para ver si terminamos
-            finished = this.finshed();
+            finished = this.finished();
             System.out.println(counter);
 
             counter++;
@@ -195,7 +224,7 @@ public class ActiveContours {
         return -1;
     }
 
-    private boolean finshed(){
+    private boolean finished(){
 
         for (Pixel p: lin) {
             if (this.calculateFd(p)<0){
@@ -284,14 +313,15 @@ public class ActiveContours {
         return min;
     }
 
-    private LinkedList<Pixel> cloneList(List<Pixel> original){
-        LinkedList<Pixel> clonedList = new LinkedList<>();
+    private ArrayList<Pixel> cloneList(List<Pixel> original){
+        ArrayList<Pixel> clonedList = new ArrayList<>();
         ListIterator<Pixel> iterator = original.listIterator();
         while( iterator.hasNext()) {
             Pixel original_pixel = iterator.next();
             Pixel cloned_pixel = new Pixel(original_pixel.getX(), original_pixel.getY(), original_pixel.getValue());
             clonedList.add(cloned_pixel);
         }
+
         return clonedList;
     }
 }

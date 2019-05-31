@@ -70,7 +70,7 @@ public class ImageSequenceController {
         ActiveContours activeContours;
         //Si estoy en el primer frame
         if(counter == 1){
-            this.backgroundTheta = this.calculateTheta(this.backgroundSelection);
+            //this.backgroundTheta = this.calculateTheta(this.backgroundSelection);
             this.objectTheta = this.calculateTheta(this.objectSelection);
             this.generateLinAndLoutBasedOnObjectSelection();
             activeContours = new ActiveContours(this.image, lin,lout,objectTheta);

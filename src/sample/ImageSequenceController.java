@@ -25,7 +25,9 @@ public class ImageSequenceController {
     private ImageSelection backgroundSelection;
     private List<Pixel> lin;
     private List<Pixel> lout;
+    int [][] phiMatrix;
     private double backgroundTheta;
+    private double objectTheta;
 
     public void initialize() throws Exception{
         counter = 0;
@@ -44,6 +46,9 @@ public class ImageSequenceController {
     @FXML public void reset(){
         counter = 0;
         WritableImage wimg = imageUtilities.readImage(is.imageList.get(counter));
+        BufferedImage bimg = SwingFXUtils.fromFXImage(wimg, null);
+        image = new Image(bimg);
+        image.convertToGreyDataMatrix();
         ImageView imageView = new ImageView(wimg);
         imagePane.getChildren().setAll(imageView);
         counter ++;
@@ -52,6 +57,9 @@ public class ImageSequenceController {
     @FXML public void next(){
         if (counter < is.imageList.size()) {
             WritableImage wimg = imageUtilities.readImage(is.imageList.get(counter));
+            BufferedImage bimg = SwingFXUtils.fromFXImage(wimg, null);
+            image = new Image(bimg);
+            image.convertToGreyDataMatrix();
             ImageView imageView = new ImageView(wimg);
             imagePane.getChildren().setAll(imageView);
             counter++;
@@ -59,23 +67,26 @@ public class ImageSequenceController {
     }
 
     @FXML public void apply(){
+        ActiveContours activeContours;
         //Si estoy en el primer frame
         if(counter == 1){
-            backgroundTheta = this.calculateTheta(this.backgroundSelection);
-            double objectTheta = this.calculateTheta(this.objectSelection);
+            this.backgroundTheta = this.calculateTheta(this.backgroundSelection);
+            this.objectTheta = this.calculateTheta(this.objectSelection);
             this.generateLinAndLoutBasedOnObjectSelection();
-            ActiveContours activeContours = new ActiveContours(this.image, lin,lout,objectTheta, backgroundTheta);
-            activeContours.apply();
-            //this.lin = activeContours.getLin();
-            //this.lout = activeContours.getLout();
-            WritableImage wimg = imageUtilities.readImage(activeContours.paintContours());
-            ImageView imageView = new ImageView(wimg);
-            imagePane.getChildren().setAll(imageView);
+            activeContours = new ActiveContours(this.image, lin,lout,objectTheta);
+
         }
-        else{
-            //double objectPhi = this.calculateTheta(this.objectSelection);
+        //Estoy en un frame > 1
+        else {
+            activeContours = new ActiveContours(this.image, lin,lout,objectTheta,this.phiMatrix);
         }
-        //ActiveContours activeContours = new ActiveContours();
+        activeContours.apply();
+        this.lin = activeContours.getLin();
+        this.lout = activeContours.getLout();
+        this.phiMatrix = activeContours.getPhiMatrix();
+        WritableImage wimg = imageUtilities.readImage(activeContours.paintContours());
+        ImageView imageView = new ImageView(wimg);
+        imagePane.getChildren().setAll(imageView);
     }
 
     @FXML public void play()throws Exception{

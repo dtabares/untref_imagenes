@@ -69,7 +69,7 @@ public class ActiveContours {
         ArrayList<Pixel> toBeAdded = new ArrayList<>();
         int counter = 0; //contador de control para no loopear de forma infinita
         boolean finished = false;
-        while (counter < 100000 && !finished){
+        while (counter < 1000000 && finished == false){
             //1. Para cada x en Lout si Fd > 0 lo sacamos de Lout y lo ponemos en Lin,
             // luego para cada vecino donde Phi vale 3, hay que agregarlo a Lout y actualizarlo en phi como 1
             ListIterator<Pixel> iterator = this.lout.listIterator();
@@ -77,11 +77,11 @@ public class ActiveContours {
                 Pixel p = iterator.next();
                 if (this.calculateFd(p) > 0){
                     //lout.remove(p);
-                    //iterator.remove();
                     toBeRemoved.add(p);
                     lin.add(p);
                     int x = p.getX();
                     int y = p.getY();
+                    phiMatrix[x][y]=-1;
                     //Reviso los vecinos,  si pertenece al fondo (phi == 3) lo agregamos a Lout y cambiamos phi = 1
                     // Ojo aca con los bordes no estamos validando y nos podemos ir a out of bounds
 
@@ -157,6 +157,7 @@ public class ActiveContours {
                     lout.add(p);
                     int x = p.getX();
                     int y = p.getY();
+                    phiMatrix[x][y] = 1;
                     if(phiMatrix[x-1][y] == -3){
                         //lin.add(new Pixel(x-1,y,bimg.getRGB(x-1,y)));
                         toBeAdded.add(new Pixel(x-1,y,bimg.getRGB(x-1,y)));

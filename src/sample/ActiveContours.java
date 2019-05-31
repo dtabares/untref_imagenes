@@ -10,26 +10,25 @@ public class ActiveContours {
     BufferedImage bimg; //
     ArrayList<Pixel> lin;
     ArrayList<Pixel> lout;
-    double objectTheta;
-    double backgroundTheta;
+    int objectColor;
 
 
-    public ActiveContours(Image image, List<Pixel> lin, List<Pixel> lout,double objectTheta){
+    public ActiveContours(Image image, List<Pixel> lin, List<Pixel> lout,int  objectColor){
         imageUtilities = new ImageUtilities();
         this.lin = this.cloneList(lin);
         this.lout = this.cloneList(lout);
         this.bimg = image.getBufferedImage();
-        this.objectTheta = objectTheta;
+        this.objectColor = objectColor;
         this.phiMatrix = new int[image.getWidth()][image.getHeight()];
         this.fillInitialPhiMatrix();
     }
 
-    public ActiveContours(Image image, List<Pixel> lin, List<Pixel> lout,double objectTheta, int[][] phiMatrix){
+    public ActiveContours(Image image, List<Pixel> lin, List<Pixel> lout,int objectColor, int[][] phiMatrix){
         imageUtilities = new ImageUtilities();
         this.lin = this.cloneList(lin);
         this.lout = this.cloneList(lout);
         this.bimg = image.getBufferedImage();
-        this.objectTheta = objectTheta;
+        this.objectColor = objectColor;
         this.phiMatrix = phiMatrix;
     }
 
@@ -69,7 +68,7 @@ public class ActiveContours {
         ArrayList<Pixel> toBeAdded = new ArrayList<>();
         int counter = 0; //contador de control para no loopear de forma infinita
         boolean finished = false;
-        while (counter < 1000000 && finished == false){
+        while (counter < 100000 && finished == false){
             //1. Para cada x en Lout si Fd > 0 lo sacamos de Lout y lo ponemos en Lin,
             // luego para cada vecino donde Phi vale 3, hay que agregarlo a Lout y actualizarlo en phi como 1
             ListIterator<Pixel> iterator = this.lout.listIterator();
@@ -219,7 +218,21 @@ public class ActiveContours {
 
     private int calculateFd(Pixel p){
         //***** Tomo un X que pertenece a Lout, tita(x) color del pixel y tita1 es el color del objeto, si || theta(x) - theta1 || < 10 entonces Fd = 1
-        if (Math.sqrt(Math.pow(p.getValue(),2)-Math.pow(this.objectTheta,2)) < 10){
+
+        int rgb = this.bimg.getRGB(p.getX(),p.getY());
+        int objectRed = ColorUtilities.getRed(this.objectColor);
+        int objectGreen = ColorUtilities.getGreen(this.objectColor);
+        int objectBlue = ColorUtilities.getBlue(this.objectColor);
+        int pRed = ColorUtilities.getRed(rgb);
+        int pGreen = ColorUtilities.getGreen(rgb);
+        int pBlue = ColorUtilities.getBlue(rgb);
+
+        int redDifference = objectRed - pRed;
+        int greenDifference = objectGreen - pGreen;
+        int blueDifference = objectBlue - pBlue;
+
+        double norm = Math.sqrt(Math.pow(redDifference,2) + Math.pow(greenDifference,2) + Math.pow(blueDifference,2));
+        if (norm < 20){
             return 1;
         }
 

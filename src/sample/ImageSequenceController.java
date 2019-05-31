@@ -20,6 +20,7 @@ public class ImageSequenceController {
     public ImageSequence is;
     private ImageUtilities imageUtilities;
     private int counter;
+    private int objectColor;
     private Image image;
     private ImageSelection objectSelection;
     private ImageSelection backgroundSelection;
@@ -70,15 +71,15 @@ public class ImageSequenceController {
         ActiveContours activeContours;
         //Si estoy en el primer frame
         if(counter == 1){
-            //this.backgroundTheta = this.calculateTheta(this.backgroundSelection);
-            this.objectTheta = this.calculateTheta(this.objectSelection);
+            this.objectColor = this.calculateObjectColor(this.objectSelection);
             this.generateLinAndLoutBasedOnObjectSelection();
-            activeContours = new ActiveContours(this.image, lin,lout,objectTheta);
+
+            activeContours = new ActiveContours(this.image, lin,lout,objectColor);
 
         }
         //Estoy en un frame > 1
         else {
-            activeContours = new ActiveContours(this.image, lin,lout,objectTheta,this.phiMatrix);
+            activeContours = new ActiveContours(this.image, lin,lout,objectColor,this.phiMatrix);
         }
         activeContours.apply();
         this.lin = activeContours.getLin();
@@ -168,20 +169,29 @@ public class ImageSequenceController {
         });
     }
 
-    private double calculateTheta(ImageSelection selection){
-        double theta = 0.0;
+    private int calculateObjectColor(ImageSelection selection){
 
-        int[][] imageDataMatrix = this.image.getGreyDataMatrix();
+        int red = 0;
+        int green = 0;
+        int blue = 0;
+        int p;
+
         for (int i = selection.getxOrigin(); i <= selection.getxFinal(); i++) {
             for (int j = selection.getyOrigin(); j <= selection.getyFinal(); j++) {
-                theta += (double) imageDataMatrix[i][j];
+                p = this.image.getBufferedImage().getRGB(i,j);
+                red += ColorUtilities.getRed(p);
+                green += ColorUtilities.getGreen(p);
+                blue += ColorUtilities.getBlue(p);
             }
         }
 
-        theta = theta /(double) selection.getSize();
-        System.out.println("Theta: " + theta);
+        red = red /selection.getSize();
+        green = green /selection.getSize();
+        blue = blue /selection.getSize();
 
-        return theta;
+        p = ColorUtilities.createRGB(red,green,blue);
+
+        return p;
     }
 
 

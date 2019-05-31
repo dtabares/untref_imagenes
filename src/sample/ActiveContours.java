@@ -214,6 +214,10 @@ public class ActiveContours {
             counter++;
         }
         System.out.println(counter);
+
+        //
+        //Poner aca el segundo ciclo con Gauss para suavizar
+        //
     }
 
     private int calculateFd(Pixel p){

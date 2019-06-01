@@ -1,5 +1,6 @@
 package sample;
 
+import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
 import javafx.scene.image.ImageView;
@@ -8,12 +9,15 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
+import javax.swing.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
+import java.util.Timer;
 import java.util.concurrent.TimeUnit;
 
-public class ImageSequenceController {
+public class ImageSequenceController extends JFrame{
 
     @FXML private AnchorPane imagePane;
 
@@ -29,6 +33,14 @@ public class ImageSequenceController {
     int [][] phiMatrix;
     private double backgroundTheta;
     private double objectTheta;
+
+    //variables para video
+    private Timer sequenceTimer = new Timer();
+    private Timer timeTimer = new Timer();
+    private TimerTask sequenceTask;
+    private TimerTask timeTask;
+    private int secondsCount=0;
+    private int framesCount=0;
 
     public void initialize() throws Exception{
         counter = 0;
@@ -73,15 +85,13 @@ public class ImageSequenceController {
         if(counter == 1){
             this.objectColor = this.calculateObjectColor(this.objectSelection);
             this.generateLinAndLoutBasedOnObjectSelection();
-
             activeContours = new ActiveContours(this.image, lin,lout,objectColor);
-
         }
         //Estoy en un frame > 1
         else {
             activeContours = new ActiveContours(this.image, lin,lout,objectColor,this.phiMatrix);
         }
-        activeContours.apply();
+        activeContours.applyReloaded();
         this.lin = activeContours.getLin();
         this.lout = activeContours.getLout();
         this.phiMatrix = activeContours.getPhiMatrix();
@@ -92,20 +102,31 @@ public class ImageSequenceController {
 
     @FXML public void play()throws Exception{
         reset();
-        try {
-            TimeUnit.SECONDS.sleep(1);
-            for (int i = counter; i < is.imageList.size(); i++) {
-                if (counter < is.imageList.size()) {
-                    WritableImage wimg = imageUtilities.readImage(is.imageList.get(i));
+        sequenceTask = new TimerTask(){
+            public void run() {
+                if(framesCount < is.imageList.size()){
+                    WritableImage wimg = imageUtilities.readImage(is.imageList.get(framesCount));
                     ImageView imageView = new ImageView(wimg);
-                    imagePane.getChildren().setAll(imageView);
-                    counter++;
-                    TimeUnit.SECONDS.sleep(1);
+                    Platform.runLater(() -> imagePane.getChildren().setAll(imageView));
+                    framesCount ++;
+                }
+                else{
+                    this.cancel();
                 }
             }
+        };
+
+        //running timer task as daemon thread
+        Timer timer = new Timer(true);
+        timer.scheduleAtFixedRate(sequenceTask, 0, 10*1000);
+        System.out.println("TimerTask started");
+        //cancel after sometime
+        try {
+            Thread.sleep(120000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
-        catch (Exception e){
-        }
+        timer.cancel();
     }
 
     @FXML public void objectSquare(){
@@ -227,7 +248,6 @@ public class ImageSequenceController {
 
         for (int i = loutXOrigin; i <= loutXFinal; i++) {
             for (int j = loutYOrigin; j <= loutYFinal; j++) {
-
                 if (j == loutYOrigin || j == loutYFinal){
                     Pixel p = new Pixel(i,j,imageDataMatrix[i][j]);
                     lout.add(p);
@@ -238,8 +258,6 @@ public class ImageSequenceController {
                         lout.add(p);
                     }
                 }
-
-
             }
         }
     }

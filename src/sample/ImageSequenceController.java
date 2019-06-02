@@ -35,6 +35,7 @@ public class ImageSequenceController extends JFrame{
     int [][] phiMatrix;
     private double backgroundTheta;
     private double objectTheta;
+    private ActiveContours activeContours;
 
     //variables para video
     Timeline timeline;
@@ -78,7 +79,6 @@ public class ImageSequenceController extends JFrame{
     }
 
     @FXML public void apply(){
-        ActiveContours activeContours;
         //Si estoy en el primer frame
         if(counter == 1){
             this.objectColor = this.calculateObjectColor(this.objectSelection);
@@ -98,15 +98,32 @@ public class ImageSequenceController extends JFrame{
         imagePane.getChildren().setAll(imageView);
     }
 
-    @FXML public void play()throws Exception{
+    @FXML public void play(){
         reset();
-        timeline = new Timeline(new KeyFrame(Duration.seconds(0.1), ev -> {
+        framesCount = 1;
+        timeline = new Timeline(new KeyFrame(Duration.seconds(0.3), ev -> {
             if (framesCount < is.imageList.size()) {
-                WritableImage wimg = imageUtilities.readImage(is.imageList.get(framesCount));
+                BufferedImage bimg = is.imageList.get(framesCount);
+                image = new Image(bimg);
+                image.convertToGreyDataMatrix();
+                if(framesCount == 1){
+                    this.objectColor = this.calculateObjectColor(this.objectSelection);
+                    this.generateLinAndLoutBasedOnObjectSelection();
+                    activeContours = new ActiveContours(this.image, lin,lout,objectColor);
+                }
+                //Estoy en un frame > 1
+                else {
+                    activeContours = new ActiveContours(this.image, lin,lout,objectColor,this.phiMatrix);
+                }
+                activeContours.applyReloaded();
+                this.lin = activeContours.getLin();
+                this.lout = activeContours.getLout();
+                this.phiMatrix = activeContours.getPhiMatrix();
+                WritableImage wimg = imageUtilities.readImage(activeContours.paintContours());
                 ImageView imageView = new ImageView(wimg);
-                System.out.println("Processing frame " + framesCount);
                 imagePane.getChildren().setAll(imageView);
                 framesCount++;
+                counter++;
             }
         }));
         timeline.setCycleCount(Animation.INDEFINITE);

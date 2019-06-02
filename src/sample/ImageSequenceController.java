@@ -1,21 +1,23 @@
 package sample;
 
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Platform;
-import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.util.Duration;
 
 import javax.swing.*;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Timer;
-import java.util.concurrent.TimeUnit;
+import java.util.TimerTask;
 
 public class ImageSequenceController extends JFrame{
 
@@ -35,20 +37,15 @@ public class ImageSequenceController extends JFrame{
     private double objectTheta;
 
     //variables para video
-    private Timer sequenceTimer = new Timer();
-    private Timer timeTimer = new Timer();
-    private TimerTask sequenceTask;
-    private TimerTask timeTask;
-    private int secondsCount=0;
+    Timeline timeline;
     private int framesCount=0;
 
     public void initialize() throws Exception{
         counter = 0;
         is = new ImageSequence();
         imageUtilities = new ImageUtilities();
-        WritableImage wimg = imageUtilities.readImage(is.imageList.get(counter));
-        //Lo transforme a buffered image porque lo necesito asi para crear nuestra imagen en formato matriz
-        BufferedImage bimg = SwingFXUtils.fromFXImage(wimg, null);
+        BufferedImage bimg = is.imageList.get(counter);
+        WritableImage wimg = imageUtilities.readImage(bimg);
         image = new Image(bimg);
         image.convertToGreyDataMatrix();
         counter ++;
@@ -58,19 +55,20 @@ public class ImageSequenceController extends JFrame{
 
     @FXML public void reset(){
         counter = 0;
-        WritableImage wimg = imageUtilities.readImage(is.imageList.get(counter));
-        BufferedImage bimg = SwingFXUtils.fromFXImage(wimg, null);
+        BufferedImage bimg = is.imageList.get(counter);
+        WritableImage wimg = imageUtilities.readImage(bimg);
         image = new Image(bimg);
         image.convertToGreyDataMatrix();
         ImageView imageView = new ImageView(wimg);
         imagePane.getChildren().setAll(imageView);
         counter ++;
+        framesCount = 0;
     }
 
     @FXML public void next(){
         if (counter < is.imageList.size()) {
-            WritableImage wimg = imageUtilities.readImage(is.imageList.get(counter));
-            BufferedImage bimg = SwingFXUtils.fromFXImage(wimg, null);
+            BufferedImage bimg = is.imageList.get(counter);
+            WritableImage wimg = imageUtilities.readImage(bimg);
             image = new Image(bimg);
             image.convertToGreyDataMatrix();
             ImageView imageView = new ImageView(wimg);
@@ -102,31 +100,23 @@ public class ImageSequenceController extends JFrame{
 
     @FXML public void play()throws Exception{
         reset();
-        sequenceTask = new TimerTask(){
-            public void run() {
-                if(framesCount < is.imageList.size()){
-                    WritableImage wimg = imageUtilities.readImage(is.imageList.get(framesCount));
-                    ImageView imageView = new ImageView(wimg);
-                    Platform.runLater(() -> imagePane.getChildren().setAll(imageView));
-                    framesCount ++;
-                }
-                else{
-                    this.cancel();
-                }
+        timeline = new Timeline(new KeyFrame(Duration.seconds(0.1), ev -> {
+            if (framesCount < is.imageList.size()) {
+                WritableImage wimg = imageUtilities.readImage(is.imageList.get(framesCount));
+                ImageView imageView = new ImageView(wimg);
+                System.out.println("Processing frame " + framesCount);
+                imagePane.getChildren().setAll(imageView);
+                framesCount++;
             }
-        };
+        }));
+        timeline.setCycleCount(Animation.INDEFINITE);
+        timeline.play();
+    }
 
-        //running timer task as daemon thread
-        Timer timer = new Timer(true);
-        timer.scheduleAtFixedRate(sequenceTask, 0, 10*1000);
-        System.out.println("TimerTask started");
-        //cancel after sometime
-        try {
-            Thread.sleep(120000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+    @FXML public void stop(){
+        if (timeline!=null){
+            timeline.stop();
         }
-        timer.cancel();
     }
 
     @FXML public void objectSquare(){
@@ -157,7 +147,6 @@ public class ImageSequenceController extends JFrame{
                 this.imagePane.getChildren().remove(selectionLine);
             }
         });
-
     }
 
     @FXML public void backgroundSquare(){

@@ -28,6 +28,7 @@
                         <Button mnemonicParsing="false" onAction="#next" prefWidth="205.0" text="Next" />
                         <Button mnemonicParsing="false" onAction="#apply" prefWidth="200.0" text="Apply Contours" />
                         <Button mnemonicParsing="false" onAction="#play" prefWidth="200.0" text="Play Sequence" />
+                        <Button mnemonicParsing="false" onAction="#stop" prefWidth="200.0" text="Stop Sequence" />
                         <Button mnemonicParsing="false" onAction="#reset" prefWidth="205.0" text="Reset" />
                       </children>
                     </VBox>

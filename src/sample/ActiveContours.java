@@ -10,10 +10,10 @@ public class ActiveContours {
     BufferedImage bimg; //
     ArrayList<Pixel> lin;
     ArrayList<Pixel> lout;
-    int objectColor;
+    int objectColor[];
 
 
-    public ActiveContours(Image image, List<Pixel> lin, List<Pixel> lout,int  objectColor){
+    public ActiveContours(Image image, List<Pixel> lin, List<Pixel> lout,int[]  objectColor){
         imageUtilities = new ImageUtilities();
         this.lin = this.cloneList(lin);
         this.lout = this.cloneList(lout);
@@ -23,7 +23,7 @@ public class ActiveContours {
         this.fillInitialPhiMatrix();
     }
 
-    public ActiveContours(Image image, List<Pixel> lin, List<Pixel> lout,int objectColor, int[][] phiMatrix){
+    public ActiveContours(Image image, List<Pixel> lin, List<Pixel> lout,int[] objectColor, int[][] phiMatrix){
         imageUtilities = new ImageUtilities();
         this.lin = this.cloneList(lin);
         this.lout = this.cloneList(lout);
@@ -375,9 +375,9 @@ public class ActiveContours {
         //***** Tomo un X que pertenece a Lout, tita(x) color del pixel y tita1 es el color del objeto, si || theta(x) - theta1 || < 10 entonces Fd = 1
 
         int rgb = this.bimg.getRGB(p.getX(),p.getY());
-        int objectRed = ColorUtilities.getRed(this.objectColor);
-        int objectGreen = ColorUtilities.getGreen(this.objectColor);
-        int objectBlue = ColorUtilities.getBlue(this.objectColor);
+        int objectRed = this.objectColor[0];
+        int objectGreen = this.objectColor[1];
+        int objectBlue = this.objectColor[2];
         int pRed = ColorUtilities.getRed(rgb);
         int pGreen = ColorUtilities.getGreen(rgb);
         int pBlue = ColorUtilities.getBlue(rgb);
@@ -387,7 +387,7 @@ public class ActiveContours {
         int blueDifference = objectBlue - pBlue;
 
         double norm = Math.sqrt(Math.pow(redDifference,2) + Math.pow(greenDifference,2) + Math.pow(blueDifference,2));
-        if (norm < 10){
+        if (norm < 20){
             return 1;
         }
 

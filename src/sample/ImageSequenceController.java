@@ -26,7 +26,7 @@ public class ImageSequenceController extends JFrame{
     public ImageSequence is;
     private ImageUtilities imageUtilities;
     private int counter;
-    private int objectColor;
+    private int[] objectColor;
     private Image image;
     private ImageSelection objectSelection;
     private ImageSelection backgroundSelection;
@@ -179,12 +179,14 @@ public class ImageSequenceController extends JFrame{
         });
     }
 
-    private int calculateObjectColor(ImageSelection selection){
+    private int[] calculateObjectColor(ImageSelection selection){
 
         int red = 0;
         int green = 0;
         int blue = 0;
+        int[] rgb = new int[3];
         int p;
+        int counter = 0;
 
         for (int i = selection.getxOrigin(); i <= selection.getxFinal(); i++) {
             for (int j = selection.getyOrigin(); j <= selection.getyFinal(); j++) {
@@ -192,16 +194,16 @@ public class ImageSequenceController extends JFrame{
                 red += ColorUtilities.getRed(p);
                 green += ColorUtilities.getGreen(p);
                 blue += ColorUtilities.getBlue(p);
+                counter++;
             }
         }
 
-        red = red /selection.getSize();
-        green = green /selection.getSize();
-        blue = blue /selection.getSize();
+        rgb[0] = red /counter;
+        rgb[1] = green /counter;
+        rgb[2] = blue /counter;
 
-        p = ColorUtilities.createRGB(red,green,blue);
 
-        return p;
+        return rgb;
     }
 
 

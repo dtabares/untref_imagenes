@@ -3,7 +3,6 @@ package sample;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
@@ -11,17 +10,17 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
-
-import javax.swing.*;
 import java.awt.image.BufferedImage;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
+import javafx.scene.control.TextField;
+import javafx.scene.control.CheckBox;
 
-public class ImageSequenceController extends JFrame{
+public class ImageSequenceController{
 
     @FXML private AnchorPane imagePane;
+    @FXML private CheckBox chkTwoCycle;
+    @FXML private TextField txtError;
 
     public ImageSequence is;
     private ImageUtilities imageUtilities;
@@ -43,6 +42,7 @@ public class ImageSequenceController extends JFrame{
 
     public void initialize() throws Exception{
         counter = 0;
+        chkTwoCycle.setSelected(false);
         is = new ImageSequence();
         imageUtilities = new ImageUtilities();
         BufferedImage bimg = is.imageList.get(counter);
@@ -89,7 +89,7 @@ public class ImageSequenceController extends JFrame{
         else {
             activeContours = new ActiveContours(this.image, lin,lout,objectColor,this.phiMatrix);
         }
-        activeContours.applyReloaded();
+        activeContours.applyReloaded(chkTwoCycle.isSelected(),Integer.parseInt(txtError.getText()));
         this.lin = activeContours.getLin();
         this.lout = activeContours.getLout();
         this.phiMatrix = activeContours.getPhiMatrix();
@@ -115,7 +115,7 @@ public class ImageSequenceController extends JFrame{
                 else {
                     activeContours = new ActiveContours(this.image, lin,lout,objectColor,this.phiMatrix);
                 }
-                activeContours.applyReloaded();
+                activeContours.applyReloaded(chkTwoCycle.isSelected(),Integer.parseInt(txtError.getText()));
                 this.lin = activeContours.getLin();
                 this.lout = activeContours.getLout();
                 this.phiMatrix = activeContours.getPhiMatrix();

@@ -63,95 +63,92 @@ public class ActiveContours {
         }
     }
 
-    public void applyReloaded(){
+    public void applyReloaded(boolean runCycleTwo, int error) {
         int counter = 0; //contador de control para no loopear de forma infinita
         boolean finished = false; //condicion de finalizacion
         //Loop que recorre hasta un tope de iteraciones o hasta terminar el algoritmo
-        while (counter < 200000 && finished == false){
+        while (counter < 200000 && finished == false) {
             // 1. Para cada x en Lout si Fd > 0 lo sacamos de Lout y lo ponemos en Lin
-            for (int i = 0; i < lout.size(); i++)
-            {
+            for (int i = 0; i < lout.size(); i++) {
                 Pixel p = lout.get(i);
-                if (this.calculateFd(p) > 0){
+                if (this.calculateFd(p,error) > 0) {
                     lin.add(p);
                     int x = p.getX();
                     int y = p.getY();
-                    phiMatrix[x][y]=-1;
+                    phiMatrix[x][y] = -1;
 
                     //Reviso los vecinos, si pertenece al fondo (phi == 3) lo agregamos a Lout y cambiamos phi = 1 (Ojo aca con los bordes no estamos validando y nos podemos ir a out of bounds)
 
                     //Reviso a izquierda
-                    if(phiMatrix[x-1][y] == 3){
-                        lout.add(new Pixel(x-1,y,bimg.getRGB(x-1,y)));
-                        phiMatrix[x-1][y]=1;
+                    if (phiMatrix[x - 1][y] == 3) {
+                        lout.add(new Pixel(x - 1, y, bimg.getRGB(x - 1, y)));
+                        phiMatrix[x - 1][y] = 1;
                     }
                     //Reviso a derecha
-                    if(phiMatrix[x+1][y] == 3){
-                        lout.add(new Pixel(x+1,y,bimg.getRGB(x+1,y)));
-                        phiMatrix[x+1][y]=1;
+                    if (phiMatrix[x + 1][y] == 3) {
+                        lout.add(new Pixel(x + 1, y, bimg.getRGB(x + 1, y)));
+                        phiMatrix[x + 1][y] = 1;
                     }
                     //Reviso a arriba
-                    if(phiMatrix[x][y-1] == 3){
-                        lout.add(new Pixel(x,y-1,bimg.getRGB(x,y-1)));
-                        phiMatrix[x][y-1]=1;
+                    if (phiMatrix[x][y - 1] == 3) {
+                        lout.add(new Pixel(x, y - 1, bimg.getRGB(x, y - 1)));
+                        phiMatrix[x][y - 1] = 1;
                     }
                     //Reviso a abajo
-                    if(phiMatrix[x][y+1] == 3){
+                    if (phiMatrix[x][y + 1] == 3) {
                         //lout.add(new Pixel(x,y+1,bimg.getRGB(x,y+1)));
-                        lout.add(new Pixel(x,y+1,bimg.getRGB(x,y+1)));
-                        phiMatrix[x][y+1]=1;
+                        lout.add(new Pixel(x, y + 1, bimg.getRGB(x, y + 1)));
+                        phiMatrix[x][y + 1] = 1;
                     }
                     lout.remove(i);
                 }
             }
 
             //2. Algunos pixels de Lin ahora pueden ser interiores, entonces hay que recorrer cada p de Lin, y buscar quien NO tiene un vecino Lout (phi == 1). El que no tenga, lo sacamos de Lin y seteamos phi(p) = -3.
-            for (int i = 0; i < lin.size(); i++)
-            {
+            for (int i = 0; i < lin.size(); i++) {
                 Pixel p = lin.get(i);
                 int x = p.getX();
                 int y = p.getY();
 
-                int leftPhi = phiMatrix[x-1][y];
-                int rightPhi = phiMatrix[x+1][y];
-                int upperPhi = phiMatrix[x][y-1];
-                int lowerPhi = phiMatrix[x][y+1];
+                int leftPhi = phiMatrix[x - 1][y];
+                int rightPhi = phiMatrix[x + 1][y];
+                int upperPhi = phiMatrix[x][y - 1];
+                int lowerPhi = phiMatrix[x][y + 1];
 
-                if (leftPhi < 0 && rightPhi < 0  && upperPhi < 0 && lowerPhi < 0 ){
+                if (leftPhi < 0 && rightPhi < 0 && upperPhi < 0 && lowerPhi < 0) {
                     lin.remove(p);
                     phiMatrix[x][y] = -3;
                 }
             }
 
             //3.Luego vuelvo a recorrer los Lin y les calculo Fd. Si Fd < 0, hay que borrarlo de Lin y agregarlo a Lout. De ese pixel, reviso los 4 vecinos(pv), y los que sean phi(pv) == -3 los agrego a lin y cambio phi(pv) == -1
-            for (int i = 0; i < lin.size(); i++)
-            {
+            for (int i = 0; i < lin.size(); i++) {
                 Pixel p = lin.get(i);
-                if (this.calculateFd(p)<0){
+                if (this.calculateFd(p,error) < 0) {
                     lout.add(p);
                     int x = p.getX();
                     int y = p.getY();
                     phiMatrix[x][y] = 1;
 
                     //Reviso a izquierda
-                    if(phiMatrix[x-1][y] == -3){
-                        lin.add(new Pixel(x-1,y,bimg.getRGB(x-1,y)));
-                        phiMatrix[x-1][y]=-1;
+                    if (phiMatrix[x - 1][y] == -3) {
+                        lin.add(new Pixel(x - 1, y, bimg.getRGB(x - 1, y)));
+                        phiMatrix[x - 1][y] = -1;
                     }
                     //Reviso a derecha
-                    if(phiMatrix[x+1][y] == -3){
-                        lin.add(new Pixel(x+1,y,bimg.getRGB(x+1,y)));
-                        phiMatrix[x+1][y]=-1;
+                    if (phiMatrix[x + 1][y] == -3) {
+                        lin.add(new Pixel(x + 1, y, bimg.getRGB(x + 1, y)));
+                        phiMatrix[x + 1][y] = -1;
                     }
                     //Reviso arriba
-                    if(phiMatrix[x][y-1] == -3){
-                        lin.add(new Pixel(x,y-1,bimg.getRGB(x,y-1)));
-                        phiMatrix[x][y-1]=-1;
+                    if (phiMatrix[x][y - 1] == -3) {
+                        lin.add(new Pixel(x, y - 1, bimg.getRGB(x, y - 1)));
+                        phiMatrix[x][y - 1] = -1;
                     }
                     //Reviso abajo
-                    if(phiMatrix[x][y+1] == -3){
-                        lin.add(new Pixel(x,y+1,bimg.getRGB(x,y+1)));
-                        phiMatrix[x][y+1]=-1;
+                    if (phiMatrix[x][y + 1] == -3) {
+                        lin.add(new Pixel(x, y + 1, bimg.getRGB(x, y + 1)));
+                        phiMatrix[x][y + 1] = -1;
                     }
                     lin.remove(i);
                 }
@@ -160,28 +157,29 @@ public class ActiveContours {
             //4. Vuelvo a loopear por cada pixel de Lout, ya que algunos pixels pudieron transformarse en exteriores.
             //Si p NO tiene vecino Lin, quiere decir que es un Lout aislado que ahora debe ser parte del fondo, entonces
             //lo eliminamos de Lout y seteamos phi(p) = 3
-            for (int i = 0; i < lout.size(); i++)
-            {
+            for (int i = 0; i < lout.size(); i++) {
                 Pixel p = lout.get(i);
                 int x = p.getX();
                 int y = p.getY();
 
-                int leftPhi = phiMatrix[x-1][y];
-                int rightPhi = phiMatrix[x+1][y];
-                int upperPhi = phiMatrix[x][y-1];
-                int lowerPhi = phiMatrix[x][y+1];
+                int leftPhi = phiMatrix[x - 1][y];
+                int rightPhi = phiMatrix[x + 1][y];
+                int upperPhi = phiMatrix[x][y - 1];
+                int lowerPhi = phiMatrix[x][y + 1];
 
-                if (leftPhi > 0 && rightPhi > 0  && upperPhi > 0  && lowerPhi > 0 ){
+                if (leftPhi > 0 && rightPhi > 0 && upperPhi > 0 && lowerPhi > 0) {
                     lout.remove(i);
                     phiMatrix[x][y] = 3;
                 }
             }
 
             //5. Hago el chequeo para ver si terminamos
-            finished = this.finished();
+            finished = this.finished(error);
             counter++;
         }
         System.out.println("Finished with: " + counter + " iterations");
+
+        if (runCycleTwo){
         System.out.println("Starting Cycle Two");
         /*
         - Ciclo 2
@@ -190,17 +188,137 @@ public class ActiveContours {
         3. Para cada pixel en Lin computar G o Phi, si G o Phi > 0 aplicamos switch_out
         4. Para cada pixel en Lout hacemos intercambio de pixels
          */
+
+        //Defino un sigma
+        int sigma = 2;
+        int gaussCounter = 0;
+        int maskSize = (int) Math.round(2 * sigma + 1);
+        Mask gaussMask = new Mask(maskSize);
+        gaussMask.setGaussMask(sigma);
+        int Ng = (int) Math.round(2 * sigma + 1);
+        while (gaussCounter < Ng) {
+            for (int i = 0; i < lout.size(); i++) {
+                Pixel p = lout.get(i);
+                if (calculateGoPhi(p, gaussMask) < 0) {
+                    lin.add(p);
+                    int x = p.getX();
+                    int y = p.getY();
+                    phiMatrix[x][y] = -1;
+
+                    //Reviso a izquierda
+                    if (phiMatrix[x - 1][y] == 3) {
+                        lout.add(new Pixel(x - 1, y, bimg.getRGB(x - 1, y)));
+                        phiMatrix[x - 1][y] = 1;
+                    }
+                    //Reviso a derecha
+                    if (phiMatrix[x + 1][y] == 3) {
+                        lout.add(new Pixel(x + 1, y, bimg.getRGB(x + 1, y)));
+                        phiMatrix[x + 1][y] = 1;
+                    }
+                    //Reviso a arriba
+                    if (phiMatrix[x][y - 1] == 3) {
+                        lout.add(new Pixel(x, y - 1, bimg.getRGB(x, y - 1)));
+                        phiMatrix[x][y - 1] = 1;
+                    }
+                    //Reviso a abajo
+                    if (phiMatrix[x][y + 1] == 3) {
+                        //lout.add(new Pixel(x,y+1,bimg.getRGB(x,y+1)));
+                        lout.add(new Pixel(x, y + 1, bimg.getRGB(x, y + 1)));
+                        phiMatrix[x][y + 1] = 1;
+                    }
+                    lout.remove(i);
+                }
+            }
+
+            for (int i = 0; i < lin.size(); i++) {
+                Pixel p = lin.get(i);
+                int x = p.getX();
+                int y = p.getY();
+
+                int leftPhi = phiMatrix[x - 1][y];
+                int rightPhi = phiMatrix[x + 1][y];
+                int upperPhi = phiMatrix[x][y - 1];
+                int lowerPhi = phiMatrix[x][y + 1];
+
+                if (leftPhi < 0 && rightPhi < 0 && upperPhi < 0 && lowerPhi < 0) {
+                    lin.remove(p);
+                    phiMatrix[x][y] = -3;
+                }
+            }
+
+            for (int i = 0; i < lin.size(); i++) {
+                Pixel p = lin.get(i);
+                if (this.calculateGoPhi(p, gaussMask) > 0) {
+                    lout.add(p);
+                    int x = p.getX();
+                    int y = p.getY();
+                    phiMatrix[x][y] = 1;
+
+                    //Reviso a izquierda
+                    if (phiMatrix[x - 1][y] == -3) {
+                        lin.add(new Pixel(x - 1, y, bimg.getRGB(x - 1, y)));
+                        phiMatrix[x - 1][y] = -1;
+                    }
+                    //Reviso a derecha
+                    if (phiMatrix[x + 1][y] == -3) {
+                        lin.add(new Pixel(x + 1, y, bimg.getRGB(x + 1, y)));
+                        phiMatrix[x + 1][y] = -1;
+                    }
+                    //Reviso arriba
+                    if (phiMatrix[x][y - 1] == -3) {
+                        lin.add(new Pixel(x, y - 1, bimg.getRGB(x, y - 1)));
+                        phiMatrix[x][y - 1] = -1;
+                    }
+                    //Reviso abajo
+                    if (phiMatrix[x][y + 1] == -3) {
+                        lin.add(new Pixel(x, y + 1, bimg.getRGB(x, y + 1)));
+                        phiMatrix[x][y + 1] = -1;
+                    }
+                    lin.remove(i);
+                }
+            }
+
+            for (int i = 0; i < lout.size(); i++) {
+                Pixel p = lout.get(i);
+                int x = p.getX();
+                int y = p.getY();
+
+                int leftPhi = phiMatrix[x - 1][y];
+                int rightPhi = phiMatrix[x + 1][y];
+                int upperPhi = phiMatrix[x][y - 1];
+                int lowerPhi = phiMatrix[x][y + 1];
+
+                if (leftPhi > 0 && rightPhi > 0 && upperPhi > 0 && lowerPhi > 0) {
+                    lout.remove(i);
+                    phiMatrix[x][y] = 3;
+                }
+            }
+            gaussCounter++;
+        }
+    }
     }
 
-    private int calculateGoPhi(Pixel p, double sigma){
-        //Esto esta MAL, no termino de entender a que se le aplica gauss
-        double fraccion = (1.0 / (2.0 * Math.PI * Math.pow(sigma, 2)));
-        double e = Math.exp(-(Math.pow(p.getX(), 2) + Math.pow(p.getY(), 2)) / (Math.pow(sigma, 2)*2));
-        double valor = fraccion * e;
-        return 0;
+    private double calculateGoPhi(Pixel p, Mask mask){
+        double result = 0;
+        int x = p.getX();
+        int y = p.getY();
+        int widthLimit = phiMatrix.length - mask.getSize();
+        int heightLimit = phiMatrix[0].length - mask.getSize();
+        for (int i = 0; i < x + mask.getSize(); i++) {
+            for (int j = 0; j < y + mask.getSize(); j++) {
+                for (int k = 0; k < mask.getSize(); k++) {
+                    for (int l = 0; l < mask.getSize(); l++) {
+                        if (i < widthLimit && j < heightLimit) {
+                            result += Math.round(phiMatrix[i + k][j + l] * mask.getValue(k, l));
+                        }
+                    }
+                }
+            }
+        }
+        return result;
     }
 
-    private int calculateFd(Pixel p){
+    private int calculateFd(Pixel p, int error){
         //***** Tomo un X que pertenece a Lout, tita(x) color del pixel y tita1 es el color del objeto, si || theta(x) - theta1 || < 10 entonces Fd = 1
 
         int rgb = this.bimg.getRGB(p.getX(),p.getY());
@@ -216,23 +334,23 @@ public class ActiveContours {
         int blueDifference = objectBlue - pBlue;
 
         double norm = Math.sqrt(Math.pow(redDifference,2) + Math.pow(greenDifference,2) + Math.pow(blueDifference,2));
-        if (norm < 15){
+        if (norm < error){
             return 1;
         }
 
         return -1;
     }
 
-    private boolean finished(){
+    private boolean finished(int error){
 
         for (Pixel p: lin) {
-            if (this.calculateFd(p)<0){
+            if (this.calculateFd(p,error)<0){
                 return false;
             }
         }
 
         for (Pixel p: lout) {
-            if (this.calculateFd(p)>0){
+            if (this.calculateFd(p,error)>0){
                 return false;
             }
         }

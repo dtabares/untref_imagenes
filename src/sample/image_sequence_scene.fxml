@@ -23,13 +23,15 @@
                   <children>
                     <VBox layoutX="0.0" layoutY="0.0" prefHeight="368.0" prefWidth="200.0">
                       <children>
-                        <Button mnemonicParsing="false" onAction="#objectSquare" prefWidth="200.0" text="Select Object"/>
+                        <Button mnemonicParsing="false" onAction="#objectSquare" prefWidth="200.0" text="Select Object" />
                         <!--<Button mnemonicParsing="false" onAction="#backgroundSquare" prefWidth="200.0" text="Select BG"/>-->
                         <Button mnemonicParsing="false" onAction="#next" prefWidth="205.0" text="Next" />
                         <Button mnemonicParsing="false" onAction="#apply" prefWidth="200.0" text="Apply Contours" />
                         <Button mnemonicParsing="false" onAction="#play" prefWidth="200.0" text="Play Sequence" />
                         <Button mnemonicParsing="false" onAction="#stop" prefWidth="200.0" text="Stop Sequence" />
                         <Button mnemonicParsing="false" onAction="#reset" prefWidth="205.0" text="Reset" />
+                        <CheckBox fx:id="chkTwoCycle" mnemonicParsing="false" text="Two Cycle Algorithm" />
+                        <TextField fx:id="txtError" prefWidth="200.0" promptText="Error Value" />
                       </children>
                     </VBox>
                   </children>

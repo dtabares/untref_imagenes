@@ -182,6 +182,7 @@ public class ActiveContours {
 
         if (runCycleTwo){
         System.out.println("Starting Cycle Two");
+
         /*
         - Ciclo 2
         1. Para cada pixel en Lout computar G o Phi, si G o Phi < 0 aplicamos switch_in
@@ -307,8 +308,8 @@ public class ActiveContours {
         int radius = maskSize/2;
         int widthLimit = phiMatrix.length - maskSize;
         int heightLimit = phiMatrix[0].length - maskSize;
-        for (int i = x - radius; i < x + radius; i++) {
-            for (int j = y - radius ; j < y + radius; j++) {
+        for (int i = x - radius; i <= x + radius; i++) {
+            for (int j = y - radius ; j <= y + radius; j++) {
                 for (int k = 0; k < mask.getSize(); k++) {
                     for (int l = 0; l < mask.getSize(); l++) {
                         //pongo un limite para que no se vaya de rango
@@ -319,7 +320,7 @@ public class ActiveContours {
                 }
             }
         }
-        System.out.println("Gauss value for pixel " + x + " " + y + " " + result );
+        //System.out.println("Gauss value for pixel " + x + " " + y + " " + result );
         return result;
     }
 

@@ -1,7 +1,6 @@
 package sample;
 
 import java.awt.image.BufferedImage;
-import java.sql.SQLOutput;
 import java.util.*;
 
 public class ActiveContours {
@@ -81,27 +80,29 @@ public class ActiveContours {
                     //Reviso los vecinos, si pertenece al fondo (phi == 3) lo agregamos a Lout y cambiamos phi = 1 (Ojo aca con los bordes no estamos validando y nos podemos ir a out of bounds)
 
                     //Reviso a izquierda
-                    if (phiMatrix[x - 1][y] == 3) {
-                        lout.add(new Pixel(x - 1, y, bimg.getRGB(x - 1, y)));
-                        phiMatrix[x - 1][y] = 1;
-                    }
-                    //Reviso a derecha
-                    if (phiMatrix[x + 1][y] == 3) {
-                        lout.add(new Pixel(x + 1, y, bimg.getRGB(x + 1, y)));
-                        phiMatrix[x + 1][y] = 1;
-                    }
-                    //Reviso a arriba
-                    if (phiMatrix[x][y - 1] == 3) {
-                        lout.add(new Pixel(x, y - 1, bimg.getRGB(x, y - 1)));
-                        phiMatrix[x][y - 1] = 1;
-                    }
-                    //Reviso a abajo
-                    if (phiMatrix[x][y + 1] == 3) {
-                        //lout.add(new Pixel(x,y+1,bimg.getRGB(x,y+1)));
-                        lout.add(new Pixel(x, y + 1, bimg.getRGB(x, y + 1)));
-                        phiMatrix[x][y + 1] = 1;
-                    }
-                    lout.remove(i);
+                    //if (x-1>0 && x+1<phiMatrix.length && y-1>0 && y+1<phiMatrix[0].length){
+                        if (phiMatrix[x - 1][y] == 3) {
+                            lout.add(new Pixel(x - 1, y, bimg.getRGB(x - 1, y)));
+                            phiMatrix[x - 1][y] = 1;
+                        }
+                        //Reviso a derecha
+                        if (phiMatrix[x + 1][y] == 3) {
+                            lout.add(new Pixel(x + 1, y, bimg.getRGB(x + 1, y)));
+                            phiMatrix[x + 1][y] = 1;
+                        }
+                        //Reviso a arriba
+                        if (phiMatrix[x][y - 1] == 3) {
+                            lout.add(new Pixel(x, y - 1, bimg.getRGB(x, y - 1)));
+                            phiMatrix[x][y - 1] = 1;
+                        }
+                        //Reviso a abajo
+                        if (phiMatrix[x][y + 1] == 3) {
+                            //lout.add(new Pixel(x,y+1,bimg.getRGB(x,y+1)));
+                            lout.add(new Pixel(x, y + 1, bimg.getRGB(x, y + 1)));
+                            phiMatrix[x][y + 1] = 1;
+                        }
+                        lout.remove(i);
+                    //}
                 }
             }
 
@@ -110,16 +111,17 @@ public class ActiveContours {
                 Pixel p = lin.get(i);
                 int x = p.getX();
                 int y = p.getY();
+                //if (x-1>0 && x+1<phiMatrix.length && y-1>0 && y+1<phiMatrix[0].length) {
+                    int leftPhi = phiMatrix[x - 1][y];
+                    int rightPhi = phiMatrix[x + 1][y];
+                    int upperPhi = phiMatrix[x][y - 1];
+                    int lowerPhi = phiMatrix[x][y + 1];
 
-                int leftPhi = phiMatrix[x - 1][y];
-                int rightPhi = phiMatrix[x + 1][y];
-                int upperPhi = phiMatrix[x][y - 1];
-                int lowerPhi = phiMatrix[x][y + 1];
-
-                if (leftPhi < 0 && rightPhi < 0 && upperPhi < 0 && lowerPhi < 0) {
-                    lin.remove(p);
-                    phiMatrix[x][y] = -3;
-                }
+                    if (leftPhi < 0 && rightPhi < 0 && upperPhi < 0 && lowerPhi < 0) {
+                        lin.remove(p);
+                        phiMatrix[x][y] = -3;
+                    }
+                //}
             }
 
             //3.Luego vuelvo a recorrer los Lin y les calculo Fd. Si Fd < 0, hay que borrarlo de Lin y agregarlo a Lout. De ese pixel, reviso los 4 vecinos(pv), y los que sean phi(pv) == -3 los agrego a lin y cambio phi(pv) == -1
@@ -131,27 +133,29 @@ public class ActiveContours {
                     int y = p.getY();
                     phiMatrix[x][y] = 1;
 
-                    //Reviso a izquierda
-                    if (phiMatrix[x - 1][y] == -3) {
-                        lin.add(new Pixel(x - 1, y, bimg.getRGB(x - 1, y)));
-                        phiMatrix[x - 1][y] = -1;
-                    }
-                    //Reviso a derecha
-                    if (phiMatrix[x + 1][y] == -3) {
-                        lin.add(new Pixel(x + 1, y, bimg.getRGB(x + 1, y)));
-                        phiMatrix[x + 1][y] = -1;
-                    }
-                    //Reviso arriba
-                    if (phiMatrix[x][y - 1] == -3) {
-                        lin.add(new Pixel(x, y - 1, bimg.getRGB(x, y - 1)));
-                        phiMatrix[x][y - 1] = -1;
-                    }
-                    //Reviso abajo
-                    if (phiMatrix[x][y + 1] == -3) {
-                        lin.add(new Pixel(x, y + 1, bimg.getRGB(x, y + 1)));
-                        phiMatrix[x][y + 1] = -1;
-                    }
-                    lin.remove(i);
+                    //if (x-1>0 && x+1<phiMatrix.length && y-1>0 && y+1<phiMatrix[0].length) {
+                        //Reviso a izquierda
+                        if (phiMatrix[x - 1][y] == -3) {
+                            lin.add(new Pixel(x - 1, y, bimg.getRGB(x - 1, y)));
+                            phiMatrix[x - 1][y] = -1;
+                        }
+                        //Reviso a derecha
+                        if (phiMatrix[x + 1][y] == -3) {
+                            lin.add(new Pixel(x + 1, y, bimg.getRGB(x + 1, y)));
+                            phiMatrix[x + 1][y] = -1;
+                        }
+                        //Reviso arriba
+                        if (phiMatrix[x][y - 1] == -3) {
+                            lin.add(new Pixel(x, y - 1, bimg.getRGB(x, y - 1)));
+                            phiMatrix[x][y - 1] = -1;
+                        }
+                        //Reviso abajo
+                        if (phiMatrix[x][y + 1] == -3) {
+                            lin.add(new Pixel(x, y + 1, bimg.getRGB(x, y + 1)));
+                            phiMatrix[x][y + 1] = -1;
+                        }
+                        lin.remove(i);
+                    //}
                 }
             }
 
@@ -162,16 +166,17 @@ public class ActiveContours {
                 Pixel p = lout.get(i);
                 int x = p.getX();
                 int y = p.getY();
+                //if (x-1>0 && x+1<phiMatrix.length && y-1>0 && y+1<phiMatrix[0].length) {
+                    int leftPhi = phiMatrix[x - 1][y];
+                    int rightPhi = phiMatrix[x + 1][y];
+                    int upperPhi = phiMatrix[x][y - 1];
+                    int lowerPhi = phiMatrix[x][y + 1];
 
-                int leftPhi = phiMatrix[x - 1][y];
-                int rightPhi = phiMatrix[x + 1][y];
-                int upperPhi = phiMatrix[x][y - 1];
-                int lowerPhi = phiMatrix[x][y + 1];
-
-                if (leftPhi > 0 && rightPhi > 0 && upperPhi > 0 && lowerPhi > 0) {
-                    lout.remove(i);
-                    phiMatrix[x][y] = 3;
-                }
+                    if (leftPhi > 0 && rightPhi > 0 && upperPhi > 0 && lowerPhi > 0) {
+                        lout.remove(i);
+                        phiMatrix[x][y] = 3;
+                    }
+                //}
             }
 
             //5. Hago el chequeo para ver si terminamos
@@ -208,27 +213,29 @@ public class ActiveContours {
                     phiMatrix[x][y] = -1;
 
                     //Reviso a izquierda
-                    if (phiMatrix[x - 1][y] == 3) {
-                        lout.add(new Pixel(x - 1, y, bimg.getRGB(x - 1, y)));
-                        phiMatrix[x - 1][y] = 1;
-                    }
-                    //Reviso a derecha
-                    if (phiMatrix[x + 1][y] == 3) {
-                        lout.add(new Pixel(x + 1, y, bimg.getRGB(x + 1, y)));
-                        phiMatrix[x + 1][y] = 1;
-                    }
-                    //Reviso a arriba
-                    if (phiMatrix[x][y - 1] == 3) {
-                        lout.add(new Pixel(x, y - 1, bimg.getRGB(x, y - 1)));
-                        phiMatrix[x][y - 1] = 1;
-                    }
-                    //Reviso a abajo
-                    if (phiMatrix[x][y + 1] == 3) {
-                        //lout.add(new Pixel(x,y+1,bimg.getRGB(x,y+1)));
-                        lout.add(new Pixel(x, y + 1, bimg.getRGB(x, y + 1)));
-                        phiMatrix[x][y + 1] = 1;
-                    }
-                    lout.remove(i);
+                    //if (x-1>0 && x+1<phiMatrix.length && y-1>0 && y+1<phiMatrix[0].length) {
+                        if (phiMatrix[x - 1][y] == 3) {
+                            lout.add(new Pixel(x - 1, y, bimg.getRGB(x - 1, y)));
+                            phiMatrix[x - 1][y] = 1;
+                        }
+                        //Reviso a derecha
+                        if (phiMatrix[x + 1][y] == 3) {
+                            lout.add(new Pixel(x + 1, y, bimg.getRGB(x + 1, y)));
+                            phiMatrix[x + 1][y] = 1;
+                        }
+                        //Reviso a arriba
+                        if (phiMatrix[x][y - 1] == 3) {
+                            lout.add(new Pixel(x, y - 1, bimg.getRGB(x, y - 1)));
+                            phiMatrix[x][y - 1] = 1;
+                        }
+                        //Reviso a abajo
+                        if (phiMatrix[x][y + 1] == 3) {
+                            //lout.add(new Pixel(x,y+1,bimg.getRGB(x,y+1)));
+                            lout.add(new Pixel(x, y + 1, bimg.getRGB(x, y + 1)));
+                            phiMatrix[x][y + 1] = 1;
+                        }
+                        lout.remove(i);
+                    //}
                 }
             }
 
@@ -237,15 +244,17 @@ public class ActiveContours {
                 int x = p.getX();
                 int y = p.getY();
 
-                int leftPhi = phiMatrix[x - 1][y];
-                int rightPhi = phiMatrix[x + 1][y];
-                int upperPhi = phiMatrix[x][y - 1];
-                int lowerPhi = phiMatrix[x][y + 1];
+                //if (x-1>0 && x+1<phiMatrix.length && y-1>0 && y+1<phiMatrix[0].length) {
+                    int leftPhi = phiMatrix[x - 1][y];
+                    int rightPhi = phiMatrix[x + 1][y];
+                    int upperPhi = phiMatrix[x][y - 1];
+                    int lowerPhi = phiMatrix[x][y + 1];
 
-                if (leftPhi < 0 && rightPhi < 0 && upperPhi < 0 && lowerPhi < 0) {
-                    lin.remove(p);
-                    phiMatrix[x][y] = -3;
-                }
+                    if (leftPhi < 0 && rightPhi < 0 && upperPhi < 0 && lowerPhi < 0) {
+                        lin.remove(p);
+                        phiMatrix[x][y] = -3;
+                    }
+                //}
             }
 
             for (int i = 0; i < lin.size(); i++) {
@@ -257,26 +266,28 @@ public class ActiveContours {
                     phiMatrix[x][y] = 1;
 
                     //Reviso a izquierda
-                    if (phiMatrix[x - 1][y] == -3) {
-                        lin.add(new Pixel(x - 1, y, bimg.getRGB(x - 1, y)));
-                        phiMatrix[x - 1][y] = -1;
-                    }
-                    //Reviso a derecha
-                    if (phiMatrix[x + 1][y] == -3) {
-                        lin.add(new Pixel(x + 1, y, bimg.getRGB(x + 1, y)));
-                        phiMatrix[x + 1][y] = -1;
-                    }
-                    //Reviso arriba
-                    if (phiMatrix[x][y - 1] == -3) {
-                        lin.add(new Pixel(x, y - 1, bimg.getRGB(x, y - 1)));
-                        phiMatrix[x][y - 1] = -1;
-                    }
-                    //Reviso abajo
-                    if (phiMatrix[x][y + 1] == -3) {
-                        lin.add(new Pixel(x, y + 1, bimg.getRGB(x, y + 1)));
-                        phiMatrix[x][y + 1] = -1;
-                    }
-                    lin.remove(i);
+                    //if (x-1>0 && x+1<phiMatrix.length && y-1>0 && y+1<phiMatrix[0].length) {
+                        if (phiMatrix[x - 1][y] == -3) {
+                            lin.add(new Pixel(x - 1, y, bimg.getRGB(x - 1, y)));
+                            phiMatrix[x - 1][y] = -1;
+                        }
+                        //Reviso a derecha
+                        if (phiMatrix[x + 1][y] == -3) {
+                            lin.add(new Pixel(x + 1, y, bimg.getRGB(x + 1, y)));
+                            phiMatrix[x + 1][y] = -1;
+                        }
+                        //Reviso arriba
+                        if (phiMatrix[x][y - 1] == -3) {
+                            lin.add(new Pixel(x, y - 1, bimg.getRGB(x, y - 1)));
+                            phiMatrix[x][y - 1] = -1;
+                        }
+                        //Reviso abajo
+                        if (phiMatrix[x][y + 1] == -3) {
+                            lin.add(new Pixel(x, y + 1, bimg.getRGB(x, y + 1)));
+                            phiMatrix[x][y + 1] = -1;
+                        }
+                        lin.remove(i);
+                    //}
                 }
             }
 
@@ -285,15 +296,17 @@ public class ActiveContours {
                 int x = p.getX();
                 int y = p.getY();
 
-                int leftPhi = phiMatrix[x - 1][y];
-                int rightPhi = phiMatrix[x + 1][y];
-                int upperPhi = phiMatrix[x][y - 1];
-                int lowerPhi = phiMatrix[x][y + 1];
+                //if (x-1>0 && x+1<phiMatrix.length && y-1>0 && y+1<phiMatrix[0].length) {
+                    int leftPhi = phiMatrix[x - 1][y];
+                    int rightPhi = phiMatrix[x + 1][y];
+                    int upperPhi = phiMatrix[x][y - 1];
+                    int lowerPhi = phiMatrix[x][y + 1];
 
-                if (leftPhi > 0 && rightPhi > 0 && upperPhi > 0 && lowerPhi > 0) {
-                    lout.remove(i);
-                    phiMatrix[x][y] = 3;
-                }
+                    if (leftPhi > 0 && rightPhi > 0 && upperPhi > 0 && lowerPhi > 0) {
+                        lout.remove(i);
+                        phiMatrix[x][y] = 3;
+                    }
+                //}
             }
             gaussCounter++;
         }

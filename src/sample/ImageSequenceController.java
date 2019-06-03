@@ -100,19 +100,21 @@ public class ImageSequenceController{
     }
 
     @FXML public void play(){
+        if (timeline!=null){
+            timeline.stop();
+        }
         reset();
-        framesCount = 1;
-        timeline = new Timeline(new KeyFrame(Duration.seconds(0.3), ev -> {
-            if (framesCount < is.imageList.size()) {
+        framesCount = 0;
+        timeline = new Timeline(new KeyFrame(Duration.seconds(0.1), ev -> {
                 BufferedImage bimg = is.imageList.get(framesCount);
                 image = new Image(bimg);
                 image.convertToGreyDataMatrix();
-                if(framesCount == 1){
+                if(framesCount == 0){
                     this.objectColor = this.calculateObjectColor(this.objectSelection);
                     this.generateLinAndLoutBasedOnObjectSelection();
                     activeContours = new ActiveContours(this.image, lin,lout,objectColor);
                 }
-                //Estoy en un frame > 1
+                //Estoy en un frame > 0
                 else {
                     activeContours = new ActiveContours(this.image, lin,lout,objectColor,this.phiMatrix);
                 }
@@ -125,9 +127,8 @@ public class ImageSequenceController{
                 imagePane.getChildren().setAll(imageView);
                 framesCount++;
                 counter++;
-            }
         }));
-        timeline.setCycleCount(Animation.INDEFINITE);
+        timeline.setCycleCount(is.imageList.size());
         timeline.play();
     }
 

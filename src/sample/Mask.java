@@ -84,13 +84,11 @@ public class Mask {
                 suma += valor;
             }
         }
-        printMask();
         for (int i = 0; i < matrix.length; i++) {
             for (int j = 0; j < matrix.length; j++) {
                 this.matrix[i][j] = this.matrix[i][j]/suma;
             }
         }
-        printMask();
     }
 
     public void setHighPassFilterMask(){

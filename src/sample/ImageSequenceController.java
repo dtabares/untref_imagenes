@@ -43,6 +43,7 @@ public class ImageSequenceController{
     public void initialize() throws Exception{
         counter = 0;
         chkTwoCycle.setSelected(false);
+        txtError.setText("10");
         is = new ImageSequence();
         imageUtilities = new ImageUtilities();
         BufferedImage bimg = is.imageList.get(counter);

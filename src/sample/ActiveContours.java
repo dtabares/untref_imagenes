@@ -1,6 +1,7 @@
 package sample;
 
 import java.awt.image.BufferedImage;
+import java.sql.SQLOutput;
 import java.util.*;
 
 public class ActiveContours {
@@ -190,12 +191,12 @@ public class ActiveContours {
          */
 
         //Defino un sigma
-        int sigma = 2;
+        int sigma = 3;
         int gaussCounter = 0;
         int maskSize = (int) Math.round(2 * sigma + 1);
         Mask gaussMask = new Mask(maskSize);
-        gaussMask.setGaussMask(sigma);
-        int Ng = (int) Math.round(2 * sigma + 1);
+        gaussMask.setGaussMaskRevised(sigma);
+        int Ng = maskSize;
         while (gaussCounter < Ng) {
             for (int i = 0; i < lout.size(); i++) {
                 Pixel p = lout.get(i);
@@ -302,19 +303,23 @@ public class ActiveContours {
         double result = 0;
         int x = p.getX();
         int y = p.getY();
-        int widthLimit = phiMatrix.length - mask.getSize();
-        int heightLimit = phiMatrix[0].length - mask.getSize();
-        for (int i = 0; i < x + mask.getSize(); i++) {
-            for (int j = 0; j < y + mask.getSize(); j++) {
+        int maskSize = mask.getSize();
+        int radius = maskSize/2;
+        int widthLimit = phiMatrix.length - maskSize;
+        int heightLimit = phiMatrix[0].length - maskSize;
+        for (int i = x - radius; i < x + radius; i++) {
+            for (int j = y - radius ; j < y + radius; j++) {
                 for (int k = 0; k < mask.getSize(); k++) {
                     for (int l = 0; l < mask.getSize(); l++) {
-                        if (i < widthLimit && j < heightLimit) {
-                            result += Math.round(phiMatrix[i + k][j + l] * mask.getValue(k, l));
+                        //pongo un limite para que no se vaya de rango
+                        if (i > maskSize && i < widthLimit && j > maskSize && j < heightLimit) {
+                            result += (double) phiMatrix[i][j] * mask.getValue(k, l);
                         }
                     }
                 }
             }
         }
+        System.out.println("Gauss value for pixel " + x + " " + y + " " + result );
         return result;
     }
 

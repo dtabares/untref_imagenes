@@ -498,12 +498,17 @@ public class Filter {
         //int[][] result = new int[bimg.getWidth()][bimg.getHeight()];
         int[][] angles = new int[bimg.getWidth()][bimg.getHeight()];
         int[][] gradient = new int[bimg.getWidth()][bimg.getHeight()];
+        int[][] gaussFilteredImage;
+        if(sigma > 0){
+            //Aplico el Filtro Gaussiano
+            gaussFilteredImage = this.applyRawGaussFilter(bimg,sigma);
+        }
+        else{
+            Image im = new Image(bimg);
+            im.convertToGreyDataMatrix();
+            gaussFilteredImage = im.getGreyDataMatrix();
+        }
 
-        //Aplico el Filtro Gaussiano
-        //int[][] gaussFilteredImage = this.applyRawGaussFilter(bimg,sigma);
-        Image im = new Image(bimg);
-        im.convertToGreyDataMatrix();
-        int[][] gaussFilteredImage = im.getGreyDataMatrix();
 
         int[] minMax = this.imageUtilities.findGreyMinMaxValues(gaussFilteredImage);
 

@@ -1007,7 +1007,9 @@ public class Controller extends BorderPane {
 
     // TP 4
     @FXML public void openCVTest(){
-        OpenCVTest.test();
+        BufferedImage bimg = OpenCVTest.test2();
+        leftImage = bimg;
+        this.displayImageInPane(bimg,leftPane);
     }
 
     //Panels

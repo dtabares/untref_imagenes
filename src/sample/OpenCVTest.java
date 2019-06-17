@@ -135,9 +135,9 @@ public class OpenCVTest {
 
             Features2d.drawMatches(objectImage, objectKeyPoints, sceneImage, sceneKeyPoints, goodMatches, matchoutput, matchestColor, newKeypointColor, new MatOfByte(), 2);
 
-            Highgui.imwrite("output//outputImage.jpg", outputImage);
-            Highgui.imwrite("output//matchoutput.jpg", matchoutput);
-            Highgui.imwrite("output//img.jpg", img);
+//            Highgui.imwrite("output//outputImage.jpg", outputImage);
+//            Highgui.imwrite("output//matchoutput.jpg", matchoutput);
+//            Highgui.imwrite("output//img.jpg", img);
             try {
                 return Mat2BufferedImage(matchoutput);
             } catch (Exception e) {

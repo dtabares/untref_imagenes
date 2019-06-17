@@ -10,11 +10,10 @@ import javafx.scene.layout.BorderPane;
 import java.io.File;
 import java.io.IOException;
 import java.awt.image.BufferedImage;
-import java.nio.Buffer;
 import java.util.LinkedList;
 import java.util.List;
 import javax.imageio.ImageIO;
-import javax.swing.*;
+
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
@@ -23,7 +22,6 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.fxml.FXML;
 import javafx.scene.image.ImageView;
-import sun.plugin.javascript.navig.Anchor;
 
 import static sample.InterfaceHelper.getInputDialog;
 
@@ -1006,10 +1004,18 @@ public class Controller extends BorderPane {
     }
 
     // TP 4
-    @FXML public void openCVTest(){
+    @FXML public void openCVTest() throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("sift.fxml"));
+        Parent siftRoot = (Parent) fxmlLoader.load();
+        SiftController siftController = fxmlLoader.<SiftController>getController();
+        Stage siftStage = new Stage();
+        siftStage.setTitle("SIFT");
+        siftStage.setScene(new Scene(siftRoot));
         BufferedImage bimg = OpenCVTest.test2();
-        leftImage = bimg;
-        this.displayImageInPane(bimg,leftPane);
+        siftController.displayImageInPane(bimg);
+        siftStage.setMinWidth(bimg.getWidth());
+        siftStage.setMinHeight(bimg.getHeight());
+        siftStage.show();
     }
 
     //Panels
@@ -1021,6 +1027,7 @@ public class Controller extends BorderPane {
         WritableImage wimg = imageUtilities.readImage(bimg);
         ImageView image = new ImageView(wimg);
         pane.getChildren().setAll(image);
+
     }
 
     //General functions

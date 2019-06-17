@@ -39,14 +39,14 @@ public class OpenCVTest {
         Mat sceneImage = Highgui.imread(bookScene, Highgui.CV_LOAD_IMAGE_COLOR);
 
         MatOfKeyPoint objectKeyPoints = new MatOfKeyPoint();
-        FeatureDetector featureDetector = FeatureDetector.create(FeatureDetector.SURF);
+        FeatureDetector featureDetector = FeatureDetector.create(FeatureDetector.SIFT);
         System.out.println("Detecting key points...");
         featureDetector.detect(objectImage, objectKeyPoints);
         KeyPoint[] keypoints = objectKeyPoints.toArray();
         System.out.println(keypoints);
 
         MatOfKeyPoint objectDescriptors = new MatOfKeyPoint();
-        DescriptorExtractor descriptorExtractor = DescriptorExtractor.create(DescriptorExtractor.SURF);
+        DescriptorExtractor descriptorExtractor = DescriptorExtractor.create(DescriptorExtractor.SIFT);
         System.out.println("Computing descriptors...");
         descriptorExtractor.compute(objectImage, objectKeyPoints, objectDescriptors);
 

@@ -1413,14 +1413,14 @@ public class Filter {
         // Elevo ambas matrices al cuadrado
         for (int i = 0; i < gx.length; i++) {
             for (int j = 0; j < gx[0].length; j++) {
-                gx[i][j] = (int) Math.round(Math.pow(gx[i][j],2));
-                gy[i][j] = (int) Math.round(Math.pow(gy[i][j],2));
+                gx[i][j] = (int) Math.pow(gx[i][j],2);
+                gy[i][j] = (int) Math.pow(gy[i][j],2);
             }
         }
 
         // Aplico filtro de gauss 7x7
-        Mask mask = new Mask(5);
-        mask.setGaussMaskRevised(2);
+        Mask mask = new Mask(3);
+        mask.setGaussMaskRevised(1);
         gx = this.applyRawConvolutionReloaded(gx,mask,gx.length,gx[0].length);
         gy = this.applyRawConvolutionReloaded(gy,mask,gy.length,gy[0].length);
 

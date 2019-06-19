@@ -947,9 +947,7 @@ public class Controller extends BorderPane {
     @FXML public void susan(){
         BufferedImage result = null;
         if (leftImage != null) {
-
             int selection = Integer.valueOf(getInputDialog("S.U.S.A.N", "0: Border - 1: Corner ", "Detection Type:"));
-
             result = this.filter.applySusan(leftImage,selection);
             this.displayImageInPane(result,rightPane);
         }
@@ -1004,7 +1002,7 @@ public class Controller extends BorderPane {
     }
 
     // TP 4
-    @FXML public void openCVTest() throws IOException {
+    @FXML public void sift() throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("sift.fxml"));
         Parent siftRoot = (Parent) fxmlLoader.load();
         SiftController siftController = fxmlLoader.<SiftController>getController();
@@ -1016,6 +1014,12 @@ public class Controller extends BorderPane {
         siftStage.setMinWidth(bimg.getWidth());
         siftStage.setMinHeight(bimg.getHeight());
         siftStage.show();
+    }
+
+    @FXML public void harris(){
+        Filter f = new Filter();
+        BufferedImage bimg = f.applyHarris(leftImage);
+        this.displayImageInPane(bimg,rightPane);
     }
 
     //Panels

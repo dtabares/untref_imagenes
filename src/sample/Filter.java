@@ -1398,4 +1398,69 @@ public class Filter {
         return newAngle;
     }
 
+    public BufferedImage applyHarris(BufferedImage bimg){
+        int[][] resultMatrix = new int[bimg.getWidth()][bimg.getHeight()];
+        Image image = new Image(bimg);
+        image.convertToGreyDataMatrix();
+
+        // Paso a escala de grises
+        int[][] greyDataMatrix = image.getGreyDataMatrix();
+
+        // Aplico Sobel y obtengo Gx (horizontal) y Gy (vertical)
+        int[][] gx = this.applyUnidirectionalRawSobel(greyDataMatrix,BorderDetectionDirection.HORIZONTAL,bimg.getWidth(),bimg.getHeight());
+        int[][] gy = this.applyUnidirectionalRawSobel(greyDataMatrix,BorderDetectionDirection.VERTICAL,bimg.getWidth(),bimg.getHeight());
+
+        // Elevo ambas matrices al cuadrado
+        for (int i = 0; i < gx.length; i++) {
+            for (int j = 0; j < gx[0].length; j++) {
+                gx[i][j] = (int) Math.round(Math.pow(gx[i][j],2));
+                gy[i][j] = (int) Math.round(Math.pow(gy[i][j],2));
+            }
+        }
+
+        // Aplico filtro de gauss 7x7
+        Mask mask = new Mask(5);
+        mask.setGaussMaskRevised(2);
+        gx = this.applyRawConvolutionReloaded(gx,mask,gx.length,gx[0].length);
+        gy = this.applyRawConvolutionReloaded(gy,mask,gy.length,gy[0].length);
+
+        // Multiplico pixel a pixel
+        int gxy[][] = new int[bimg.getWidth()][bimg.getHeight()];
+        for (int i = 0; i < bimg.getWidth(); i++) {
+            for (int j = 0; j < bimg.getHeight(); j++) {
+                gxy[i][j] = gx[i][j] * gy[i][j];
+            }
+        }
+
+        // Aplico filtro de gauss al resultado de la multiplicacion
+        gxy = this.applyRawConvolutionReloaded(gxy,mask,gxy.length,gxy[0].length);
+
+        // Aplico formula
+        for (int i = 0; i < resultMatrix.length; i++) {
+            for (int j = 0; j < resultMatrix[0].length; j++) {
+                resultMatrix[i][j] = (int) Math.round((gx[i][j] * gy[i][j] - Math.pow(gxy[i][j],2)) - (0.04 * Math.pow(gx[i][j] + gy[i][j],2)));
+            }
+        }
+
+        // Busco el maximo
+        int max = 0;
+        for (int i = 0; i < resultMatrix.length; i++) {
+            for (int j = 0; j < resultMatrix[0].length; j++) {
+                if ( resultMatrix[i][j] > max){
+                    max = resultMatrix[i][j];
+                }
+            }
+        }
+
+        //Recorro el resultado y pinto las esquinas
+        BufferedImage result = imageUtilities.copyImageIntoAnother(bimg,13);
+        for (int i = 0; i < bimg.getWidth(); i++) {
+            for (int j = 0; j < bimg.getHeight(); j++) {
+                if (resultMatrix[i][j] > 0.90 * max){
+                    result.setRGB(i,j,ColorUtilities.createRGB(0,255,0));
+                }
+            }
+        }
+        return result;
+    }
 }

@@ -1449,7 +1449,8 @@ public class Filter {
         // Aplico formula
         for (int i = 0; i < resultMatrix.length; i++) {
             for (int j = 0; j < resultMatrix[0].length; j++) {
-                resultMatrix[i][j] = (int) Math.round((gx[i][j] * gy[i][j] - Math.pow(gxy[i][j],2)) - (0.04 * Math.pow(gx[i][j] + gy[i][j],2)));
+                //resultMatrix[i][j] = (int) Math.round((gx[i][j] * gy[i][j] - Math.pow(gxy[i][j],2)) - (0.04 * Math.pow(gx[i][j] + gy[i][j],2)));
+                resultMatrix[i][j] = (int) Math.round((gx[i][j] * gy[i][j] * g45[i][j] * g135[i][j] - Math.pow(gxy[i][j],2)) - (0.04 * Math.pow(gx[i][j] + gy[i][j] + g45[i][j] + g135[i][j],2)));
             }
         }
 

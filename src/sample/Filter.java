@@ -1406,35 +1406,46 @@ public class Filter {
         // Paso a escala de grises
         int[][] greyDataMatrix = image.getGreyDataMatrix();
 
+        //Paso 1
         // Aplico Sobel y obtengo Gx (horizontal) y Gy (vertical)
         int[][] gx = this.applyUnidirectionalRawSobel(greyDataMatrix,BorderDetectionDirection.HORIZONTAL,bimg.getWidth(),bimg.getHeight());
         int[][] gy = this.applyUnidirectionalRawSobel(greyDataMatrix,BorderDetectionDirection.VERTICAL,bimg.getWidth(),bimg.getHeight());
+        int[][] g45 = this.applyUnidirectionalRawSobel(greyDataMatrix,BorderDetectionDirection.DIAGONAL45,bimg.getWidth(),bimg.getHeight());
+        int[][] g135 = this.applyUnidirectionalRawSobel(greyDataMatrix,BorderDetectionDirection.DIAGONAL135,bimg.getWidth(),bimg.getHeight());
 
-        // Elevo ambas matrices al cuadrado
+        //Paso 2
+        // Elevo  matrices al cuadrado
         for (int i = 0; i < gx.length; i++) {
             for (int j = 0; j < gx[0].length; j++) {
                 gx[i][j] = (int) Math.pow(gx[i][j],2);
                 gy[i][j] = (int) Math.pow(gy[i][j],2);
+                g45[i][j] = (int) Math.pow(g45[i][j],2);
+                g135[i][j] = (int) Math.pow(g135[i][j],2);
             }
         }
 
         // Aplico filtro de gauss 7x7
         Mask mask = new Mask(3);
-        mask.setGaussMaskRevised(1);
+        mask.setGaussMaskRevised(2);
         gx = this.applyRawConvolutionReloaded(gx,mask,gx.length,gx[0].length);
         gy = this.applyRawConvolutionReloaded(gy,mask,gy.length,gy[0].length);
+        g45 = this.applyRawConvolutionReloaded(g45,mask,g45.length,g45[0].length);
+        g135 = this.applyRawConvolutionReloaded(g135,mask,g135.length,g135[0].length);
 
+        //Paso 3
         // Multiplico pixel a pixel
         int gxy[][] = new int[bimg.getWidth()][bimg.getHeight()];
         for (int i = 0; i < bimg.getWidth(); i++) {
             for (int j = 0; j < bimg.getHeight(); j++) {
-                gxy[i][j] = gx[i][j] * gy[i][j];
+                gxy[i][j] = gx[i][j] * gy[i][j] * g45[i][j] * g135[i][j];
+                //gxy[i][j] = gx[i][j] * gy[i][j];
             }
         }
 
         // Aplico filtro de gauss al resultado de la multiplicacion
         gxy = this.applyRawConvolutionReloaded(gxy,mask,gxy.length,gxy[0].length);
 
+        //Paso 4
         // Aplico formula
         for (int i = 0; i < resultMatrix.length; i++) {
             for (int j = 0; j < resultMatrix[0].length; j++) {
@@ -1456,7 +1467,7 @@ public class Filter {
         BufferedImage result = imageUtilities.copyImageIntoAnother(bimg,13);
         for (int i = 0; i < bimg.getWidth(); i++) {
             for (int j = 0; j < bimg.getHeight(); j++) {
-                if (resultMatrix[i][j] > 0.90 * max){
+                if (resultMatrix[i][j] > 0.95 * max){
                     result.setRGB(i,j,ColorUtilities.createRGB(0,255,0));
                 }
             }

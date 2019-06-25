@@ -29,14 +29,15 @@ public class OpenCVTest {
 
     public static BufferedImage test2(){
 
-        String bookObject = "C:\\Users\\Fernando.Ares\\Desktop\\Imagenes\\cameraman.png";
-        String bookScene = "C:\\Users\\Fernando.Ares\\Desktop\\Imagenes\\cameramanRot.png";
+        String bookObject = "C:\\Users\\Fernando.Ares\\Desktop\\Imagenes\\_arduinotest.png";
+        String bookScene = "C:\\Users\\Fernando.Ares\\Desktop\\Imagenes\\arduino_uno_pinout_web.png";
 
         System.out.println("Started....");
         System.out.println("Loading images...");
         Mat objectImage = Highgui.imread(bookObject, Highgui.CV_LOAD_IMAGE_COLOR);
         Mat sceneImage = Highgui.imread(bookScene, Highgui.CV_LOAD_IMAGE_COLOR);
 
+        //Matriz para guardar Keypoints
         MatOfKeyPoint objectKeyPoints = new MatOfKeyPoint();
         //Usa un Feature Detector para extraer keypoints
         FeatureDetector featureDetector = FeatureDetector.create(FeatureDetector.SIFT);
@@ -45,6 +46,7 @@ public class OpenCVTest {
         KeyPoint[] keypoints = objectKeyPoints.toArray();
         System.out.println(" : " + keypoints.length);
 
+        //Matriz para guardar Descriptores >> Descriptor: punto que caracteriza a una imagen
         MatOfKeyPoint objectDescriptors = new MatOfKeyPoint();
         //Usa un descriptor extractor para extraer descriptores
         DescriptorExtractor descriptorExtractor = DescriptorExtractor.create(DescriptorExtractor.SIFT);
@@ -79,7 +81,7 @@ public class OpenCVTest {
         System.out.println("Calculating good match list...");
         LinkedList<DMatch> goodMatchesList = new LinkedList<DMatch>();
 
-        float nndrRatio = 0.7f;
+        float nndrRatio = 0.7f; // Parametro para distancia euclidia entre descriptores
 
         for (int i = 0; i < matches.size(); i++) {
             MatOfDMatch matofDMatch = matches.get(i);
@@ -87,7 +89,7 @@ public class OpenCVTest {
             DMatch m1 = dmatcharray[0];
             DMatch m2 = dmatcharray[1];
 
-            //PARAMETRO: distancia entre el descriptor y keypoints
+            //Calculo de distancia euclidia
             if (m1.distance <= m2.distance * nndrRatio) {
                 goodMatchesList.addLast(m1);
             }

@@ -1003,17 +1003,31 @@ public class Controller extends BorderPane {
 
     // TP 4
     @FXML public void sift() throws IOException {
+
+        Stage browser = new Stage();
+        FileChooser fc = new FileChooser();
+        try
+        {
+            fc.setTitle("Select Object Image");
+            File objectFile = fc.showOpenDialog(browser);
+            fc.setTitle("Select Object Image");
+            File sceneFile = fc.showOpenDialog(browser);
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("sift.fxml"));
         Parent siftRoot = (Parent) fxmlLoader.load();
         SiftController siftController = fxmlLoader.<SiftController>getController();
         Stage siftStage = new Stage();
         siftStage.setTitle("SIFT");
         siftStage.setScene(new Scene(siftRoot));
-        BufferedImage bimg = OpenCVTest.test2();
+        BufferedImage bimg = Sift.applySift(objectFile, sceneFile);
         siftController.displayImageInPane(bimg);
         siftStage.setMinWidth(bimg.getWidth());
-        siftStage.setMinHeight(bimg.getHeight());
+        siftStage.setMinHeight(bimg.getHeight() + 50);
+        siftController.setText(String.valueOf(Sift.objectInScene));
         siftStage.show();
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     @FXML public void harris(){

@@ -4,33 +4,23 @@ import org.opencv.calib3d.Calib3d;
 import org.opencv.core.*;
 import org.opencv.features2d.*;
 import org.opencv.highgui.Highgui;
-
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
-import java.sql.SQLOutput;
+import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 
-public class OpenCVTest {
+public class Sift {
+
+    public static boolean objectInScene = false;
     // Compulsory
     static{ System.loadLibrary(Core.NATIVE_LIBRARY_NAME); }
 
-    public static void test() {
-        System.out.println("Welcome to OpenCV " + Core.VERSION);
-        Mat m = new Mat(5, 10, CvType.CV_8UC1, new Scalar(0));
-        System.out.println("OpenCV Mat: " + m);
-        Mat mr1 = m.row(1);
-        mr1.setTo(new Scalar(1));
-        Mat mc5 = m.col(5);
-        mc5.setTo(new Scalar(5));
-        System.out.println("OpenCV Mat data:\n" + m.dump());
-    }
+    public static BufferedImage applySift(File objectFile, File sceneFile){
 
-    public static BufferedImage test2(){
-
-        String bookObject = "C:\\Users\\Fernando.Ares\\Desktop\\Imagenes\\_arduinotest.png";
-        String bookScene = "C:\\Users\\Fernando.Ares\\Desktop\\Imagenes\\arduino_uno_pinout_web.png";
+        String bookObject = objectFile.getAbsolutePath();
+        String bookScene = sceneFile.getAbsolutePath();
 
         System.out.println("Started....");
         System.out.println("Loading images...");
@@ -98,6 +88,10 @@ public class OpenCVTest {
         System.out.println("Cantidad de Matcheos: " + goodMatchesList.size());
         if (goodMatchesList.size() >= 7) {
             System.out.println("Object Found!!!");
+
+            if(goodMatchesList.size() >= keypoints.length * 0.7){
+                objectInScene = true;
+            }
 
             List<KeyPoint> objKeypointlist = objectKeyPoints.toList();
             List<KeyPoint> scnKeypointlist = sceneKeyPoints.toList();

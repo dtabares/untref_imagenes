@@ -1,7 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-
-<AnchorPane fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="sample.SiftController" />
+<?import javafx.scene.text.Text?>
+<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="sample.SiftController">
+  <children>
+    <BorderPane layoutX="0.0" layoutY="0.0">
+        <bottom>
+            <GridPane>
+                <children>
+                    <Text fx:id="txtBottom" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                </children>
+            </GridPane>
+        </bottom>
+      <center>
+        <AnchorPane fx:id="pane"/>
+      </center>
+    </BorderPane>
+  </children>
+</AnchorPane>

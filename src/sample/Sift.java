@@ -86,10 +86,13 @@ public class Sift {
         }
 
         System.out.println("Cantidad de Matcheos: " + goodMatchesList.size());
-        if (goodMatchesList.size() >= 7) {
+        if (goodMatchesList.size() >= 4) {
             System.out.println("Object Found!!!");
-
-            if(goodMatchesList.size() >= keypoints.length * 0.7){
+            double keypointRelation = (double)Math.max(keypoints.length, sceneKeyPoints.size().height)/(double)Math.min(keypoints.length, sceneKeyPoints.size().height);
+            System.out.println("max: " + Math.max(keypoints.length, sceneKeyPoints.size().height));
+            System.out.println("min: " + Math.min(keypoints.length, sceneKeyPoints.size().height));
+            System.out.println("keypointRelation: " + keypointRelation);
+            if(goodMatchesList.size() >= (keypointRelation*10)){
                 objectInScene = true;
             }
 

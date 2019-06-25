@@ -1398,7 +1398,7 @@ public class Filter {
         return newAngle;
     }
 
-    public BufferedImage applyHarris(BufferedImage bimg){
+    public BufferedImage applyHarris(BufferedImage bimg, int sigma, int maskSize, double percent){
         int[][] resultMatrix = new int[bimg.getWidth()][bimg.getHeight()];
         Image image = new Image(bimg);
         image.convertToGreyDataMatrix();
@@ -1425,8 +1425,8 @@ public class Filter {
         }
 
         // Aplico filtro de gauss 7x7
-        Mask mask = new Mask(3);
-        mask.setGaussMaskRevised(2);
+        Mask mask = new Mask(maskSize);
+        mask.setGaussMaskRevised(sigma);
         gx = this.applyRawConvolutionReloaded(gx,mask,gx.length,gx[0].length);
         gy = this.applyRawConvolutionReloaded(gy,mask,gy.length,gy[0].length);
         g45 = this.applyRawConvolutionReloaded(g45,mask,g45.length,g45[0].length);
@@ -1468,7 +1468,7 @@ public class Filter {
         BufferedImage result = imageUtilities.copyImageIntoAnother(bimg,13);
         for (int i = 0; i < bimg.getWidth(); i++) {
             for (int j = 0; j < bimg.getHeight(); j++) {
-                if (resultMatrix[i][j] > 0.95 * max){
+                if (resultMatrix[i][j] > percent * max){
                     result.setRGB(i,j,ColorUtilities.createRGB(0,255,0));
                 }
             }

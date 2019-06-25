@@ -1010,20 +1010,20 @@ public class Controller extends BorderPane {
         {
             fc.setTitle("Select Object Image");
             File objectFile = fc.showOpenDialog(browser);
-            fc.setTitle("Select Object Image");
+            fc.setTitle("Select Scene Image");
             File sceneFile = fc.showOpenDialog(browser);
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("sift.fxml"));
-        Parent siftRoot = (Parent) fxmlLoader.load();
-        SiftController siftController = fxmlLoader.<SiftController>getController();
-        Stage siftStage = new Stage();
-        siftStage.setTitle("SIFT");
-        siftStage.setScene(new Scene(siftRoot));
-        BufferedImage bimg = Sift.applySift(objectFile, sceneFile);
-        siftController.displayImageInPane(bimg);
-        siftStage.setMinWidth(bimg.getWidth());
-        siftStage.setMinHeight(bimg.getHeight() + 50);
-        siftController.setText(String.valueOf(Sift.objectInScene));
-        siftStage.show();
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("sift.fxml"));
+            Parent siftRoot = (Parent) fxmlLoader.load();
+            SiftController siftController = fxmlLoader.<SiftController>getController();
+            Stage siftStage = new Stage();
+            siftStage.setTitle("SIFT");
+            siftStage.setScene(new Scene(siftRoot));
+            BufferedImage bimg = Sift.applySift(objectFile, sceneFile);
+            siftController.displayImageInPane(bimg);
+            siftStage.setMinWidth(bimg.getWidth());
+            siftStage.setMinHeight(bimg.getHeight() + 50);
+            siftController.setText(String.valueOf(Sift.objectInScene));
+            siftStage.show();
         }
         catch (Exception e){
             e.printStackTrace();
@@ -1031,8 +1031,11 @@ public class Controller extends BorderPane {
     }
 
     @FXML public void harris(){
+        int sigma = Integer.valueOf(getInputDialog("Harris", "Enter a new Value", "Sigma:"));
+        int maskSize = Integer.valueOf(getInputDialog("Harris", "Enter a new Value", "Mask Size:"));
+        double percent = Double.valueOf(getInputDialog("Harris", "Enter a new Value", "Max Percent:"));
         Filter f = new Filter();
-        BufferedImage bimg = f.applyHarris(leftImage);
+        BufferedImage bimg = f.applyHarris(leftImage, sigma, maskSize, percent);
         this.displayImageInPane(bimg,rightPane);
     }
 

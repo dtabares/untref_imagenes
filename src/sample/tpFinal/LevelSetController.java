@@ -115,18 +115,12 @@ public class LevelSetController {
             o.generateLinAndLoutBasedOnObjectSelection(image);
             o.fillInitialPhiMatrix();
         }
-        timeline = new Timeline(new KeyFrame(Duration.seconds(0.1), ev -> {
+        timeline = new Timeline(new KeyFrame(Duration.seconds(0.2), ev -> {
                 BufferedImage bimg = is.imageList.get(framesCount);
                 image = new Image(bimg);
                 image.convertToGreyDataMatrix();
-                if (framesCount == 0) {
-
-                    this.levelSet = new LevelSet(this.image,this.objectList);
-                }
-                //Estoy en un frame > 0
-                else {
-                    this.levelSet = new LevelSet(this.image,this.objectList);
-                }
+                this.levelSet = new LevelSet(this.image,this.objectList);
+                System.out.println("Applying level set to frame " + framesCount );
                 this.levelSet.apply(chkTwoCycle.isSelected(), Integer.parseInt(txtError.getText()));
                 WritableImage wimg = imageUtilities.readImage(this.paintContoursReloaded());
                 ImageView imageView = new ImageView(wimg);

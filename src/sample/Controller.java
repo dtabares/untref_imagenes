@@ -22,6 +22,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.fxml.FXML;
 import javafx.scene.image.ImageView;
+import sample.tpFinal.LevelSetController;
 
 import static sample.InterfaceHelper.getInputDialog;
 
@@ -33,21 +34,21 @@ public class Controller extends BorderPane {
     private List<BufferedImage> historyImageList;
     private ImageUtilities imageUtilities;
     private Filter filter;
-    private ImageSequenceController imageSequenceController;
+    private LevelSetController levelSetController;
 
     @FXML private AnchorPane leftPane;
     @FXML private AnchorPane rightPane;
     @FXML private Text txtBottom;
 
-    public void initialize()throws IOException{
+    public void initialize() throws Exception {
         System.out.println("Starting...");
         this.rightPaneImageList = new LinkedList<>();
         this.historyImageList = new LinkedList<>();
         this.imageUtilities = new ImageUtilities();
         this.filter = new Filter();
-        BufferedImage bimg = imageUtilities.openRawImage(new File("src/sample/lena512.raw"),512,512);
-        leftImage = bimg;
-        this.displayImageInPane(bimg,leftPane);
+//        BufferedImage bimg = imageUtilities.openRawImage(new File("src/sample/lena512.raw"),512,512);
+//        leftImage = bimg;
+//        this.displayImageInPane(bimg,leftPane);
         //this.test();
     }
 

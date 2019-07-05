@@ -16,6 +16,10 @@ public class LevelSet {
         this.objectList = objectList;
     }
 
+    public void updateImage(Image image){
+        this.bimg = image.getBufferedImage();
+    }
+
     public void apply(boolean runCycleTwo, int error) {
         // Va a recorrer la lista de objetos y aplicar el metodo a cada uno de ellos
         for (LevelSetObject o : objectList) {

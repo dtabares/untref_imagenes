@@ -90,14 +90,7 @@ public class LevelSetController {
             o.generateLinAndLoutBasedOnObjectSelection(image);
             o.fillInitialPhiMatrix();
         }
-        //Si estoy en el primer frame
-        if (counter == 1) {
-                this.levelSet = new LevelSet(this.image,this.objectList);
-        }
-        //Estoy en un frame > 1
-        else {
-                this.levelSet = new LevelSet(this.image,this.objectList);
-        }
+        this.levelSet = new LevelSet(this.image,this.objectList);
         this.levelSet.apply(chkTwoCycle.isSelected(), Integer.parseInt(txtError.getText()));
         WritableImage wimg = imageUtilities.readImage(this.paintContoursReloaded());
         ImageView imageView = new ImageView(wimg);

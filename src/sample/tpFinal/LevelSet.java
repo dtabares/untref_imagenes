@@ -31,7 +31,7 @@ public class LevelSet {
             int counter = 0; //contador de control para no loopear de forma infinita
             boolean finished = false; //condicion de finalizacion
             //Loop que recorre hasta un tope de iteraciones o hasta terminar el algoritmo
-            while (counter < 1000 && finished == false) {
+            while (counter < 20 && finished == false) {
 
                 //region Switch_in
                 // 1. Para cada x en Lout si Fd > 0 lo sacamos de Lout y lo ponemos en Lin

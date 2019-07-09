@@ -111,7 +111,7 @@ public class LevelSetController {
             o.fillInitialPhiMatrix();
         }
         this.levelSet = new LevelSet(this.image,this.objectList);
-        timeline = new Timeline(new KeyFrame(Duration.seconds(0.2), ev -> {
+        timeline = new Timeline(new KeyFrame(Duration.seconds(0.5), ev -> {
                 BufferedImage bimg = is.imageList.get(framesCount);
                 image = new Image(bimg);
                 image.convertToGreyDataMatrix();

@@ -10,6 +10,7 @@ import java.util.List;
 
 public class LevelSetObject {
 
+    public int id;
     public int[] objectColor;
     public ImageSelection objectSelection;
     public List<Pixel> lin;

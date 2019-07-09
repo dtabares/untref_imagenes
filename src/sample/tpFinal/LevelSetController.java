@@ -28,6 +28,7 @@ public class LevelSetController {
     private Image image;
     private LevelSet levelSet;
     List<LevelSetObject> objectList;
+    private int idCounter=1;
 
     // Variables de secuencia de imagenes
     public ImageSequence is;
@@ -68,6 +69,7 @@ public class LevelSetController {
         counter ++;
         framesCount = 0;
         objectList.clear();
+        idCounter=1;
     }
 
     @FXML public void next(){
@@ -158,7 +160,9 @@ public class LevelSetController {
                 }
             });
             //Agrega el objeto a la lista
+            o.id = idCounter;
             objectList.add(o);
+            idCounter++;
     }
 
     private BufferedImage paintContoursReloaded(){

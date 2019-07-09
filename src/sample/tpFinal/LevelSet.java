@@ -2,6 +2,7 @@ package sample.tpFinal;
 
 import sample.*;
 import java.awt.image.BufferedImage;
+import java.sql.SQLOutput;
 import java.util.*;
 
 public class LevelSet {
@@ -9,11 +10,15 @@ public class LevelSet {
     ImageUtilities imageUtilities;
     BufferedImage bimg;
     List<LevelSetObject> objectList;
+    public int [][] psiMatrix; // No es la matriz Phi, sino la matriz Psi
 
     public LevelSet(Image image, List<LevelSetObject> objectList){
         imageUtilities = new ImageUtilities();
         this.bimg = image.getBufferedImage();
         this.objectList = objectList;
+        this.psiMatrix = new int [bimg.getWidth()][bimg.getHeight()];
+        this.initializePsiMatriz(objectList);
+        //getPsiNonZeroCount();
     }
 
     public void updateImage(Image image){
@@ -25,17 +30,19 @@ public class LevelSet {
         for (LevelSetObject o : objectList) {
             int counter = 0; //contador de control para no loopear de forma infinita
             boolean finished = false; //condicion de finalizacion
-            int x,y,leftPhi=0,rightPhi=0,upperPhi=0,lowerPhi=0;
             //Loop que recorre hasta un tope de iteraciones o hasta terminar el algoritmo
             while (counter < 1000 && finished == false) {
+
+                //region Switch_in
                 // 1. Para cada x en Lout si Fd > 0 lo sacamos de Lout y lo ponemos en Lin
                 for (int i = 0; i < o.lout.size(); i++) {
                     Pixel p = o.lout.get(i);
-                    if (this.getFd(p,error,o) > 0) {
+                    if (this.getFd(p,error,o) > 0 && this.getTr(p,o) == 1) {
                         o.lin.add(p);
-                        x = p.getX();
-                        y = p.getY();
+                        int x = p.getX();
+                        int y = p.getY();
                         o.phiMatrix[x][y] = -1;
+                        this.psiMatrix[x][y] = o.id;
                         //Reviso los vecinos, si pertenece al fondo (phi == 3) lo agregamos a Lout y cambiamos phi = 1 (Ojo aca con los bordes no estamos validando y nos podemos ir a out of bounds)
 
                         //Me fijo que no se vaya de rango
@@ -74,12 +81,14 @@ public class LevelSet {
 
                     }
                 }
+                //endregion Switch_in
 
                 //2. Algunos pixels de Lin ahora pueden ser interiores, entonces hay que recorrer cada p de Lin, y buscar quien NO tiene un vecino Lout (phi == 1). El que no tenga, lo sacamos de Lin y seteamos phi(p) = -3.
                 for (int i = 0; i < o.lin.size(); i++) {
                     Pixel p = o.lin.get(i);
-                    x = p.getX();
-                    y = p.getY();
+                    int x = p.getX();
+                    int y = p.getY();
+                    int leftPhi=0,rightPhi=0,upperPhi=0,lowerPhi=0;
                     if (x - 1 > 0) {
                         leftPhi = o.phiMatrix[x - 1][y];
                     }
@@ -87,7 +96,7 @@ public class LevelSet {
                         rightPhi = o.phiMatrix[x + 1][y];
                     }
                     if (y - 1 > 0) {
-                        upperPhi = o.phiMatrix[x][y - 1];
+                        lowerPhi = o.phiMatrix[x][y - 1];
                     }
                     if (y + 1 < o.phiMatrix[0].length) {
                         upperPhi = o.phiMatrix[x][y + 1];
@@ -98,15 +107,16 @@ public class LevelSet {
                     }
                 }
 
+                //region Switch_out
                 //3.Luego vuelvo a recorrer los Lin y les calculo Fd. Si Fd < 0, hay que borrarlo de Lin y agregarlo a Lout. De ese pixel, reviso los 4 vecinos(pv), y los que sean phi(pv) == -3 los agrego a lin y cambio phi(pv) == -1
                 for (int i = 0; i < o.lin.size(); i++) {
                     Pixel p = o.lin.get(i);
                     if (this.getFd(p,error,o) < 0) {
                         o.lout.add(p);
-                        x = p.getX();
-                        y = p.getY();
+                        int x = p.getX();
+                        int y = p.getY();
                         o.phiMatrix[x][y] = 1;
-
+                        this.psiMatrix[x][y] = 0;
                         if (x-1>0){
                             //Reviso a izquierda
                             if (o.phiMatrix[x - 1][y] == -3) {
@@ -138,14 +148,16 @@ public class LevelSet {
                         o.lin.remove(i);
                     }
                 }
+                //endregion Switch_out
 
                 //4. Vuelvo a loopear por cada pixel de Lout, ya que algunos pixels pudieron transformarse en exteriores.
                 //Si p NO tiene vecino Lin, quiere decir que es un Lout aislado que ahora debe ser parte del fondo, entonces
                 //lo eliminamos de Lout y seteamos phi(p) = 3
                 for (int i = 0; i < o.lout.size(); i++) {
                         Pixel p = o.lout.get(i);
-                        x = p.getX();
-                        y = p.getY();
+                        int x = p.getX();
+                        int y = p.getY();
+                        int leftPhi=0,rightPhi=0,upperPhi=0,lowerPhi=0;
                         if (x-1>0){
                             leftPhi = o.phiMatrix[x - 1][y];
                         }
@@ -193,10 +205,10 @@ public class LevelSet {
                         Pixel p = o.lout.get(i);
                         if (getGoPhi(p, gaussMask,o) < 0) {
                             o.lin.add(p);
-                            x = p.getX();
-                            y = p.getY();
+                            int x = p.getX();
+                            int y = p.getY();
                             o.phiMatrix[x][y] = -1;
-
+                            this.psiMatrix[x][y] = o.id;
                             //Reviso a izquierda
                             if (x-1>0 && x+1<o.phiMatrix.length && y-1>0 && y+1<o.phiMatrix[0].length) {
                                 if (o.phiMatrix[x - 1][y] == 3) {
@@ -226,19 +238,19 @@ public class LevelSet {
 
                     for (int i = 0; i < o.lin.size(); i++) {
                         Pixel p = o.lin.get(i);
-                        x = p.getX();
-                        y = p.getY();
-
+                        int x = p.getX();
+                        int y = p.getY();
+                        int leftPhi,rightPhi,upperPhi,lowerPhi;
                         if (x-1>0 && x+1<o.phiMatrix.length && y-1>0 && y+1<o.phiMatrix[0].length) {
-                        leftPhi = o.phiMatrix[x - 1][y];
-                        rightPhi = o.phiMatrix[x + 1][y];
-                        upperPhi = o.phiMatrix[x][y - 1];
-                        lowerPhi = o.phiMatrix[x][y + 1];
+                            leftPhi = o.phiMatrix[x - 1][y];
+                            rightPhi = o.phiMatrix[x + 1][y];
+                            upperPhi = o.phiMatrix[x][y - 1];
+                            lowerPhi = o.phiMatrix[x][y + 1];
 
-                        if (leftPhi < 0 && rightPhi < 0 && upperPhi < 0 && lowerPhi < 0) {
-                            o.lin.remove(p);
-                            o.phiMatrix[x][y] = -3;
-                        }
+                            if (leftPhi < 0 && rightPhi < 0 && upperPhi < 0 && lowerPhi < 0) {
+                                o.lin.remove(p);
+                                o.phiMatrix[x][y] = -3;
+                            }
                         }
                     }
 
@@ -246,10 +258,10 @@ public class LevelSet {
                         Pixel p = o.lin.get(i);
                         if (this.getGoPhi(p, gaussMask,o) > 0) {
                             o.lout.add(p);
-                            x = p.getX();
-                            y = p.getY();
+                            int x = p.getX();
+                            int y = p.getY();
                             o.phiMatrix[x][y] = 1;
-
+                            this.psiMatrix[x][y] = 0;
                             //Reviso a izquierda
                             if (x-1>0 && x+1<o.phiMatrix.length && y-1>0 && y+1<o.phiMatrix[0].length) {
                             if (o.phiMatrix[x - 1][y] == -3) {
@@ -278,19 +290,18 @@ public class LevelSet {
 
                     for (int i = 0; i < o.lout.size(); i++) {
                         Pixel p = o.lout.get(i);
-                        x = p.getX();
-                        y = p.getY();
-
+                        int x = p.getX();
+                        int y = p.getY();
+                        int leftPhi,rightPhi,upperPhi,lowerPhi;
                         if (x-1>0 && x+1<o.phiMatrix.length && y-1>0 && y+1<o.phiMatrix[0].length) {
-                        leftPhi = o.phiMatrix[x - 1][y];
-                        rightPhi = o.phiMatrix[x + 1][y];
-                        upperPhi = o.phiMatrix[x][y - 1];
-                        lowerPhi = o.phiMatrix[x][y + 1];
-
-                        if (leftPhi > 0 && rightPhi > 0 && upperPhi > 0 && lowerPhi > 0) {
-                            o.lout.remove(i);
-                            o.phiMatrix[x][y] = 3;
-                        }
+                            leftPhi = o.phiMatrix[x - 1][y];
+                            rightPhi = o.phiMatrix[x + 1][y];
+                            upperPhi = o.phiMatrix[x][y - 1];
+                            lowerPhi = o.phiMatrix[x][y + 1];
+                            if (leftPhi > 0 && rightPhi > 0 && upperPhi > 0 && lowerPhi > 0) {
+                                o.lout.remove(i);
+                                o.phiMatrix[x][y] = 3;
+                            }
                         }
                     }
                     gaussCounter++;
@@ -344,6 +355,93 @@ public class LevelSet {
         }
 
         return -1;
+    }
+
+    public void initializePsiMatriz(List<LevelSetObject> objectList){
+        for (LevelSetObject o : objectList) {
+            for (int i = 0; i < psiMatrix.length; i++) {
+                for (int j = 0; j < psiMatrix[0].length; j++) {
+                    if (o.phiMatrix[i][j] < 0){
+                        psiMatrix[i][j] = o.id;
+                    }
+                }
+            }
+        }
+    }
+
+    public int getPsiNonZeroCount(){
+        int count=0;
+        for (int i = 0; i < psiMatrix.length; i++) {
+            for (int j = 0; j < psiMatrix[0].length; j++) {
+                if (psiMatrix[i][j]!=0){
+                    count++;
+                }
+            }
+        }
+        System.out.println("Matriz psi con: " + count + " valores distintos de 0");
+        return count;
+    }
+
+    public int getTr(Pixel p, LevelSetObject o){
+        int alpha = this.getAlpha(p);
+        int tObj = this.getTobj(p);
+        int tBg = this.getTbg(p,o);
+        int result = Math.min(alpha,Math.max(tObj,tBg));
+        //System.out.println("alpha: " + alpha +" tObj: " + tObj + " tBg: " + tBg + " result: " + result);
+        return result;
+    }
+
+    public int getTobj(Pixel p){
+        int tObj = 0;
+        int x = p.getX();
+        int y = p.getY();
+        //miro a los 4 vecinos con cuidado de no desbordar
+        if (x-1>0 && x+1<psiMatrix.length && y-1>0 && y+1<psiMatrix[0].length) {
+            //Si alguno de los vecinos pertenece al objeto o al borde interior incremento tObj
+            if (psiMatrix[x - 1][y] != 0){tObj++;}
+            if (psiMatrix[x + 1][y] != 0){tObj++;}
+            if (psiMatrix[x][y - 1] != 0){tObj++;}
+            if (psiMatrix[x][y + 1] != 0){tObj++;}
+            }
+        return tObj;
+    }
+
+    public int getTbg(Pixel p, LevelSetObject o){
+        int tBg = 0;
+        int x = p.getX();
+        int y = p.getY();
+        //miro a los 8 vecinos
+        for (int i = -1; i < 2; i++) {
+            for (int j = -1; j < 2; j++) {
+                //Me fijo que no desborde la mascara
+                if(x+i > 0 && x+i < o.phiMatrix.length && y+j > 0 && y+j < o.phiMatrix[0].length) {
+                    //Me fijo en la matriz Phi del objeto, si es negativo es que esta dentro del objeto o en su linea interior
+                    if (o.phiMatrix[x + i][y + j] < 0) {
+                        tBg++;
+                    }
+                }
+            }
+        }
+        return tBg;
+    }
+
+    public int getAlpha(Pixel p){
+        List<Integer> regions = new LinkedList<>();
+        int x = p.getX();
+        int y = p.getY();
+        //miro a los vecinos y determino si alguno se intersecta con algun objeto
+        for (int i = -1; i < 2; i++) {
+            for (int j = -1; j < 2; j++) {
+                //Me fijo que no desborde la mascara
+                if(x+i > 0 && x+i < psiMatrix.length && y+j > 0 && y+j < psiMatrix[0].length) {
+                    int psiMatrixValue = psiMatrix[x + i][y + j];
+                    if (psiMatrixValue != 0 && !regions.contains(psiMatrixValue)) {
+                        regions.add(psiMatrixValue);
+                    }
+                }
+            }
+        }
+        return regions.size();
     }
 
     private boolean finished(int error, LevelSetObject o){

@@ -396,13 +396,19 @@ public class LevelSet {
         int x = p.getX();
         int y = p.getY();
         //miro a los 4 vecinos con cuidado de no desbordar
-        if (x-1>0 && x+1<psiMatrix.length && y-1>0 && y+1<psiMatrix[0].length) {
-            //Si alguno de los vecinos pertenece al objeto o al borde interior incremento tObj
+        //Si alguno de los vecinos pertenece al objeto o al borde interior incremento tObj
+        if (x-1>0){
             if (psiMatrix[x - 1][y] != 0){tObj++;}
+        }
+        if (x+1<psiMatrix.length){
             if (psiMatrix[x + 1][y] != 0){tObj++;}
+        }
+        if (y-1>0){
             if (psiMatrix[x][y - 1] != 0){tObj++;}
+        }
+        if (y+1<psiMatrix[0].length) {
             if (psiMatrix[x][y + 1] != 0){tObj++;}
-            }
+        }
         return tObj;
     }
 
@@ -435,6 +441,7 @@ public class LevelSet {
                 //Me fijo que no desborde la mascara
                 if(x+i > 0 && x+i < psiMatrix.length && y+j > 0 && y+j < psiMatrix[0].length) {
                     int psiMatrixValue = psiMatrix[x + i][y + j];
+                    //Buscamos que no sea el fondo, y para no contar dos veces el mismo objeto nos fijamos que ya no lo tengamos
                     if (psiMatrixValue != 0 && !regions.contains(psiMatrixValue)) {
                         regions.add(psiMatrixValue);
                     }

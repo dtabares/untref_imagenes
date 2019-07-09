@@ -6,6 +6,7 @@ import javafx.stage.Stage;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -19,7 +20,9 @@ public class ImageSequence {
         File directory = dc.showDialog(browser);
         dc.setTitle("Select Directory");
         imageList = new LinkedList<>();
-        for (File f: directory.listFiles()){
+        File[] files = directory.listFiles();
+        Arrays.sort(files);
+        for (File f: files){
             imageList.add(ImageIO.read(new File(f.getAbsolutePath())));
         }
     }

@@ -2,7 +2,6 @@ package sample.tpFinal;
 
 import sample.*;
 import java.awt.image.BufferedImage;
-import java.sql.SQLOutput;
 import java.util.*;
 
 public class LevelSet {
@@ -11,13 +10,15 @@ public class LevelSet {
     BufferedImage bimg;
     List<LevelSetObject> objectList;
     public int [][] psiMatrix; // No es la matriz Phi, sino la matriz Psi
+    public int [][] phiMatrix;
 
     public LevelSet(Image image, List<LevelSetObject> objectList){
         imageUtilities = new ImageUtilities();
         this.bimg = image.getBufferedImage();
         this.objectList = objectList;
-        this.psiMatrix = new int [bimg.getWidth()][bimg.getHeight()];
-        this.initializePsiMatriz(objectList);
+        this.psiMatrix = new int[bimg.getWidth()][bimg.getHeight()];
+        this.phiMatrix = new int[bimg.getWidth()][bimg.getHeight()];
+        this.initializePhiAndPsiMatrix();
         //getPsiNonZeroCount();
     }
 
@@ -31,7 +32,7 @@ public class LevelSet {
             int counter = 0; //contador de control para no loopear de forma infinita
             boolean finished = false; //condicion de finalizacion
             //Loop que recorre hasta un tope de iteraciones o hasta terminar el algoritmo
-            while (counter < 20 && finished == false) {
+            while (counter < 15 && finished == false) {
 
                 //region Switch_in
                 // 1. Para cada x en Lout si Fd > 0 lo sacamos de Lout y lo ponemos en Lin
@@ -41,43 +42,43 @@ public class LevelSet {
                         o.lin.add(p);
                         int x = p.getX();
                         int y = p.getY();
-                        o.phiMatrix[x][y] = -1;
+                        this.phiMatrix[x][y] = -1;
                         this.psiMatrix[x][y] = o.id;
                         //Reviso los vecinos, si pertenece al fondo (phi == 3) lo agregamos a Lout y cambiamos phi = 1 (Ojo aca con los bordes no estamos validando y nos podemos ir a out of bounds)
 
                         //Me fijo que no se vaya de rango
                         if (x-1>0){
                             //Reviso a izquierda
-                            if (o.phiMatrix[x - 1][y] == 3) {
+                            if (this.phiMatrix[x - 1][y] == 3) {
                                 o.lout.add(new Pixel(x - 1, y, bimg.getRGB(x - 1, y)));
-                                o.phiMatrix[x - 1][y] = 1;
+                                this.phiMatrix[x - 1][y] = 1;
                             }
                         }
-                        if (x+1<o.phiMatrix.length) {
+                        if (x+1<this.phiMatrix.length) {
                             //Reviso a derecha
-                            if (o.phiMatrix[x + 1][y] == 3) {
+                            if (this.phiMatrix[x + 1][y] == 3) {
                                 o.lout.add(new Pixel(x + 1, y, bimg.getRGB(x + 1, y)));
-                                o.phiMatrix[x + 1][y] = 1;
+                                this.phiMatrix[x + 1][y] = 1;
                             }
                         }
 
                         if (y-1>0) {
                             //Reviso a arriba
-                            if (o.phiMatrix[x][y - 1] == 3) {
+                            if (this.phiMatrix[x][y - 1] == 3) {
                                 o.lout.add(new Pixel(x, y - 1, bimg.getRGB(x, y - 1)));
-                                o.phiMatrix[x][y - 1] = 1;
+                                this.phiMatrix[x][y - 1] = 1;
                             }
                         }
 
-                        if (y+1<o.phiMatrix[0].length){
+                        if (y+1<this.phiMatrix[0].length){
                             //Reviso a abajo
-                            if (o.phiMatrix[x][y + 1] == 3) {
+                            if (this.phiMatrix[x][y + 1] == 3) {
                                 //lout.add(new Pixel(x,y+1,bimg.getRGB(x,y+1)));
                                 o.lout.add(new Pixel(x, y + 1, bimg.getRGB(x, y + 1)));
-                                o.phiMatrix[x][y + 1] = 1;
+                                this.phiMatrix[x][y + 1] = 1;
                             }
                         }
-                            o.lout.remove(i);
+                        o.lout.remove(i);
 
                     }
                 }
@@ -88,22 +89,24 @@ public class LevelSet {
                     Pixel p = o.lin.get(i);
                     int x = p.getX();
                     int y = p.getY();
-                    int leftPhi=0,rightPhi=0,upperPhi=0,lowerPhi=0;
+                    //Los inicializo en negativo, para que si alguna posicion no existe (estoy en un borde)
+                    //La condicion que pregunta por los valores de Phi pase
+                    int leftPhi=-1,rightPhi=-1,upperPhi=-1,lowerPhi=-1;
                     if (x - 1 > 0) {
-                        leftPhi = o.phiMatrix[x - 1][y];
+                        leftPhi = this.phiMatrix[x - 1][y];
                     }
-                    if (x + 1 < o.phiMatrix.length) {
-                        rightPhi = o.phiMatrix[x + 1][y];
+                    if (x + 1 < this.phiMatrix.length) {
+                        rightPhi = this.phiMatrix[x + 1][y];
                     }
                     if (y - 1 > 0) {
-                        lowerPhi = o.phiMatrix[x][y - 1];
+                        lowerPhi = this.phiMatrix[x][y - 1];
                     }
-                    if (y + 1 < o.phiMatrix[0].length) {
-                        upperPhi = o.phiMatrix[x][y + 1];
+                    if (y + 1 < this.phiMatrix[0].length) {
+                        upperPhi = this.phiMatrix[x][y + 1];
                     }
                     if (leftPhi < 0 && rightPhi < 0 && upperPhi < 0 && lowerPhi < 0) {
                         o.lin.remove(p);
-                        o.phiMatrix[x][y] = -3;
+                        this.phiMatrix[x][y] = -3;
                     }
                 }
 
@@ -115,34 +118,34 @@ public class LevelSet {
                         o.lout.add(p);
                         int x = p.getX();
                         int y = p.getY();
-                        o.phiMatrix[x][y] = 1;
+                        this.phiMatrix[x][y] = 1;
                         this.psiMatrix[x][y] = 0;
                         if (x-1>0){
                             //Reviso a izquierda
-                            if (o.phiMatrix[x - 1][y] == -3) {
+                            if (this.phiMatrix[x - 1][y] == -3) {
                                 o.lin.add(new Pixel(x - 1, y, bimg.getRGB(x - 1, y)));
-                                o.phiMatrix[x - 1][y] = -1;
+                                this.phiMatrix[x - 1][y] = -1;
                             }
                         }
-                        if(x+1<o.phiMatrix.length){
+                        if(x+1<this.phiMatrix.length){
                             //Reviso a derecha
-                            if (o.phiMatrix[x + 1][y] == -3) {
+                            if (this.phiMatrix[x + 1][y] == -3) {
                                 o.lin.add(new Pixel(x + 1, y, bimg.getRGB(x + 1, y)));
-                                o.phiMatrix[x + 1][y] = -1;
+                                this.phiMatrix[x + 1][y] = -1;
                             }
                         }
                         if(y-1>0){
                             //Reviso arriba
-                            if (o.phiMatrix[x][y - 1] == -3) {
+                            if (this.phiMatrix[x][y - 1] == -3) {
                                 o.lin.add(new Pixel(x, y - 1, bimg.getRGB(x, y - 1)));
-                                o.phiMatrix[x][y - 1] = -1;
+                                this.phiMatrix[x][y - 1] = -1;
                             }
                         }
-                        if(y+1<o.phiMatrix[0].length){
+                        if(y+1<this.phiMatrix[0].length){
                             //Reviso abajo
-                            if (o.phiMatrix[x][y + 1] == -3) {
+                            if (this.phiMatrix[x][y + 1] == -3) {
                                 o.lin.add(new Pixel(x, y + 1, bimg.getRGB(x, y + 1)));
-                                o.phiMatrix[x][y + 1] = -1;
+                                this.phiMatrix[x][y + 1] = -1;
                             }
                         }
                         o.lin.remove(i);
@@ -154,26 +157,28 @@ public class LevelSet {
                 //Si p NO tiene vecino Lin, quiere decir que es un Lout aislado que ahora debe ser parte del fondo, entonces
                 //lo eliminamos de Lout y seteamos phi(p) = 3
                 for (int i = 0; i < o.lout.size(); i++) {
-                        Pixel p = o.lout.get(i);
-                        int x = p.getX();
-                        int y = p.getY();
-                        int leftPhi=0,rightPhi=0,upperPhi=0,lowerPhi=0;
-                        if (x-1>0){
-                            leftPhi = o.phiMatrix[x - 1][y];
-                        }
-                        if(x+1<o.phiMatrix.length){
-                            rightPhi = o.phiMatrix[x + 1][y];
-                        }
-                        if(y-1>0){
-                            upperPhi = o.phiMatrix[x][y - 1];
-                        }
-                        if(y+1<o.phiMatrix[0].length){
-                            lowerPhi = o.phiMatrix[x][y + 1];
-                        }
-                        if (leftPhi > 0 && rightPhi > 0 && upperPhi > 0 && lowerPhi > 0) {
-                            o.lout.remove(i);
-                            o.phiMatrix[x][y] = 3;
-                        }
+                    Pixel p = o.lout.get(i);
+                    int x = p.getX();
+                    int y = p.getY();
+                    //Los inicializo en positivo, para que si alguna posicion no existe (estoy en un borde)
+                    //La condicion que pregunta por los valores de Phi pase
+                    int leftPhi=1,rightPhi=1,upperPhi=1,lowerPhi=1;
+                    if (x-1>0){
+                        leftPhi = this.phiMatrix[x - 1][y];
+                    }
+                    if(x+1<this.phiMatrix.length){
+                        rightPhi = this.phiMatrix[x + 1][y];
+                    }
+                    if(y-1>0){
+                        upperPhi = this.phiMatrix[x][y - 1];
+                    }
+                    if(y+1<this.phiMatrix[0].length){
+                        lowerPhi = this.phiMatrix[x][y + 1];
+                    }
+                    if (leftPhi > 0 && rightPhi > 0 && upperPhi > 0 && lowerPhi > 0) {
+                        o.lout.remove(i);
+                        this.phiMatrix[x][y] = 3;
+                    }
                 }
 
                 //5. Hago el chequeo para ver si terminamos
@@ -185,13 +190,13 @@ public class LevelSet {
             if (runCycleTwo){
                 System.out.println("Starting Cycle Two");
 
-            /*
-            - Ciclo 2
-            1. Para cada pixel en Lout computar G o Phi, si G o Phi < 0 aplicamos switch_in
-            2. Para cada pixel en Lin hacemos intercambio de pixels
-            3. Para cada pixel en Lin computar G o Phi, si G o Phi > 0 aplicamos switch_out
-            4. Para cada pixel en Lout hacemos intercambio de pixels
-             */
+                /*
+                - Ciclo 2
+                1. Para cada pixel en Lout computar G o Phi, si G o Phi < 0 aplicamos switch_in
+                2. Para cada pixel en Lin hacemos intercambio de pixels
+                3. Para cada pixel en Lin computar G o Phi, si G o Phi > 0 aplicamos switch_out
+                4. Para cada pixel en Lout hacemos intercambio de pixels
+                 */
 
                 //Defino un sigma
                 int sigma = 3;
@@ -203,33 +208,33 @@ public class LevelSet {
                 while (gaussCounter < Ng) {
                     for (int i = 0; i < o.lout.size(); i++) {
                         Pixel p = o.lout.get(i);
-                        if (getGoPhi(p, gaussMask,o) < 0) {
+                        if (getGoPhi(p, gaussMask,o) < 0 && this.getTr(p,o) == 1) {
                             o.lin.add(p);
                             int x = p.getX();
                             int y = p.getY();
-                            o.phiMatrix[x][y] = -1;
+                            this.phiMatrix[x][y] = -1;
                             this.psiMatrix[x][y] = o.id;
                             //Reviso a izquierda
-                            if (x-1>0 && x+1<o.phiMatrix.length && y-1>0 && y+1<o.phiMatrix[0].length) {
-                                if (o.phiMatrix[x - 1][y] == 3) {
+                            if (x-1>0 && x+1<this.phiMatrix.length && y-1>0 && y+1<this.phiMatrix[0].length) {
+                                if (this.phiMatrix[x - 1][y] == 3) {
                                     o.lout.add(new Pixel(x - 1, y, bimg.getRGB(x - 1, y)));
-                                    o.phiMatrix[x - 1][y] = 1;
+                                    this.phiMatrix[x - 1][y] = 1;
                                 }
                                 //Reviso a derecha
-                                if (o.phiMatrix[x + 1][y] == 3) {
+                                if (this.phiMatrix[x + 1][y] == 3) {
                                     o.lout.add(new Pixel(x + 1, y, bimg.getRGB(x + 1, y)));
-                                    o.phiMatrix[x + 1][y] = 1;
+                                    this.phiMatrix[x + 1][y] = 1;
                                 }
                                 //Reviso a arriba
-                                if (o.phiMatrix[x][y - 1] == 3) {
+                                if (this.phiMatrix[x][y - 1] == 3) {
                                     o.lout.add(new Pixel(x, y - 1, bimg.getRGB(x, y - 1)));
-                                    o.phiMatrix[x][y - 1] = 1;
+                                    this.phiMatrix[x][y - 1] = 1;
                                 }
                                 //Reviso a abajo
-                                if (o.phiMatrix[x][y + 1] == 3) {
+                                if (this.phiMatrix[x][y + 1] == 3) {
                                     //lout.add(new Pixel(x,y+1,bimg.getRGB(x,y+1)));
                                     o.lout.add(new Pixel(x, y + 1, bimg.getRGB(x, y + 1)));
-                                    o.phiMatrix[x][y + 1] = 1;
+                                    this.phiMatrix[x][y + 1] = 1;
                                 }
                                 o.lout.remove(i);
                             }
@@ -241,15 +246,15 @@ public class LevelSet {
                         int x = p.getX();
                         int y = p.getY();
                         int leftPhi,rightPhi,upperPhi,lowerPhi;
-                        if (x-1>0 && x+1<o.phiMatrix.length && y-1>0 && y+1<o.phiMatrix[0].length) {
-                            leftPhi = o.phiMatrix[x - 1][y];
-                            rightPhi = o.phiMatrix[x + 1][y];
-                            upperPhi = o.phiMatrix[x][y - 1];
-                            lowerPhi = o.phiMatrix[x][y + 1];
+                        if (x-1>0 && x+1<this.phiMatrix.length && y-1>0 && y+1<this.phiMatrix[0].length) {
+                            leftPhi = this.phiMatrix[x - 1][y];
+                            rightPhi = this.phiMatrix[x + 1][y];
+                            upperPhi = this.phiMatrix[x][y - 1];
+                            lowerPhi = this.phiMatrix[x][y + 1];
 
                             if (leftPhi < 0 && rightPhi < 0 && upperPhi < 0 && lowerPhi < 0) {
                                 o.lin.remove(p);
-                                o.phiMatrix[x][y] = -3;
+                                this.phiMatrix[x][y] = -3;
                             }
                         }
                     }
@@ -260,30 +265,30 @@ public class LevelSet {
                             o.lout.add(p);
                             int x = p.getX();
                             int y = p.getY();
-                            o.phiMatrix[x][y] = 1;
+                            this.phiMatrix[x][y] = 1;
                             this.psiMatrix[x][y] = 0;
                             //Reviso a izquierda
-                            if (x-1>0 && x+1<o.phiMatrix.length && y-1>0 && y+1<o.phiMatrix[0].length) {
-                            if (o.phiMatrix[x - 1][y] == -3) {
-                                o.lin.add(new Pixel(x - 1, y, bimg.getRGB(x - 1, y)));
-                                o.phiMatrix[x - 1][y] = -1;
-                            }
-                            //Reviso a derecha
-                            if (o.phiMatrix[x + 1][y] == -3) {
-                                o.lin.add(new Pixel(x + 1, y, bimg.getRGB(x + 1, y)));
-                                o.phiMatrix[x + 1][y] = -1;
-                            }
-                            //Reviso arriba
-                            if (o.phiMatrix[x][y - 1] == -3) {
-                                o.lin.add(new Pixel(x, y - 1, bimg.getRGB(x, y - 1)));
-                                o.phiMatrix[x][y - 1] = -1;
-                            }
-                            //Reviso abajo
-                            if (o.phiMatrix[x][y + 1] == -3) {
-                                o.lin.add(new Pixel(x, y + 1, bimg.getRGB(x, y + 1)));
-                                o.phiMatrix[x][y + 1] = -1;
-                            }
-                            o.lin.remove(i);
+                            if (x-1>0 && x+1<this.phiMatrix.length && y-1>0 && y+1<this.phiMatrix[0].length) {
+                                if (this.phiMatrix[x - 1][y] == -3) {
+                                    o.lin.add(new Pixel(x - 1, y, bimg.getRGB(x - 1, y)));
+                                    this.phiMatrix[x - 1][y] = -1;
+                                }
+                                //Reviso a derecha
+                                if (this.phiMatrix[x + 1][y] == -3) {
+                                    o.lin.add(new Pixel(x + 1, y, bimg.getRGB(x + 1, y)));
+                                    this.phiMatrix[x + 1][y] = -1;
+                                }
+                                //Reviso arriba
+                                if (this.phiMatrix[x][y - 1] == -3) {
+                                    o.lin.add(new Pixel(x, y - 1, bimg.getRGB(x, y - 1)));
+                                    this.phiMatrix[x][y - 1] = -1;
+                                }
+                                //Reviso abajo
+                                if (this.phiMatrix[x][y + 1] == -3) {
+                                    o.lin.add(new Pixel(x, y + 1, bimg.getRGB(x, y + 1)));
+                                    this.phiMatrix[x][y + 1] = -1;
+                                }
+                                o.lin.remove(i);
                             }
                         }
                     }
@@ -293,14 +298,14 @@ public class LevelSet {
                         int x = p.getX();
                         int y = p.getY();
                         int leftPhi,rightPhi,upperPhi,lowerPhi;
-                        if (x-1>0 && x+1<o.phiMatrix.length && y-1>0 && y+1<o.phiMatrix[0].length) {
-                            leftPhi = o.phiMatrix[x - 1][y];
-                            rightPhi = o.phiMatrix[x + 1][y];
-                            upperPhi = o.phiMatrix[x][y - 1];
-                            lowerPhi = o.phiMatrix[x][y + 1];
+                        if (x-1>0 && x+1<this.phiMatrix.length && y-1>0 && y+1<this.phiMatrix[0].length) {
+                            leftPhi = this.phiMatrix[x - 1][y];
+                            rightPhi = this.phiMatrix[x + 1][y];
+                            upperPhi = this.phiMatrix[x][y - 1];
+                            lowerPhi = this.phiMatrix[x][y + 1];
                             if (leftPhi > 0 && rightPhi > 0 && upperPhi > 0 && lowerPhi > 0) {
                                 o.lout.remove(i);
-                                o.phiMatrix[x][y] = 3;
+                                this.phiMatrix[x][y] = 3;
                             }
                         }
                     }
@@ -308,6 +313,64 @@ public class LevelSet {
                 }
             }
         }
+        //LikeHood Test
+        for (LevelSetObject o : objectList) {
+            for (int i = 0; i < o.lout.size(); i++) {
+                Pixel p = o.lout.get(i);
+                Pixel neighborPixel;
+                Pixel mostSimilarPixel = null;
+                //La maxima diferencia de color puede ser 255, entre blanco y negro, asi que seteandolo así
+                //alguno va a entrar seguro.
+                double maxLikeHood = 256;
+                double temp;
+                if(this.getTr(p,o) > 1){
+                    int x = p.getX();
+                    int y = p.getY();
+                    //Reviso a izquierda
+                    if (x-1>0){
+                        neighborPixel = new Pixel(x - 1, y, bimg.getRGB(x - 1, y ));
+                        temp = this.colorSimilarity(p,neighborPixel);
+                        if (temp<maxLikeHood){
+                            maxLikeHood = temp;
+                            mostSimilarPixel = neighborPixel;
+                        }
+                    }
+                    //Reviso a derecha
+                    if (x+1>0){
+                        neighborPixel = new Pixel(x + 1, y, bimg.getRGB(x + 1, y ));
+                        temp = this.colorSimilarity(p,neighborPixel);
+                        if (temp<maxLikeHood){
+                            maxLikeHood = temp;
+                            mostSimilarPixel = neighborPixel;
+                        }
+                    }
+                    //Reviso a arriba
+                    if (y-1>0){
+                        neighborPixel = new Pixel(x, y - 1, bimg.getRGB(x, y-1 ));
+                        temp = this.colorSimilarity(p,neighborPixel);
+                        if (temp<maxLikeHood){
+                            maxLikeHood = temp;
+                            mostSimilarPixel = neighborPixel;
+                        }
+                    }
+                    //Reviso a abajo
+                    if (y+1>0){
+                        neighborPixel = new Pixel(x, y + 1, bimg.getRGB(x, y+1 ));
+                        temp = this.colorSimilarity(p,neighborPixel);
+                        if (temp<maxLikeHood){
+                            maxLikeHood = temp;
+                            mostSimilarPixel = neighborPixel;
+                        }
+                    }
+
+                    if (mostSimilarPixel != null){
+                        this.psiMatrix[x][y] = this.psiMatrix[mostSimilarPixel.getX()][mostSimilarPixel.getY()];
+                    }
+                    //Si por alguna razon no entramos dentro del if anterior queda igual, como parte del background
+                }
+            }
+        }
+
     }
 
     private double getGoPhi(Pixel p, Mask mask, LevelSetObject o){
@@ -316,15 +379,15 @@ public class LevelSet {
         int y = p.getY();
         int maskSize = mask.getSize();
         int radius = maskSize/2;
-        int widthLimit = o.phiMatrix.length - maskSize;
-        int heightLimit = o.phiMatrix[0].length - maskSize;
+        int widthLimit = this.phiMatrix.length - maskSize;
+        int heightLimit = this.phiMatrix[0].length - maskSize;
         for (int i = x - radius; i <= x + radius; i++) {
             for (int j = y - radius ; j <= y + radius; j++) {
                 for (int k = 0; k < mask.getSize(); k++) {
                     for (int l = 0; l < mask.getSize(); l++) {
                         //pongo un limite para que no se vaya de rango
                         if (i > maskSize && i < widthLimit && j > maskSize && j < heightLimit) {
-                            result += (double) o.phiMatrix[i][j] * mask.getValue(k, l);
+                            result += (double) this.phiMatrix[i][j] * mask.getValue(k, l);
                         }
                     }
                 }
@@ -357,17 +420,25 @@ public class LevelSet {
         return -1;
     }
 
-    public void initializePsiMatriz(List<LevelSetObject> objectList){
-        for (LevelSetObject o : objectList) {
-            for (int i = 0; i < psiMatrix.length; i++) {
-                for (int j = 0; j < psiMatrix[0].length; j++) {
-                    if (o.phiMatrix[i][j] < 0){
-                        psiMatrix[i][j] = o.id;
-                    }
-                }
-            }
-        }
+    private double colorSimilarity(Pixel p, Pixel neighbour){
+        int pixelRGB = this.bimg.getRGB(p.getX(),p.getY());
+        int neighbourRGB = this.bimg.getRGB(neighbour.getX(),neighbour.getY());
+        int pixelRed = ColorUtilities.getRed(pixelRGB);
+        int pixelGreen = ColorUtilities.getGreen(pixelRGB);
+        int pixelBlue =ColorUtilities.getBlue(pixelRGB);
+        int neighbourRed = ColorUtilities.getRed(neighbourRGB);
+        int neighbourGreen = ColorUtilities.getGreen(neighbourRGB);
+        int neighbourBlue = ColorUtilities.getBlue(neighbourRGB);
+
+        int redDifference = pixelRed - neighbourRed;
+        int greenDifference = pixelGreen - neighbourGreen;
+        int blueDifference = pixelBlue - neighbourBlue;
+
+        double similarity = Math.sqrt(Math.pow(redDifference,2) + Math.pow(greenDifference,2) + Math.pow(blueDifference,2));
+
+        return similarity;
     }
+
 
     public int getPsiNonZeroCount(){
         int count=0;
@@ -420,9 +491,9 @@ public class LevelSet {
         for (int i = -1; i < 2; i++) {
             for (int j = -1; j < 2; j++) {
                 //Me fijo que no desborde la mascara
-                if(x+i > 0 && x+i < o.phiMatrix.length && y+j > 0 && y+j < o.phiMatrix[0].length) {
+                if(x+i > 0 && x+i < this.phiMatrix.length && y+j > 0 && y+j < this.phiMatrix[0].length) {
                     //Me fijo en la matriz Phi del objeto, si es negativo es que esta dentro del objeto o en su linea interior
-                    if (o.phiMatrix[x + i][y + j] < 0) {
+                    if (this.phiMatrix[x + i][y + j] < 0) {
                         tBg++;
                     }
                 }
@@ -490,5 +561,55 @@ public class LevelSet {
             }
         }
         return false;
+    }
+
+    private void initializePhiAndPsiMatrix() {
+        //NOTA: la Matriz Phi se definede la siguiente manera:
+        // 3 para pixels que pertenencen al fondo
+        // 1 para pixels que pertenecen a Lout de algún objeto
+        // -1 para pixels que pertenencen a Lin de algún objeto
+        // -3 para pixels que pertenecen al interior de un objeto
+
+        //La Matriz Psi se definede la siguiente manera:
+        // 0 si el pixel pertenece al fondo
+        // N si el pixel pertenece al objeto N
+
+        //Ambas matrices tienen las mismas dimensiones
+
+        //Lleno la matriz Phi de 3 y Psi de 0
+        for (int i = 0; i < this.phiMatrix.length; i++) {
+            for (int j = 0; j < this.phiMatrix[0].length; j++) {
+                this.phiMatrix[i][j] = 3;
+                this.psiMatrix[i][j] = 0;
+            }
+        }
+
+        for (LevelSetObject o : objectList) {
+            //Recorro lout y relleno
+            for (Pixel p: o.lout) {
+                this.phiMatrix[p.getX()][p.getY()] = 1;
+                //this.psiMatrix[p.getX()][p.getY()] = o.id;
+            }
+            //Recorro lin y relleno
+            for (Pixel p: o.lin) {
+                this.phiMatrix[p.getX()][p.getY()] = -1;
+                this.psiMatrix[p.getX()][p.getY()] = o.id;
+            }
+
+            //Caluclo maximos y minimos del borde interion
+            int xMin = o.getMinBorderXPosition(phiMatrix.length);
+            int xMax = o.getMaxBorderXPosition();
+            int yMin = o.getMinBorderYPosition(phiMatrix[0].length);
+            int yMax = o.getMaxBorderYPosition();
+
+            //Lleno el interior del objeto
+            for (int i = xMin + 1; i < xMax; i++) {
+                for (int j = yMin + 1; j < yMax; j++) {
+                    this.phiMatrix[i][j] = -3;
+                    this.psiMatrix[i][j] = o.id;
+                }
+            }
+
+        }
     }
 }

@@ -85,18 +85,25 @@ public class LevelSetController {
     }
 
     @FXML public void apply(){
+        System.out.println("Counter: " + counter);
         BufferedImage bimg = imageUtilities.copyImageIntoAnother(this.image.getBufferedImage());
         //Calculo las condiciones iniciales para todos los objetos
-        for (LevelSetObject o : objectList) {
-            o.calculateObjectColor(image);
-            o.generateLinAndLoutBasedOnObjectSelection(image);
-            o.fillInitialPhiMatrix();
+        if(counter == 1){
+            for (LevelSetObject o : objectList) {
+                o.calculateObjectColor(image);
+                o.generateLinAndLoutBasedOnObjectSelection(image);
+            }
+            this.levelSet = new LevelSet(this.image,this.objectList);
         }
-        this.levelSet = new LevelSet(this.image,this.objectList);
+        else {
+            this.levelSet.updateImage(image);
+        }
+        System.out.println("Applying level set to frame " + framesCount );
         this.levelSet.apply(chkTwoCycle.isSelected(), Integer.parseInt(txtError.getText()));
         WritableImage wimg = imageUtilities.readImage(this.paintContoursReloaded());
         ImageView imageView = new ImageView(wimg);
         imagePane.getChildren().setAll(imageView);
+        framesCount++;
     }
 
     @FXML public void play(){
@@ -108,7 +115,6 @@ public class LevelSetController {
         for (LevelSetObject o : objectList) {
             o.calculateObjectColor(image);
             o.generateLinAndLoutBasedOnObjectSelection(image);
-            o.fillInitialPhiMatrix();
         }
         this.levelSet = new LevelSet(this.image,this.objectList);
         timeline = new Timeline(new KeyFrame(Duration.seconds(0.5), ev -> {
@@ -136,7 +142,7 @@ public class LevelSetController {
 
     @FXML public void objectSquare(){
             //Crea un nuevo Objeto y le pasa sus atributos de seleccion
-            LevelSetObject o = new LevelSetObject(this.image);
+            LevelSetObject o = new LevelSetObject();
             o.objectSelection = new ImageSelection();
             Rectangle selectionLine = new Rectangle();
             ImageView leftImageView = (ImageView) imagePane.getChildren().get(0);

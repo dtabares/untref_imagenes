@@ -15,11 +15,6 @@ public class LevelSetObject {
     public ImageSelection objectSelection;
     public List<Pixel> lin;
     public List<Pixel> lout;
-    public int [][] phiMatrix;
-
-    public LevelSetObject(Image image){
-        this.phiMatrix = new int[image.getWidth()][image.getHeight()];
-    }
 
     public void calculateObjectColor(Image image){
 
@@ -92,38 +87,7 @@ public class LevelSetObject {
             }
     }
 
-    public void fillInitialPhiMatrix() {
-        //NOTA: la funcion phi inicial define un cuadradito con todos valores -3, el borde del cuadrado es -1, el borde exterior es 1 y todo el resto es 3
-        //Lleno la matriz de 3
-        for (int i = 0; i < this.phiMatrix.length; i++) {
-            for (int j = 0; j < this.phiMatrix[0].length; j++) {
-                this.phiMatrix[i][j] = 3;
-            }
-        }
-        //Recorro lout y relleno
-        for (Pixel p: lout) {
-            this.phiMatrix[p.getX()][p.getY()] = 1;
-        }
-        //Recorro lin y relleno
-        for (Pixel p: lin) {
-            this.phiMatrix[p.getX()][p.getY()] = -1;
-        }
-
-        //Caluclo maximos y minimos del borde interion
-        int xMin = this.getMinBorderXPosition();
-        int xMax = this.getMaxBorderXPosition();
-        int yMin = this.getMinBorderYPosition();
-        int yMax = this.getMaxBorderYPosition();
-
-        //Lleno el interior del objeto
-        for (int i = xMin + 1; i < xMax; i++) {
-            for (int j = yMin + 1; j < yMax; j++) {
-                this.phiMatrix[i][j] = -3;
-            }
-        }
-    }
-
-    private int getMaxBorderXPosition(){
+    public int getMaxBorderXPosition(){
         int max = 0;
         for (Pixel p: lin
         ) {
@@ -134,8 +98,8 @@ public class LevelSetObject {
         return max;
     }
 
-    private int getMinBorderXPosition(){
-        int min = phiMatrix.length;
+    public int getMinBorderXPosition(int maxXInPhi){
+        int min = maxXInPhi;
         for (Pixel p: lin
         ) {
             if(p.getX() < min){
@@ -145,7 +109,7 @@ public class LevelSetObject {
         return min;
     }
 
-    private int getMaxBorderYPosition(){
+    public int getMaxBorderYPosition(){
         int max = 0;
         for (Pixel p: lin
         ) {
@@ -156,8 +120,8 @@ public class LevelSetObject {
         return max;
     }
 
-    private int getMinBorderYPosition(){
-        int min = phiMatrix[0].length;
+    public int getMinBorderYPosition(int maxYInPhi){
+        int min = maxYInPhi;
         for (Pixel p: lin
         ) {
             if(p.getY() < min){

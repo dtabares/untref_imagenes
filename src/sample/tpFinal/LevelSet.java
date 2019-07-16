@@ -466,19 +466,30 @@ public class LevelSet {
         int tObj = 0;
         int x = p.getX();
         int y = p.getY();
+        int psiValueForP = psiMatrix[x][y];
         //miro a los 4 vecinos con cuidado de no desbordar
-        //Si alguno de los vecinos pertenece al objeto o al borde interior incremento tObj
-        if (x-1>0){
-            if (psiMatrix[x - 1][y] != 0){tObj++;}
-        }
-        if (x+1<psiMatrix.length){
-            if (psiMatrix[x + 1][y] != 0){tObj++;}
-        }
-        if (y-1>0){
-            if (psiMatrix[x][y - 1] != 0){tObj++;}
-        }
-        if (y+1<psiMatrix[0].length) {
-            if (psiMatrix[x][y + 1] != 0){tObj++;}
+        //Si alguno de los vecinos pertenece tiene el mismo valor que p y es mayor a cero significa que esta conectado con p
+        if (psiValueForP > 0) {
+            if (x - 1 > 0) {
+                if (psiMatrix[x - 1][y] == psiValueForP) {
+                    tObj++;
+                }
+            }
+            if (x + 1 < psiMatrix.length) {
+                if (psiMatrix[x + 1][y] == psiValueForP) {
+                    tObj++;
+                }
+            }
+            if (y - 1 > 0) {
+                if (psiMatrix[x][y - 1] == psiValueForP) {
+                    tObj++;
+                }
+            }
+            if (y + 1 < psiMatrix[0].length) {
+                if (psiMatrix[x][y + 1] == psiValueForP) {
+                    tObj++;
+                }
+            }
         }
         return tObj;
     }
@@ -487,14 +498,17 @@ public class LevelSet {
         int tBg = 0;
         int x = p.getX();
         int y = p.getY();
+        int psiValueForP = psiMatrix[x][y];
         //miro a los 8 vecinos
-        for (int i = -1; i < 2; i++) {
-            for (int j = -1; j < 2; j++) {
-                //Me fijo que no desborde la mascara
-                if(x+i > 0 && x+i < this.phiMatrix.length && y+j > 0 && y+j < this.phiMatrix[0].length) {
-                    //Me fijo en la matriz Phi del objeto, si es negativo es que esta dentro del objeto o en su linea interior
-                    if (this.phiMatrix[x + i][y + j] < 0) {
-                        tBg++;
+        if (psiValueForP == 0) {
+            for (int i = -1; i < 2; i++) {
+                for (int j = -1; j < 2; j++) {
+                    //Me fijo que no desborde la mascara
+                    if (x + i > 0 && x + i < this.phiMatrix.length && y + j > 0 && y + j < this.phiMatrix[0].length) {
+                        //Me fijo en la matriz Phi del objeto, si es negativo es que esta dentro del objeto o en su linea interior
+                        if (this.phiMatrix[x + i][y + j] < 0) {
+                            tBg++;
+                        }
                     }
                 }
             }

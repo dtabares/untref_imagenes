@@ -51,7 +51,7 @@ public class LevelSetController {
         counter ++;
         //Inicializo variables de Active Contours
         image = new Image(bimg);
-        image.convertToGreyDataMatrix();
+        //image.convertToGreyDataMatrix();
         objectList = new LinkedList<>();
         //Muestro imagen en interfaz
         ImageView imageView = new ImageView(wimg);
@@ -120,7 +120,7 @@ public class LevelSetController {
         timeline = new Timeline(new KeyFrame(Duration.seconds(0.5), ev -> {
                 BufferedImage bimg = is.imageList.get(framesCount);
                 image = new Image(bimg);
-                image.convertToGreyDataMatrix();
+                //image.convertToGreyDataMatrix();
                 this.levelSet.updateImage(image);
                 System.out.println("Applying level set to frame " + framesCount );
                 this.levelSet.apply(chkTwoCycle.isSelected(), Integer.parseInt(txtError.getText()));

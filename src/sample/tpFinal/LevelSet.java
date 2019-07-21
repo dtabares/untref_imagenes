@@ -313,7 +313,7 @@ public class LevelSet {
                 }
             }
         }
-        //LikeHood Test
+        //Like-Lihood Test
         for (LevelSetObject o : objectList) {
             for (int i = 0; i < o.lout.size(); i++) {
                 Pixel p = o.lout.get(i);
@@ -336,7 +336,7 @@ public class LevelSet {
                         }
                     }
                     //Reviso a derecha
-                    if (x+1>0){
+                    if (x+1<bimg.getWidth()){
                         neighborPixel = new Pixel(x + 1, y, bimg.getRGB(x + 1, y ));
                         temp = this.colorSimilarity(p,neighborPixel);
                         if (temp<maxLikeHood){
@@ -354,7 +354,7 @@ public class LevelSet {
                         }
                     }
                     //Reviso a abajo
-                    if (y+1>0){
+                    if (y+1<bimg.getHeight()){
                         neighborPixel = new Pixel(x, y + 1, bimg.getRGB(x, y+1 ));
                         temp = this.colorSimilarity(p,neighborPixel);
                         if (temp<maxLikeHood){
@@ -455,30 +455,30 @@ public class LevelSet {
 
     public int getTr(Pixel p, LevelSetObject o){
         int alpha = this.getAlpha(p);
-        int tObj = this.getTobj(p);
+        int tObj = this.getTobj(p,o);
         int tBg = this.getTbg(p,o);
         int result = Math.min(alpha,Math.max(tObj,tBg));
         //System.out.println("alpha: " + alpha +" tObj: " + tObj + " tBg: " + tBg + " result: " + result);
         return result;
     }
 
-    public int getTobj(Pixel p){
+    public int getTobj(Pixel p, LevelSetObject o){
         int tObj = 0;
         int x = p.getX();
         int y = p.getY();
         //miro a los 4 vecinos con cuidado de no desbordar
         //Si alguno de los vecinos pertenece al objeto o al borde interior incremento tObj
         if (x-1>0){
-            if (psiMatrix[x - 1][y] != 0){tObj++;}
+            if (psiMatrix[x - 1][y] == o.id){tObj++;}
         }
         if (x+1<psiMatrix.length){
-            if (psiMatrix[x + 1][y] != 0){tObj++;}
+            if (psiMatrix[x + 1][y] == o.id){tObj++;}
         }
         if (y-1>0){
-            if (psiMatrix[x][y - 1] != 0){tObj++;}
+            if (psiMatrix[x][y - 1] == o.id){tObj++;}
         }
         if (y+1<psiMatrix[0].length) {
-            if (psiMatrix[x][y + 1] != 0){tObj++;}
+            if (psiMatrix[x][y + 1] == o.id){tObj++;}
         }
         return tObj;
     }

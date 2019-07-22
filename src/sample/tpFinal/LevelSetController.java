@@ -117,7 +117,7 @@ public class LevelSetController {
             o.generateLinAndLoutBasedOnObjectSelection(image);
         }
         this.levelSet = new LevelSet(this.image,this.objectList);
-        timeline = new Timeline(new KeyFrame(Duration.seconds(1), ev -> {
+        timeline = new Timeline(new KeyFrame(Duration.seconds(0.15), ev -> {
                 BufferedImage bimg = is.imageList.get(framesCount);
                 image = new Image(bimg);
                 //image.convertToGreyDataMatrix();
